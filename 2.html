@@ -7,16 +7,16 @@
     
     <style>
         /* ========================================= */
-        /* НАСТРОЙКИ ЦВЕТОВ (МОЖЕТЕ МЕНЯТЬ ПОД СЕБЯ) */
+        /* НАСТРОЙКИ ЦВЕТОВ */
         /* ========================================= */
         :root {
-            --primary-color: #39b54a;     /* Главный синий цвет (заголовки, кнопки) */
-            --primary-hover: #32CD32;     /* Цвет кнопки при наведении */
-            --bg-page: #f0f4f9;           /* Цвет фона страницы */
-            --bg-card: #ffffff;           /* Цвет фона карточек (белый) */
-            --text-main: #000000;         /* Основной цвет текста (темно-серый) */
-            --text-muted: #000000;        /* Цвет подсказок (светло-серый) */
-            --border-color: #6B8E23;      /* Цвет рамок полей и таблиц */
+            --primary-color: #39b54a;
+            --primary-hover: #32CD32;
+            --bg-page: #f0f4f9;
+            --bg-card: #ffffff;
+            --text-main: #1f2937;
+            --text-muted: #6b7280;
+            --border-color: #39b54a;
         }
 
         /* БАЗОВЫЕ СТИЛИ */
@@ -30,14 +30,12 @@
         }
 
         .container {
-	
             max-width: 900px;
             margin: 0 auto;
         }
 
         /* КАРТОЧКИ (БЛОКИ ОТЧЕТА) */
         .card {
-
             background-color: var(--bg-card);
             padding: 25px;
             border-radius: 10px;
@@ -67,6 +65,7 @@
             border-radius: 50%;
             font-size: 14px;
             margin-right: 10px;
+            flex-shrink: 0;
         }
 
         /* ПОЛЯ ВВОДА */
@@ -107,11 +106,20 @@
             gap: 20px;
         }
 
-        /* ТАБЛИЦЫ */
+        /* ТАБЛИЦЫ И АДАПТИВНЫЙ СКРОЛЛ */
+        .table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch; /* Плавный скролл на iOS */
+            margin-bottom: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 10px;
+            min-width: 600px; /* Минимальная ширина таблицы, чтобы она не сжималась в кашу */
         }
 
         th, td {
@@ -120,6 +128,11 @@
             text-align: left;
             vertical-align: top;
         }
+        
+        /* Убираем лишние границы у ячеек, если есть wrapper */
+        .table-wrapper th, .table-wrapper td { border-top: none; border-left: none; }
+        .table-wrapper th:last-child, .table-wrapper td:last-child { border-right: none; }
+        .table-wrapper tr:last-child td { border-bottom: none; }
 
         th {
             background-color: #f8fafc;
@@ -132,6 +145,7 @@
             border: none;
             background: transparent;
             padding: 5px;
+            min-width: 120px; /* Минимальная ширина для полей внутри таблицы */
         }
         td input:hover, td textarea:hover { background: #f3f4f6; }
         
@@ -188,19 +202,41 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-text-align: left;
-            padding: 12px;
+            padding: 15px;
             border: 1px solid var(--border-color);
             border-radius: 6px;
             margin-bottom: 10px;
         }
-        .rating-options { display: flex; gap: 15px; }
+        .rating-options { display: flex; gap: 20px; }
         .rating-options label { display: flex; flex-direction: column; align-items: center; font-weight: normal; cursor: pointer; margin-bottom: 0;}
+
+        /* ========================================= */
+        /* МЕДИАЗАПРОСЫ ДЛЯ МОБИЛЬНОЙ ВЕРСТКИ (ТЕЛЕФОНЫ) */
+        /* ========================================= */
+        @media (max-width: 768px) {
+            body { padding: 10px; }
+            .card { padding: 15px; }
+            
+            /* Делаем сетку одноколоночной */
+            .grid-2 { grid-template-columns: 1fr; gap: 10px; }
+            
+            /* Адаптация самооценки */
+            .rating-row {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .rating-options {
+                margin-top: 15px;
+                width: 100%;
+                justify-content: space-between;
+            }
+        }
     </style>
 </head>
 <body>
 <div align="center">
-<img src="https://amanat24.kz/_nuxt/img/logo.2b6daef.svg"></img>
+<img src="https://amanat24.kz/_nuxt/img/logo.2b6daef.svg">
+</div>
 <div class="container">
     <div style="text-align: center; margin-bottom: 30px;">
         <h1 style="color: var(--primary-color);">Еженедельный отчет менеджера</h1>
@@ -234,58 +270,66 @@ text-align: left;
         <!-- 2. МЕРОПРИЯТИЯ -->
         <div class="card">
             <h2 class="card-title"><span class="block-number">2</span> Выполненные мероприятия</h2>
-            <table>
-                <tr><th width="25%">Мероприятие</th><th width="20%">Количество</th><th width="55%">Результат</th></tr>
-                <tr><td class="row-header">Холодные звонки</td><td><input type="number" name="ev_call_qty" min="0"></td><td><input type="text" name="ev_call_res"></td></tr>
-                <tr><td class="row-header">Онлайн-встречи</td><td><input type="number" name="ev_online_qty" min="0"></td><td><input type="text" name="ev_online_res"></td></tr>
-                <tr><td class="row-header">Личные встречи</td><td><input type="number" name="ev_offline_qty" min="0"></td><td><input type="text" name="ev_offline_res"></td></tr>
-                <tr><td class="row-header">Обучения</td><td><input type="number" name="ev_edu_qty" min="0"></td><td><input type="text" name="ev_edu_res"></td></tr>
-                <tr><td class="row-header">Повторные контакты</td><td><input type="number" name="ev_follow_qty" min="0"></td><td><input type="text" name="ev_follow_res"></td></tr>
-                <tr><td class="row-header">Другое</td><td><input type="number" name="ev_other_qty" min="0"></td><td><input type="text" name="ev_other_res"></td></tr>
-            </table>
+            <div class="table-wrapper">
+                <table>
+                    <tr><th width="30%">Мероприятие</th><th width="20%">Количество</th><th width="50%">Результат</th></tr>
+                    <tr><td class="row-header">Холодные звонки</td><td><input type="number" name="ev_call_qty" min="0"></td><td><input type="text" name="ev_call_res"></td></tr>
+                    <tr><td class="row-header">Онлайн-встречи</td><td><input type="number" name="ev_online_qty" min="0"></td><td><input type="text" name="ev_online_res"></td></tr>
+                    <tr><td class="row-header">Личные встречи</td><td><input type="number" name="ev_offline_qty" min="0"></td><td><input type="text" name="ev_offline_res"></td></tr>
+                    <tr><td class="row-header">Обучения</td><td><input type="number" name="ev_edu_qty" min="0"></td><td><input type="text" name="ev_edu_res"></td></tr>
+                    <tr><td class="row-header">Повторные контакты</td><td><input type="number" name="ev_follow_qty" min="0"></td><td><input type="text" name="ev_follow_res"></td></tr>
+                    <tr><td class="row-header">Другое</td><td><input type="number" name="ev_other_qty" min="0"></td><td><input type="text" name="ev_other_res"></td></tr>
+                </table>
+            </div>
         </div>
 
         <!-- 3. РЕЗУЛЬТАТЫ -->
         <div class="card">
             <h2 class="card-title"><span class="block-number">3</span> Основные результаты недели</h2>
-            <table>
-                <tr><th width="50%">Показатель</th><th width="50%">Факт</th></tr>
-                <tr><td class="row-header">Подключено новых агентов</td><td><input type="number" name="res_new" min="0"></td></tr>
-                <tr><td class="row-header">Выписано полисов</td><td><input type="number" name="res_pol" min="0"></td></tr>
-                <tr><td class="row-header">Страховая премия</td><td><input type="number" name="res_prem" min="0" step="0.01"></td></tr>
-                <tr><td class="row-header">АВ</td><td><input type="number" name="res_av" min="0" step="0.01"></td></tr>
-            </table>
+            <div class="table-wrapper">
+                <table>
+                    <tr><th width="50%">Показатель</th><th width="50%">Факт</th></tr>
+                    <tr><td class="row-header">Подключено новых агентов</td><td><input type="number" name="res_new" min="0"></td></tr>
+                    <tr><td class="row-header">Выписано полисов</td><td><input type="number" name="res_pol" min="0"></td></tr>
+                    <tr><td class="row-header">Страховая премия</td><td><input type="number" name="res_prem" min="0" step="0.01"></td></tr>
+                    <tr><td class="row-header">АВ</td><td><input type="number" name="res_av" min="0" step="0.01"></td></tr>
+                </table>
+            </div>
         </div>
 
         <!-- 4. ДЕЙСТВУЮЩИЕ АГЕНТЫ -->
         <div class="card">
             <h2 class="card-title"><span class="block-number">4</span> Работа с действующими агентами</h2>
-            <table id="tbl_current">
-                <tr><th>Агент</th><th width="15%">Полисы</th><th>Что сделано</th><th>Следующий шаг</th><th width="30px"></th></tr>
-                <tr>
-                    <td><input type="text" name="ca_agent[]"></td>
-                    <td><input type="number" name="ca_pol[]" min="0"></td>
-                    <td><input type="text" name="ca_done[]"></td>
-                    <td><input type="text" name="ca_next[]"></td>
-                    <td><button type="button" class="btn-remove" onclick="removeRow(this)">×</button></td>
-                </tr>
-            </table>
-            <button type="button" class="btn-add" onclick="addRow('tbl_current')">+ Добавить строку</button>
+            <div class="table-wrapper">
+                <table id="tbl_current">
+                    <tr><th>Агент</th><th width="15%">Полисы</th><th>Что сделано</th><th>Следующий шаг</th><th width="30px"></th></tr>
+                    <tr>
+                        <td><input type="text" name="ca_agent[]"></td>
+                        <td><input type="number" name="ca_pol[]" min="0"></td>
+                        <td><input type="text" name="ca_done[]"></td>
+                        <td><input type="text" name="ca_next[]"></td>
+                        <td style="text-align: center;"><button type="button" class="btn-remove" onclick="removeRow(this)">×</button></td>
+                    </tr>
+                </table>
+            </div>
+            <button type="button" class="btn-add" onclick="addRow('tbl_current')">+ Добавить агента</button>
         </div>
 
         <!-- 5. НОВЫЕ ПАРТНЕРЫ -->
         <div class="card">
             <h2 class="card-title"><span class="block-number">5</span> Развитие агентской базы (Новые партнеры)</h2>
-            <table id="tbl_new">
-                <tr><th>Компания</th><th>Статус</th><th>Следующее действие</th><th width="30px"></th></tr>
-                <tr>
-                    <td><input type="text" name="np_comp[]"></td>
-                    <td><input type="text" name="np_stat[]"></td>
-                    <td><input type="text" name="np_next[]"></td>
-                    <td><button type="button" class="btn-remove" onclick="removeRow(this)">×</button></td>
-                </tr>
-            </table>
-            <button type="button" class="btn-add" onclick="addRow('tbl_new')">+ Добавить строку</button>
+            <div class="table-wrapper">
+                <table id="tbl_new">
+                    <tr><th>Компания</th><th>Статус</th><th>Следующее действие</th><th width="30px"></th></tr>
+                    <tr>
+                        <td><input type="text" name="np_comp[]"></td>
+                        <td><input type="text" name="np_stat[]"></td>
+                        <td><input type="text" name="np_next[]"></td>
+                        <td style="text-align: center;"><button type="button" class="btn-remove" onclick="removeRow(this)">×</button></td>
+                    </tr>
+                </table>
+            </div>
+            <button type="button" class="btn-add" onclick="addRow('tbl_new')">+ Добавить партнера</button>
         </div>
 
         <!-- 6. САМООЦЕНКА -->
@@ -297,67 +341,73 @@ text-align: left;
         <!-- 7. ИНСАЙТЫ -->
         <div class="card">
             <h2 class="card-title"><span class="block-number">7</span> Инсайт недели</h2>
-            <table>
-                <tr><th width="40%">Вопрос</th><th width="60%">Ответ</th></tr>
-                <tr>
-                    <td class="row-header">Что нового узнали о рынке?<br><span class="hint">Что предлагали конкуренты?</span></td>
-                    <td><textarea name="in_market" rows="2"></textarea></td>
-                </tr>
-                <tr>
-                    <td class="row-header">Что чаще всего спрашивают клиенты?<br><span class="hint">Какой вопрос поставил в тупик?</span></td>
-                    <td><textarea name="in_questions" rows="2"></textarea></td>
-                </tr>
-                <tr>
-                    <td class="row-header">Какое возражение встречалось чаще всего?<br><span class="hint">Как удалось отработать?</span></td>
-                    <td><textarea name="in_objections" rows="2"></textarea></td>
-                </tr>
-                <tr>
-                    <td class="row-header">Что мешает продавать продукт?</td>
-                    <td><textarea name="in_problems" rows="2"></textarea></td>
-                </tr>
-            </table>
+            <div class="table-wrapper">
+                <table>
+                    <tr><th width="40%">Вопрос</th><th width="60%">Ответ</th></tr>
+                    <tr>
+                        <td class="row-header">Что нового узнали о рынке?<br><span class="hint">Что предлагали конкуренты?</span></td>
+                        <td><textarea name="in_market" rows="2"></textarea></td>
+                    </tr>
+                    <tr>
+                        <td class="row-header">Что чаще всего спрашивают клиенты?<br><span class="hint">Какой вопрос поставил в тупик?</span></td>
+                        <td><textarea name="in_questions" rows="2"></textarea></td>
+                    </tr>
+                    <tr>
+                        <td class="row-header">Какое возражение встречалось чаще всего?<br><span class="hint">Как удалось отработать?</span></td>
+                        <td><textarea name="in_objections" rows="2"></textarea></td>
+                    </tr>
+                    <tr>
+                        <td class="row-header">Что мешает продавать продукт?</td>
+                        <td><textarea name="in_problems" rows="2"></textarea></td>
+                    </tr>
+                </table>
+            </div>
         </div>
 
         <!-- 8. ПЛАН -->
         <div class="card">
             <h2 class="card-title"><span class="block-number">8</span> План мероприятий на следующую неделю</h2>
-            <table id="tbl_plan">
-                <tr><th>Мероприятие</th><th>Цель</th><th width="15%">Дата</th><th>Ожидаемый результат</th><th width="30px"></th></tr>
-                <tr>
-                    <td><input type="text" name="nw_task[]"></td>
-                    <td><input type="text" name="nw_goal[]"></td>
-                    <td><input type="date" name="nw_date[]"></td>
-                    <td><input type="text" name="nw_result[]"></td>
-                    <td><button type="button" class="btn-remove" onclick="removeRow(this)">×</button></td>
-                </tr>
-            </table>
-            <button type="button" class="btn-add" onclick="addRow('tbl_plan')">+ Добавить строку</button>
+            <div class="table-wrapper">
+                <table id="tbl_plan">
+                    <tr><th>Мероприятие</th><th>Цель</th><th width="15%">Дата</th><th>Ожидаемый результат</th><th width="30px"></th></tr>
+                    <tr>
+                        <td><input type="text" name="nw_task[]"></td>
+                        <td><input type="text" name="nw_goal[]"></td>
+                        <td><input type="date" name="nw_date[]"></td>
+                        <td><input type="text" name="nw_result[]"></td>
+                        <td style="text-align: center;"><button type="button" class="btn-remove" onclick="removeRow(this)">×</button></td>
+                    </tr>
+                </table>
+            </div>
+            <button type="button" class="btn-add" onclick="addRow('tbl_plan')">+ Добавить задачу</button>
         </div>
 
-        <!-- 9. ПРОБЛЕМЫ (НОВЫЙ БЛОК) -->
+        <!-- 9. ПРОБЛЕМЫ -->
         <div class="card">
             <h2 class="card-title"><span class="block-number">9</span> Проблемы</h2>
-            <table id="tbl_problems">
-                <tr>
-                    <th width="40%">Описание проблемы</th>
-                    <th width="30%">Кто может помочь</th>
-                    <th width="30%">Что теряем из-за проблемы</th>
-                    <th width="30px"></th>
-                </tr>
-                <tr>
-                    <td><textarea name="pr_desc[]" rows="2"></textarea></td>
-                    <td><textarea name="pr_help[]" rows="2"></textarea></td>
-                    <td><textarea name="pr_lost[]" rows="2"></textarea></td>
-                    <td><button type="button" class="btn-remove" onclick="removeRow(this)">×</button></td>
-                </tr>
-            </table>
-            <button type="button" class="btn-add" onclick="addRow('tbl_problems')">+ Добавить строку</button>
+            <div class="table-wrapper">
+                <table id="tbl_problems">
+                    <tr>
+                        <th width="40%">Описание проблемы</th>
+                        <th width="30%">Кто может помочь</th>
+                        <th width="30%">Что теряем из-за проблемы</th>
+                        <th width="30px"></th>
+                    </tr>
+                    <tr>
+                        <td><textarea name="pr_desc[]" rows="2"></textarea></td>
+                        <td><textarea name="pr_help[]" rows="2"></textarea></td>
+                        <td><textarea name="pr_lost[]" rows="2"></textarea></td>
+                        <td style="text-align: center;"><button type="button" class="btn-remove" onclick="removeRow(this)">×</button></td>
+                    </tr>
+                </table>
+            </div>
+            <button type="button" class="btn-add" onclick="addRow('tbl_problems')">+ Добавить проблему</button>
         </div>
 
         <!-- КНОПКИ ДЕЙСТВИЙ -->
         <div class="btn-group">
             <button type="button" id="btnMain" class="btn-main" onclick="actionHtmlAndCloud()">
-                📥 Скачать Отчет и ☁️ Отправить на Диск
+                📥 Скачать HTML и ☁️ Отправить на Диск
             </button>
         </div>
 
@@ -369,17 +419,17 @@ text-align: left;
 
     // Генерация самооценки
     const ratingsData = [
-        { id: "rate_plan", label: "Выполнение плана (1 — Далеко от плана, 3 — В графике, 5 — Иду на перевыполнение)" },
-        { id: "rate_new", label: "Работа с новыми клиентами (1 — Не искал новых, 3 — Сделал норму звонков/встреч, 5 — Подключил сильных партнеров) " },
-        { id: "rate_curr", label: "Работа с действующими агентами (1 — Работал только на входящих, 3 — Регулярно обзванивал базу, 5 — Реактивировал уснувших)" },
-        { id: "rate_crm", label: "Качество ведения Bitrix (1 — Есть просроченные задачи и пустые сделки, 5 — Идеальный порядок, все звонки и комментарии зафиксированы )" },
-        { id: "rate_exp", label: "Продуктовая экспертиза (1 — Плавал в вопросах агентов, 5 — Легко отрабатывал возражения, консультировал как эксперт ) " }
+        { id: "rate_plan", label: "Выполнение плана" },
+        { id: "rate_new", label: "Работа с новыми клиентами" },
+        { id: "rate_curr", label: "Работа с действующими агентами" },
+        { id: "rate_crm", label: "Качество ведения Bitrix" },
+        { id: "rate_exp", label: "Продуктовая экспертиза" }
     ];
     const rContainer = document.getElementById('ratingsContainer');
     ratingsData.forEach((item) => {
         let radioHTML = '';
         for(let i=1; i<=5; i++) {
-            radioHTML += `<label><input type="radio" name="${item.id}" value="${i}" required><span>${i}</span></label>`;
+            radioHTML += `<label><input type="radio" name="${item.id}" value="${i}" required><span style="font-size: 16px;">${i}</span></label>`;
         }
         rContainer.innerHTML += `
             <div class="rating-row">
@@ -395,6 +445,7 @@ text-align: left;
         newRow.querySelectorAll('input, textarea').forEach(input => input.value = '');
         tbody.appendChild(newRow);
     }
+    
     function removeRow(btn) {
         const tr = btn.closest('tr');
         const tbody = tr.closest('tbody');
@@ -402,8 +453,7 @@ text-align: left;
         else { tr.querySelectorAll('input, textarea').forEach(inp => inp.value = ''); }
     }
 
-    // СБОРКА ИДЕАЛЬНОГО HTML-ШАБЛОНА
-    // Эта функция теперь создает полноценную веб-страницу с красивым CSS внутри
+    // СБОРКА ИДЕАЛЬНОГО HTML-ШАБЛОНА С АДАПТИВНОСТЬЮ ДЛЯ МОБИЛЬНЫХ
     function buildStaticTemplate() {
         const form = document.getElementById('weeklyReportForm');
         const formData = new FormData(form);
@@ -429,11 +479,11 @@ text-align: left;
 
         const ratingVal = (name) => formData.get(name) || "—";
 
-        // Возвращаем полный HTML-документ с красивыми внутренними стилями
         return `<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Отчет: ${val('managerName')} - ${val('reportDate')}</title>
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f9; color: #1f2937; margin: 0; padding: 40px 20px; line-height: 1.6; }
@@ -443,17 +493,27 @@ text-align: left;
         .header p { color: #6b7280; font-size: 16px; margin: 0; }
         .section { background: #ffffff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 30px; }
         .section-title { color: #0b57d0; border-bottom: 2px solid #e5e7eb; padding-bottom: 10px; margin-top: 0; margin-bottom: 20px; font-size: 20px; display: flex; align-items: center; gap: 10px; }
-        .block-number { background: #0b57d0; color: white; border-radius: 50%; width: 28px; height: 28px; display: inline-flex; justify-content: center; align-items: center; font-size: 14px; font-weight: bold; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .block-number { background: #0b57d0; color: white; border-radius: 50%; width: 28px; height: 28px; display: inline-flex; justify-content: center; align-items: center; font-size: 14px; font-weight: bold; flex-shrink: 0; }
+        
+        .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; min-width: 600px; }
         th, td { border: 1px solid #d1d5db; padding: 12px; text-align: left; vertical-align: top; }
         th { background-color: #f8fafc; font-weight: 600; font-size: 14px; color: #374151; }
         td { font-size: 14px; }
         .highlight-bg { background-color: #f8fafc; font-weight: 600; width: 40%; }
+        
         ul { padding-left: 20px; margin: 10px 0; }
         li { margin-bottom: 8px; }
         .rating-grid { display: grid; grid-template-columns: 1fr; gap: 10px; }
         .rating-item { display: flex; justify-content: space-between; padding: 12px 15px; border: 1px solid #e5e7eb; border-radius: 6px; background: #f9fafb; }
         .rating-score { font-weight: bold; color: #0b57d0; font-size: 16px; }
+
+        @media (max-width: 768px) {
+            body { padding: 15px 10px; }
+            .section { padding: 15px; }
+            .rating-item { flex-direction: column; align-items: flex-start; }
+            .rating-score { margin-top: 5px; }
+        }
     </style>
 </head>
 <body>
@@ -474,41 +534,49 @@ text-align: left;
 
         <div class="section">
             <h2 class="section-title"><span class="block-number">2</span> Выполненные мероприятия</h2>
-            <table>
-                <tr><th>Мероприятие</th><th width="15%">Кол-во</th><th>Результат</th></tr>
-                <tr><td class="highlight-bg">Холодные звонки</td><td>${val('ev_call_qty')}</td><td>${val('ev_call_res')}</td></tr>
-                <tr><td class="highlight-bg">Онлайн-встречи</td><td>${val('ev_online_qty')}</td><td>${val('ev_online_res')}</td></tr>
-                <tr><td class="highlight-bg">Личные встречи</td><td>${val('ev_offline_qty')}</td><td>${val('ev_offline_res')}</td></tr>
-                <tr><td class="highlight-bg">Обучения</td><td>${val('ev_edu_qty')}</td><td>${val('ev_edu_res')}</td></tr>
-                <tr><td class="highlight-bg">Повторные контакты</td><td>${val('ev_follow_qty')}</td><td>${val('ev_follow_res')}</td></tr>
-                <tr><td class="highlight-bg">Другое</td><td>${val('ev_other_qty')}</td><td>${val('ev_other_res')}</td></tr>
-            </table>
+            <div class="table-responsive">
+                <table>
+                    <tr><th>Мероприятие</th><th width="15%">Кол-во</th><th>Результат</th></tr>
+                    <tr><td class="highlight-bg">Холодные звонки</td><td>${val('ev_call_qty')}</td><td>${val('ev_call_res')}</td></tr>
+                    <tr><td class="highlight-bg">Онлайн-встречи</td><td>${val('ev_online_qty')}</td><td>${val('ev_online_res')}</td></tr>
+                    <tr><td class="highlight-bg">Личные встречи</td><td>${val('ev_offline_qty')}</td><td>${val('ev_offline_res')}</td></tr>
+                    <tr><td class="highlight-bg">Обучения</td><td>${val('ev_edu_qty')}</td><td>${val('ev_edu_res')}</td></tr>
+                    <tr><td class="highlight-bg">Повторные контакты</td><td>${val('ev_follow_qty')}</td><td>${val('ev_follow_res')}</td></tr>
+                    <tr><td class="highlight-bg">Другое</td><td>${val('ev_other_qty')}</td><td>${val('ev_other_res')}</td></tr>
+                </table>
+            </div>
         </div>
 
         <div class="section">
             <h2 class="section-title"><span class="block-number">3</span> Основные результаты</h2>
-            <table>
-                <tr><td class="highlight-bg" style="width: 50%;">Подключено агентов</td><td>${val('res_new')}</td></tr>
-                <tr><td class="highlight-bg">Выписано полисов</td><td>${val('res_pol')}</td></tr>
-                <tr><td class="highlight-bg">Премия (тнг)</td><td>${val('res_prem')}</td></tr>
-                <tr><td class="highlight-bg">АВ (тнг)</td><td>${val('res_av')}</td></tr>
-            </table>
+            <div class="table-responsive">
+                <table>
+                    <tr><td class="highlight-bg" style="width: 50%;">Подключено агентов</td><td>${val('res_new')}</td></tr>
+                    <tr><td class="highlight-bg">Выписано полисов</td><td>${val('res_pol')}</td></tr>
+                    <tr><td class="highlight-bg">Премия (тнг)</td><td>${val('res_prem')}</td></tr>
+                    <tr><td class="highlight-bg">АВ (тнг)</td><td>${val('res_av')}</td></tr>
+                </table>
+            </div>
         </div>
 
         <div class="section">
             <h2 class="section-title"><span class="block-number">4</span> Работа с действующими агентами</h2>
-            <table>
-                <tr><th>Агент</th><th width="15%">Полисы</th><th>Сделано</th><th>Шаг</th></tr>
-                ${extractTable(['ca_agent[]', 'ca_pol[]', 'ca_done[]', 'ca_next[]'])}
-            </table>
+            <div class="table-responsive">
+                <table>
+                    <tr><th>Агент</th><th width="15%">Полисы</th><th>Сделано</th><th>Шаг</th></tr>
+                    ${extractTable(['ca_agent[]', 'ca_pol[]', 'ca_done[]', 'ca_next[]'])}
+                </table>
+            </div>
         </div>
 
         <div class="section">
             <h2 class="section-title"><span class="block-number">5</span> Развитие базы (Новые партнеры)</h2>
-            <table>
-                <tr><th>Компания</th><th>Статус</th><th>Действие</th></tr>
-                ${extractTable(['np_comp[]', 'np_stat[]', 'np_next[]'])}
-            </table>
+            <div class="table-responsive">
+                <table>
+                    <tr><th>Компания</th><th>Статус</th><th>Действие</th></tr>
+                    ${extractTable(['np_comp[]', 'np_stat[]', 'np_next[]'])}
+                </table>
+            </div>
         </div>
 
         <div class="section">
@@ -524,28 +592,34 @@ text-align: left;
 
         <div class="section">
             <h2 class="section-title"><span class="block-number">7</span> Инсайты</h2>
-            <table>
-                <tr><td class="highlight-bg" style="width: 40%;">Что нового узнали о рынке?</td><td>${val('in_market')}</td></tr>
-                <tr><td class="highlight-bg">Что чаще всего спрашивают клиенты?</td><td>${val('in_questions')}</td></tr>
-                <tr><td class="highlight-bg">Какое возражение встречалось чаще всего?</td><td>${val('in_objections')}</td></tr>
-                <tr><td class="highlight-bg">Что мешает продавать продукт?</td><td>${val('in_problems')}</td></tr>
-            </table>
+            <div class="table-responsive">
+                <table>
+                    <tr><td class="highlight-bg" style="width: 40%;">Что нового узнали о рынке?</td><td>${val('in_market')}</td></tr>
+                    <tr><td class="highlight-bg">Что чаще всего спрашивают клиенты?</td><td>${val('in_questions')}</td></tr>
+                    <tr><td class="highlight-bg">Какое возражение встречалось чаще всего?</td><td>${val('in_objections')}</td></tr>
+                    <tr><td class="highlight-bg">Что мешает продавать продукт?</td><td>${val('in_problems')}</td></tr>
+                </table>
+            </div>
         </div>
 
         <div class="section">
             <h2 class="section-title"><span class="block-number">8</span> План на следующую неделю</h2>
-            <table>
-                <tr><th>Мероприятие</th><th>Цель</th><th width="15%">Дата</th><th>Ожидание</th></tr>
-                ${extractTable(['nw_task[]', 'nw_goal[]', 'nw_date[]', 'nw_result[]'])}
-            </table>
+            <div class="table-responsive">
+                <table>
+                    <tr><th>Мероприятие</th><th>Цель</th><th width="15%">Дата</th><th>Ожидание</th></tr>
+                    ${extractTable(['nw_task[]', 'nw_goal[]', 'nw_date[]', 'nw_result[]'])}
+                </table>
+            </div>
         </div>
 
         <div class="section">
             <h2 class="section-title"><span class="block-number">9</span> Проблемы</h2>
-            <table>
-                <tr><th>Описание проблемы</th><th>Кто может помочь</th><th>Что теряем</th></tr>
-                ${extractTable(['pr_desc[]', 'pr_help[]', 'pr_lost[]'])}
-            </table>
+            <div class="table-responsive">
+                <table>
+                    <tr><th>Описание проблемы</th><th>Кто может помочь</th><th>Что теряем</th></tr>
+                    ${extractTable(['pr_desc[]', 'pr_help[]', 'pr_lost[]'])}
+                </table>
+            </div>
         </div>
     </div>
 </body>
