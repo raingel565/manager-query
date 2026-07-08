@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Еженедельный отчет менеджера</title>
+    
+    <!-- Подключаем Tailwind CSS для красивого дизайна формы -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
+        
+        /* Стили для текстовых полей */
+        input[type="text"], input[type="number"], input[type="date"], textarea {
+            width: 100%;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            padding: 0.5rem;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+            background-color: transparent;
+        }
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+            background-color: #ffffff;
+        }
+    </style>
+</head>
+<body class="text-gray-800 py-8">
+
+    <div class="max-w-4xl mx-auto">
+        <form id="weeklyReportForm">
+            <div id="reportContent" class="bg-white p-10 rounded-xl shadow-lg border border-gray-200">
+                
+                <!-- Шапка отчета -->
+                <div class="text-center mb-8 border-b pb-6">
+                    <h1 class="text-2xl font-bold text-blue-800 mb-4 uppercase tracking-wide">Еженедельный отчет менеджера</h1>
+                    <div class="flex justify-between items-center bg-blue-50 p-4 rounded-lg">
+                        <div class="w-1/2 pr-4 text-left">
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">ФИО Менеджера</label>
+                            <input type="text" id="managerName" name="managerName" placeholder="Иванов Иван" class="font-medium bg-white" required>
+                        </div>
+                        <div class="w-1/2 pl-4 text-left">
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Дата отчета</label>
+                            <input type="date" id="reportDate" name="reportDate" class="font-medium bg-white" required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 1. Личный OKR недели -->
+                <div class="mb-8">
+                    <h2 class="text-lg font-bold text-gray-800 mb-3 flex items-center">
+                        <span class="bg-blue-600 text-white w-6 h-6 rounded-full inline-flex justify-center items-center text-sm mr-2">1</span>
+                        Личный OKR недели
+                    </h2>
+                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <div class="mb-3">
+                            <label class="block text-sm font-semibold text-blue-800 mb-1">Главная цель:</label>
+                            <input type="text" name="okr_main" placeholder="Введите главную цель на неделю...">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">3 ключевых результата:</label>
+                            <div class="flex flex-col gap-2">
+                                <div class="flex items-center w-full"><span class="mr-2 text-gray-500 font-bold">1.</span><input type="text" name="okr_kr1" placeholder="Результат №1"></div>
+                                <div class="flex items-center w-full"><span class="mr-2 text-gray-500 font-bold">2.</span><input type="text" name="okr_kr2" placeholder="Результат №2"></div>
+                                <div class="flex items-center w-full"><span class="mr-2 text-gray-500 font-bold">3.</span><input type="text" name="okr_kr3" placeholder="Результат №3"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Выполненные мероприятия -->
+                <div class="mb-8">
+                    <h2 class="text-lg font-bold text-gray-800 mb-3 flex items-center">
+                        <span class="bg-blue-600 text-white w-6 h-6 rounded-full inline-flex justify-center items-center text-sm mr-2">2</span>
+                        Выполненные мероприятия
+                    </h2>
+                    <table class="w-full text-sm border-collapse border border-gray-300">
+                        <thead>
+                            <tr class="bg-gray-100 text-gray-700">
+                                <th class="border border-gray-300 p-2 text-left w-1/3">Мероприятие</th>
+                                <th class="border border-gray-300 p-2 text-left w-1/6">Количество</th>
+                                <th class="border border-gray-300 p-2 text-left w-1/2">Результат</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td class="border border-gray-300 p-2 font-medium bg-gray-50">Холодные звонки</td><td class="border border-gray-300 p-1"><input type="number" name="ev_call_qty" min="0"></td><td class="border border-gray-300 p-1"><input type="text" name="ev_call_res"></td></tr>
+                            <tr><td class="border border-gray-300 p-2 font-medium bg-gray-50">Онлайн-встречи</td><td class="border border-gray-300 p-1"><input type="number" name="ev_online_qty" min="0"></td><td class="border border-gray-300 p-1"><input type="text" name="ev_online_res"></td></tr>
+                            <tr><td class="border border-gray-300 p-2 font-medium bg-gray-50">Личные встречи</td><td class="border border-gray-300 p-1"><input type="number" name="ev_offline_qty" min="0"></td><td class="border border-gray-300 p-1"><input type="text" name="ev_offline_res"></td></tr>
+                            <tr><td class="border border-gray-300 p-2 font-medium bg-gray-50">Обучения</td><td class="border border-gray-300 p-1"><input type="number" name="ev_edu_qty" min="0"></td><td class="border border-gray-300 p-1"><input type="text" name="ev_edu_res"></td></tr>
+                            <tr><td class="border border-gray-300 p-2 font-medium bg-gray-50">Повторные контакты</td><td class="border border-gray-300 p-1"><input type="number" name="ev_follow_qty" min="0"></td><td class="border border-gray-300 p-1"><input type="text" name="ev_follow_res"></td></tr>
+                            <tr><td class="border border-gray-300 p-2 font-medium bg-gray-50">Другое</td><td class="border border-gray-300 p-1"><input type="number" name="ev_other_qty" min="0"></td><td class="border border-gray-300 p-1"><input type="text" name="ev_other_res"></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- 3. Основные результаты недели -->
+                <div class="mb-8">
+                    <h2 class="text-lg font-bold text-gray-800 mb-3 flex items-center">
+                        <span class="bg-blue-600 text-white w-6 h-6 rounded-full inline-flex justify-center items-center text-sm mr-2">3</span>
+                        Основные результаты недели
+                    </h2>
+                    <table class="w-full text-sm border-collapse border border-gray-300">
+                        <thead>
+                            <tr class="bg-gray-100 text-gray-700">
+                                <th class="border border-gray-300 p-2 text-left w-1/2">Показатель</th>
+                                <th class="border border-gray-300 p-2 text-left w-1/2">Факт</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td class="border border-gray-300 p-2 font-medium bg-gray-50">Подключено новых агентов</td><td class="border border-gray-300 p-1"><input type="number" name="res_new" min="0" placeholder="0"></td></tr>
+                            <tr><td class="border border-gray-300 p-2 font-medium bg-gray-50">Выписано полисов</td><td class="border border-gray-300 p-1"><input type="number" name="res_pol" min="0" placeholder="0"></td></tr>
+                            <tr><td class="border border-gray-300 p-2 font-medium bg-gray-50">Страховая премия</td><td class="border border-gray-300 p-1"><input type="number" name="res_prem" min="0" step="0.01" placeholder="0"></td></tr>
+                            <tr><td class="border border-gray-300 p-2 font-medium bg-gray-50">АВ</td><td class="border border-gray-300 p-1"><input type="number" name="res_av" min="0" step="0.01" placeholder="0"></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- 4. Работа с действующими агентами -->
+                <div class="mb-8">
+                    <h2 class="text-lg font-bold text-gray-800 mb-3 flex items-center">
+                        <span class="bg-blue-600 text-white w-6 h-6 rounded-full inline-flex justify-center items-center text-sm mr-2">4</span>
+                        Работа с действующими агентами
+                    </h2>
+                    <table class="w-full text-sm border-collapse border border-gray-300" id="tableCurrentAgents">
+                        <thead>
+                            <tr class="bg-gray-100 text-gray-700">
+                                <th class="border border-gray-300 p-2 text-left w-1/4">Агент</th>
+                                <th class="border border-gray-300 p-2 text-left w-1/6">Полисы</th>
+                                <th class="border border-gray-300 p-2 text-left w-1/3">Что сделано</th>
+                                <th class="border border-gray-300 p-2 text-left w-1/4">Следующий шаг</th>
+                                <th class="border border-gray-300 p-2 text-center w-8"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="border border-gray-300 p-1"><input type="text" name="ca_agent[]"></td>
+                                <td class="border border-gray-300 p-1"><input type="number" name="ca_pol[]" min="0"></td>
+                                <td class="border border-gray-300 p-1"><input type="text" name="ca_done[]"></td>
+                                <td class="border border-gray-300 p-1"><input type="text" name="ca_next[]"></td>
+                                <td class="border border-gray-300 p-1 text-center"><button type="button" onclick="removeRow(this)" class="text-red-500 font-bold hover:text-red-700">&times;</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <button type="button" onclick="addRow('tableCurrentAgents')" class="mt-2 text-sm text-blue-600 font-semibold hover:text-blue-800">+ Добавить агента</button>
+                </div>
+
+                <!-- 5. Развитие агентской базы -->
+                <div class="mb-8">
+                    <h2 class="text-lg font-bold text-gray-800 mb-1 flex items-center">
+                        <span class="bg-blue-600 text-white w-6 h-6 rounded-full inline-flex justify-center items-center text-sm mr-2">5</span>
+                        Развитие агентской базы
+                    </h2>
+                    <p class="text-sm text-gray-500 mb-3 ml-8">Новые потенциальные партнеры</p>
+                    <table class="w-full text-sm border-collapse border border-gray-300" id="tableNewPartners">
+                        <thead>
+                            <tr class="bg-gray-100 text-gray-700">
+                                <th class="border border-gray-300 p-2 text-left w-1/3">Компания</th>
+                                <th class="border border-gray-300 p-2 text-left w-1/3">Статус</th>
+                                <th class="border border-gray-300 p-2 text-left w-1/3">Следующее действие</th>
+                                <th class="border border-gray-300 p-2 text-center w-8"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="border border-gray-300 p-1"><input type="text" name="np_comp[]"></td>
+                                <td class="border border-gray-300 p-1"><input type="text" name="np_stat[]"></td>
+                                <td class="border border-gray-300 p-1"><input type="text" name="np_next[]"></td>
+                                <td class="border border-gray-300 p-1 text-center"><button type="button" onclick="removeRow(this)" class="text-red-500 font-bold hover:text-red-700">&times;</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <button type="button" onclick="addRow('tableNewPartners')" class="mt-2 text-sm text-blue-600 font-semibold hover:text-blue-800">+ Добавить партнера</button>
+                </div>
+
+                <!-- 6. Самооценка недели -->
+                <div class="mb-8">
+                    <h2 class="text-lg font-bold text-gray-800 mb-3 flex items-center">
+                        <span class="bg-blue-600 text-white w-6 h-6 rounded-full inline-flex justify-center items-center text-sm mr-2">6</span>
+                        Самооценка недели
+                    </h2>
+                    <p class="text-sm text-gray-600 mb-4 ml-8">Оцените по шкале от 1 до 5:</p>
+                    <div class="ml-8 flex flex-col gap-4" id="ratingsContainer"></div>
+                </div>
+
+                <!-- 7. Инсайт недели -->
+                <div class="mb-8">
+                    <h2 class="text-lg font-bold text-gray-800 mb-1 flex items-center">
+                        <span class="bg-blue-600 text-white w-6 h-6 rounded-full inline-flex justify-center items-center text-sm mr-2">7</span>
+                        Инсайт недели
+                    </h2>
+                    <p class="text-sm text-gray-500 mb-4 ml-8">Каждый менеджер за 2–3 минуты отвечает на вопросы:</p>
+                    
+                    <table class="w-full text-sm border-collapse border border-gray-300 ml-2">
+                        <thead>
+                            <tr class="bg-gray-100 text-gray-700">
+                                <th class="border border-gray-300 p-2 text-left w-2/5">Вопрос</th>
+                                <th class="border border-gray-300 p-2 text-left w-3/5">Ответ</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="border border-gray-300 p-3 bg-gray-50">
+                                    <div class="font-semibold text-gray-800">Что нового узнали о рынке?</div>
+                                    <div class="text-xs text-gray-500 mt-1 italic">ПОДСКАЗКА: Что на этой неделе предлагали конкуренты нашим агентам?</div>
+                                </td>
+                                <td class="border border-gray-300 p-1"><textarea name="in_market" rows="2"></textarea></td>
+                            </tr>
+                            <tr>
+                                <td class="border border-gray-300 p-3 bg-gray-50">
+                                    <div class="font-semibold text-gray-800">Что чаще всего спрашивают клиенты?</div>
+                                    <div class="text-xs text-gray-500 mt-1 italic">ПОДСКАЗКА: Какой вопрос от агента на этой неделе заставил вас задуматься или поставил в тупик?</div>
+                                </td>
+                                <td class="border border-gray-300 p-1"><textarea name="in_questions" rows="2"></textarea></td>
+                            </tr>
+                            <tr>
+                                <td class="border border-gray-300 p-3 bg-gray-50">
+                                    <div class="font-semibold text-gray-800">Какое возражение встречалось чаще всего?</div>
+                                    <div class="text-xs text-gray-500 mt-1 italic">ПОДСКАЗКА: Главное возражение недели и КАК вам удалось его отработать?</div>
+                                </td>
+                                <td class="border border-gray-300 p-1"><textarea name="in_objections" rows="2"></textarea></td>
+                            </tr>
+                            <tr>
+                                <td class="border border-gray-300 p-3 bg-gray-50">
+                                    <div class="font-semibold text-gray-800">Что мешает продавать продукт?</div>
+                                </td>
+                                <td class="border border-gray-300 p-1"><textarea name="in_problems" rows="2"></textarea></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- 8. План мероприятий на следующую неделю -->
+                <div class="mb-4">
+                    <h2 class="text-lg font-bold text-gray-800 mb-3 flex items-center">
+                        <span class="bg-blue-600 text-white w-6 h-6 rounded-full inline-flex justify-center items-center text-sm mr-2">8</span>
+                        План мероприятий на следующую неделю
+                    </h2>
+                    <table class="w-full text-sm border-collapse border border-gray-300" id="tableNextWeek">
+                        <thead>
+                            <tr class="bg-gray-100 text-gray-700">
+                                <th class="border border-gray-300 p-2 text-left w-1/4">Мероприятие</th>
+                                <th class="border border-gray-300 p-2 text-left w-1/4">Цель</th>
+                                <th class="border border-gray-300 p-2 text-left w-1/6">Плановая дата</th>
+                                <th class="border border-gray-300 p-2 text-left w-1/3">Ожидаемый результат</th>
+                                <th class="border border-gray-300 p-2 text-center w-8"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="border border-gray-300 p-1"><input type="text" name="nw_task[]"></td>
+                                <td class="border border-gray-300 p-1"><input type="text" name="nw_goal[]"></td>
+                                <td class="border border-gray-300 p-1"><input type="date" name="nw_date[]"></td>
+                                <td class="border border-gray-300 p-1"><input type="text" name="nw_result[]"></td>
+                                <td class="border border-gray-300 p-1 text-center"><button type="button" onclick="removeRow(this)" class="text-red-500 font-bold hover:text-red-700">&times;</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <button type="button" onclick="addRow('tableNextWeek')" class="mt-2 text-sm text-blue-600 font-semibold hover:text-blue-800">+ Добавить задачу</button>
+                </div>
+                
+            </div>
+
+            <!-- Кнопка генерации -->
+            <div class="mt-8 flex justify-center pb-12">
+                <button type="button" onclick="generateHTML()" id="htmlBtn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-8 rounded-xl shadow-lg transition-transform transform hover:-translate-y-1 text-lg max-w-sm w-full">
+                    🌐 Сформировать HTML-отчет
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Инициализация дат
+        document.getElementById('reportDate').valueAsDate = new Date();
+
+        // Генерация блока самооценки
+        const ratingsData = [
+            { id: "rate_plan", label: "Выполнение плана", hint: "1 — Далеко от плана, 3 — В графике, 5 — Иду на перевыполнение" },
+            { id: "rate_new", label: "Работа с новыми клиентами", hint: "1 — Не искал новых, 3 — Сделал норму звонков/встреч, 5 — Подключил сильных партнеров" },
+            { id: "rate_curr", label: "Работа с существующими агентами", hint: "1 — Работал только на входящих, 3 — Регулярно обзванивал базу, 5 — Реактивировал уснувших или увеличил средний чек" },
+            { id: "rate_crm", label: "Качество ведения Bitrix", hint: "1 — Есть просроченные задачи и пустые сделки, 5 — Идеальный порядок, все звонки и комментарии зафиксированы" },
+            { id: "rate_exp", label: "Продуктовая экспертиза", hint: "1 — Плавал в вопросах агентов, 5 — Легко отрабатывал возражения, консультировал как эксперт" }
+        ];
+
+        const rContainer = document.getElementById('ratingsContainer');
+        ratingsData.forEach((item) => {
+            let radioHTML = '';
+            for(let i=1; i<=5; i++) {
+                radioHTML += `
+                    <label class="flex flex-col items-center cursor-pointer px-2">
+                        <input type="radio" name="${item.id}" value="${i}" class="mb-1 w-4 h-4 text-blue-600" required>
+                        <span class="text-sm font-medium text-gray-700">${i}</span>
+                    </label>
+                `;
+            }
+            rContainer.innerHTML += `
+                <div class="flex justify-between items-center bg-white p-3 border border-gray-200 rounded-lg">
+                    <div class="w-3/4 pr-4">
+                        <div class="font-semibold text-gray-800 text-sm">${item.label}</div>
+                        <div class="text-xs text-gray-500 mt-1 italic">${item.hint}</div>
+                    </div>
+                    <div class="w-1/4 flex justify-end gap-2">
+                        ${radioHTML}
+                    </div>
+                </div>
+            `;
+        });
+
+        // Работа с таблицами
+        function addRow(tableId) {
+            const tbody = document.getElementById(tableId).querySelector('tbody');
+            const newRow = tbody.rows[0].cloneNode(true);
+            newRow.querySelectorAll('input, textarea').forEach(input => input.value = '');
+            tbody.appendChild(newRow);
+        }
+
+        function removeRow(btn) {
+            const tr = btn.closest('tr');
+            const tbody = tr.closest('tbody');
+            if(tbody.querySelectorAll('tr').length > 1) {
+                tr.remove();
+            } else {
+                tr.querySelectorAll('input, textarea').forEach(inp => inp.value = '');
+            }
+        }
+
+        // ==========================================
+        // МАГИЯ ШАБЛОНА ДЛЯ HTML
+        // ==========================================
+        function buildStaticTemplate() {
+            const formData = new FormData(document.getElementById('weeklyReportForm'));
+            const data = Object.fromEntries(formData.entries());
+            const val = (name) => {
+                if (!data[name] || data[name].trim() === "") return "—";
+                return data[name].replace(/\n/g, '<br>'); 
+            };
+
+            function getTableHTML(keys) {
+                const arrays = keys.map(k => formData.getAll(k));
+                let html = "";
+                for(let i=0; i<arrays[0].length; i++) {
+                    if(arrays[0][i].trim() !== "") {
+                        html += "<tr>";
+                        for(let j=0; j<keys.length; j++) html += `<td>${arrays[j][i] || "—"}</td>`;
+                        html += "</tr>";
+                    }
+                }
+                return html || `<tr><td colspan="${keys.length}" style="text-align:center; color:#888;">Нет данных</td></tr>`;
+            }
+
+            return `
+            <div style="font-family: 'Segoe UI', Tahoma, sans-serif; color: #222; width: 100%; max-width: 900px; margin: 0 auto; padding: 20px; box-sizing: border-box; background: #fff;">
+                
+                <!-- Шапка -->
+                <div style="border-bottom: 3px solid #0b57d0; padding-bottom: 20px; margin-bottom: 30px; text-align: center;">
+                    <h1 style="margin: 0; color: #0b57d0; font-size: 26px; text-transform: uppercase;">Еженедельный отчет менеджера</h1>
+                    <p style="margin: 10px 0 0 0; font-size: 16px; color: #555;">
+                        <strong>Менеджер:</strong> ${val('managerName')} &nbsp;|&nbsp; <strong>Дата:</strong> ${val('reportDate')}
+                    </p>
+                </div>
+
+                <style>
+                    h2 { color: #2c3e50; border-left: 4px solid #0b57d0; padding-left: 10px; margin-top: 30px; font-size: 18px; margin-bottom: 10px;}
+                    table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px; }
+                    th, td { border: 1px solid #d1d5db; padding: 10px; text-align: left; vertical-align: top;}
+                    th { background-color: #f3f4f6; font-weight: 600; color: #333; }
+                </style>
+
+                <!-- 1. OKR -->
+                <div>
+                    <h2>1. Личный OKR недели</h2>
+                    <div style="background: #f8fafc; padding: 15px; border-radius: 6px; border: 1px solid #e2e8f0;">
+                        <div style="font-size: 16px; font-weight: bold; color: #1e40af; margin-bottom: 10px;">Цель: ${val('okr_main')}</div>
+                        <div style="margin-bottom: 5px;"><strong>1.</strong> ${val('okr_kr1')}</div>
+                        <div style="margin-bottom: 5px;"><strong>2.</strong> ${val('okr_kr2')}</div>
+                        <div><strong>3.</strong> ${val('okr_kr3')}</div>
+                    </div>
+                </div>
+
+                <!-- 2. Мероприятия -->
+                <div>
+                    <h2>2. Выполненные мероприятия</h2>
+                    <table>
+                        <tr><th style="width: 30%">Мероприятие</th><th style="width: 15%">Количество</th><th style="width: 55%">Результат / Комментарий</th></tr>
+                        <tr><td><strong>Холодные звонки</strong></td><td>${val('ev_call_qty')}</td><td>${val('ev_call_res')}</td></tr>
+                        <tr><td><strong>Онлайн-встречи</strong></td><td>${val('ev_online_qty')}</td><td>${val('ev_online_res')}</td></tr>
+                        <tr><td><strong>Личные встречи</strong></td><td>${val('ev_offline_qty')}</td><td>${val('ev_offline_res')}</td></tr>
+                        <tr><td><strong>Обучения агентов</strong></td><td>${val('ev_edu_qty')}</td><td>${val('ev_edu_res')}</td></tr>
+                        <tr><td><strong>Повторные контакты</strong></td><td>${val('ev_follow_qty')}</td><td>${val('ev_follow_res')}</td></tr>
+                        <tr><td><strong>Другое</strong></td><td>${val('ev_other_qty')}</td><td>${val('ev_other_res')}</td></tr>
+                    </table>
+                </div>
+
+                <!-- 3. Результаты -->
+                <div>
+                    <h2>3. Основные результаты недели</h2>
+                    <table>
+                        <tr><th style="width: 50%">Показатель</th><th style="width: 50%">Факт</th></tr>
+                        <tr><td><strong>Подключено новых агентов</strong></td><td>${val('res_new')}</td></tr>
+                        <tr><td><strong>Выписано полисов</strong></td><td>${val('res_pol')}</td></tr>
+                        <tr><td><strong>Страховая премия (тнг)</strong></td><td>${val('res_prem')}</td></tr>
+                        <tr><td><strong>АВ (тнг)</strong></td><td>${val('res_av')}</td></tr>
+                    </table>
+                </div>
+
+                <!-- 4. Текущие агенты -->
+                <div>
+                    <h2>4. Работа с действующими агентами</h2>
+                    <table>
+                        <tr><th style="width: 25%">Агент</th><th style="width: 15%">Полисы (шт)</th><th style="width: 30%">Что сделано</th><th style="width: 30%">Следующий шаг</th></tr>
+                        ${getTableHTML(['ca_agent[]', 'ca_pol[]', 'ca_done[]', 'ca_next[]'])}
+                    </table>
+                </div>
+
+                <!-- 5. Новые партнеры -->
+                <div>
+                    <h2>5. Развитие агентской базы (Новые партнеры)</h2>
+                    <table>
+                        <tr><th style="width: 30%">Компания / Агентство</th><th style="width: 30%">Статус</th><th style="width: 40%">Следующее действие</th></tr>
+                        ${getTableHTML(['np_comp[]', 'np_stat[]', 'np_next[]'])}
+                    </table>
+                </div>
+
+                <!-- 6. Самооценка -->
+                <div>
+                    <h2>6. Самооценка эффективности (от 1 до 5)</h2>
+                    <table>
+                        <tr><th style="width: 70%">Критерий</th><th style="width: 30%">Оценка</th></tr>
+                        <tr><td>Выполнение плана</td><td><strong style="color:#0b57d0; font-size:16px;">${val('rate_plan')}</strong> / 5</td></tr>
+                        <tr><td>Работа с новыми агентами</td><td><strong style="color:#0b57d0; font-size:16px;">${val('rate_new')}</strong> / 5</td></tr>
+                        <tr><td>Работа с существующими</td><td><strong style="color:#0b57d0; font-size:16px;">${val('rate_curr')}</strong> / 5</td></tr>
+                        <tr><td>Качество ведения Bitrix24</td><td><strong style="color:#0b57d0; font-size:16px;">${val('rate_crm')}</strong> / 5</td></tr>
+                        <tr><td>Продуктовая экспертиза</td><td><strong style="color:#0b57d0; font-size:16px;">${val('rate_exp')}</strong> / 5</td></tr>
+                    </table>
+                </div>
+
+                <!-- 7. Инсайты -->
+                <div>
+                    <h2>7. Инсайт недели (Голос рынка)</h2>
+                    <table>
+                        <tr><th style="width: 40%">Вопрос</th><th style="width: 60%">Ответ</th></tr>
+                        <tr><td><strong>Что нового узнали о рынке?</strong></td><td>${val('in_market')}</td></tr>
+                        <tr><td><strong>Что чаще всего спрашивают клиенты?</strong></td><td>${val('in_questions')}</td></tr>
+                        <tr><td><strong>Какое возражение встречалось чаще всего?</strong></td><td>${val('in_objections')}</td></tr>
+                        <tr><td><strong>Что мешает продавать продукт?</strong></td><td>${val('in_problems')}</td></tr>
+                    </table>
+                </div>
+
+                <!-- 8. План на неделю -->
+                <div>
+                    <h2>8. План мероприятий на следующую неделю</h2>
+                    <table>
+                        <tr><th style="width: 30%">Мероприятие</th><th style="width: 25%">Цель</th><th style="width: 15%">Дата</th><th style="width: 30%">Ожидаемый результат</th></tr>
+                        ${getTableHTML(['nw_task[]', 'nw_goal[]', 'nw_date[]', 'nw_result[]'])}
+                    </table>
+                </div>
+            </div>
+            `;
+        }
+
+        function checkRequired() {
+            if(!document.getElementById('managerName').value || !document.getElementById('reportDate').value) {
+                alert("Пожалуйста, заполните ФИО и Дату отчета!");
+                return false;
+            }
+            return true;
+        }
+
+        // ==========================================
+        // ГЕНЕРАЦИЯ HTML
+        // ==========================================
+        function generateHTML() {
+            if(!checkRequired()) return;
+
+            const htmlContent = buildStaticTemplate();
+            
+            // Заворачиваем в полные теги HTML для скачивания
+            const fullHTML = `<!DOCTYPE html><html lang="ru"><head><meta charset="UTF-8"><title>Отчет</title></head><body style="background: #eef2f6;">${htmlContent}</body></html>`;
+
+            const blob = new Blob([fullHTML], { type: 'text/html;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            
+            const name = document.getElementById('managerName').value.replace(/\s+/g, '_');
+            const date = document.getElementById('reportDate').value;
+            
+            a.download = `Отчет_${name}_${date}.html`;
+            a.href = url;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>
