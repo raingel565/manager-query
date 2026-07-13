@@ -7,16 +7,17 @@
     
     <style>
         /* ========================================= */
-        /* НАСТРОЙКИ ЦВЕТОВ */
+        /* НАСТРОЙКИ ЦВЕТОВ (КОРПОРАТИВНЫЙ ЗЕЛЕНЫЙ) */
         /* ========================================= */
         :root {
-            --primary-color: #39b54a;
-            --primary-hover: #32CD32;
-            --bg-page: #f0f4f9;
-            --bg-card: #ffffff;
-            --text-main: #1f2937;
-            --text-muted: #6b7280;
-            --border-color: #39b54a;
+            --primary-color: #39b54a;     /* Главный зеленый цвет */
+            --primary-hover: #2e963c;     /* Цвет при наведении */
+            --bg-page: #f0f4f9;           
+            --bg-card: #ffffff;           
+            --text-main: #1f2937;         /* Черный/темно-серый текст */
+            --text-muted: #6b7280;        
+            --border-color: #39b54a;      /* Рамки таблиц тоже зеленые */
+            --border-input: #d1d5db;      /* Рамки полей ввода серые для контраста */
         }
 
         /* БАЗОВЫЕ СТИЛИ */
@@ -29,10 +30,7 @@
             line-height: 1.5;
         }
 
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-        }
+        .container { max-width: 900px; margin: 0 auto; }
 
         /* КАРТОЧКИ (БЛОКИ ОТЧЕТА) */
         .card {
@@ -69,24 +67,14 @@
         }
 
         /* ПОЛЯ ВВОДА */
-        label {
-            display: block;
-            font-weight: 600;
-            margin-bottom: 5px;
-            font-size: 14px;
-        }
+        label { display: block; font-weight: 600; margin-bottom: 5px; font-size: 14px; }
         
-        .hint {
-            font-size: 12px;
-            color: var(--text-muted);
-            margin-bottom: 8px;
-            display: block;
-        }
+        .hint { font-size: 12px; color: var(--text-muted); margin-bottom: 8px; display: block; font-style: italic; }
 
         input[type="text"], input[type="number"], input[type="date"], textarea {
             width: 100%;
             padding: 10px;
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--border-input);
             border-radius: 6px;
             box-sizing: border-box;
             font-family: inherit;
@@ -97,87 +85,47 @@
         input:focus, textarea:focus {
             outline: none;
             border-color: var(--primary-color);
-            box-shadow: 0 0 0 2px rgba(11, 87, 208, 0.2);
+            box-shadow: 0 0 0 2px rgba(57, 181, 74, 0.2);
         }
 
-        .grid-2 {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
 
         /* ТАБЛИЦЫ И АДАПТИВНЫЙ СКРОЛЛ */
         .table-wrapper {
             width: 100%;
             overflow-x: auto;
-            -webkit-overflow-scrolling: touch; /* Плавный скролл на iOS */
+            -webkit-overflow-scrolling: touch;
             margin-bottom: 10px;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            min-width: 600px; /* Минимальная ширина таблицы, чтобы она не сжималась в кашу */
+            min-width: 600px; 
+            border: 2px solid var(--border-color); /* Внешняя рамка таблицы */
         }
 
         th, td {
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--border-color); /* Внутренние рамки таблицы */
             padding: 8px;
             text-align: left;
             vertical-align: top;
         }
-        
-        /* Убираем лишние границы у ячеек, если есть wrapper */
-        .table-wrapper th, .table-wrapper td { border-top: none; border-left: none; }
-        .table-wrapper th:last-child, .table-wrapper td:last-child { border-right: none; }
-        .table-wrapper tr:last-child td { border-bottom: none; }
 
-        th {
-            background-color: #f8fafc;
-            font-weight: 600;
-            font-size: 13px;
-        }
+        th { background-color: #f8fafc; font-weight: 600; font-size: 13px; color: var(--primary-color); }
 
-        td input, td textarea {
-            margin-bottom: 0;
-            border: none;
-            background: transparent;
-            padding: 5px;
-            min-width: 120px; /* Минимальная ширина для полей внутри таблицы */
-        }
+        td input, td textarea { margin-bottom: 0; border: none; background: transparent; padding: 5px; min-width: 120px; }
         td input:hover, td textarea:hover { background: #f3f4f6; }
         
         .row-header { background-color: #f8fafc; font-weight: 600; font-size: 14px;}
 
         /* КНОПКИ */
-        .btn-add {
-            background: transparent;
-            color: var(--primary-color);
-            border: none;
-            cursor: pointer;
-            font-weight: 600;
-            padding: 5px 0;
-            font-size: 14px;
-        }
+        .btn-add { background: transparent; color: var(--primary-color); border: none; cursor: pointer; font-weight: 600; padding: 5px 0; font-size: 14px; }
         .btn-add:hover { text-decoration: underline; }
 
-        .btn-remove {
-            color: #dc2626;
-            background: transparent;
-            border: none;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 18px;
-        }
+        .btn-remove { color: #dc2626; background: transparent; border: none; cursor: pointer; font-weight: bold; font-size: 18px; }
 
-        .btn-group {
-            display: flex;
-            justify-content: center;
-            margin-top: 30px;
-            margin-bottom: 50px;
-        }
+        .btn-group { display: flex; justify-content: center; margin-top: 30px; margin-bottom: 50px; }
 
         .btn-main {
             background-color: var(--primary-color);
@@ -192,50 +140,72 @@
             transition: 0.2s;
             width: 100%;
             max-width: 600px;
-            box-shadow: 0 4px 12px rgba(11, 87, 208, 0.3);
+            box-shadow: 0 4px 12px rgba(57, 181, 74, 0.3);
         }
         .btn-main:hover { background-color: var(--primary-hover); transform: translateY(-2px); }
         .btn-main:disabled { opacity: 0.7; cursor: wait; transform: none; }
 
-        /* САМООЦЕНКА */
+        /* ИНТЕРАКТИВНАЯ САМООЦЕНКА */
         .rating-row {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
+            flex-direction: column;
             padding: 15px;
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--border-input);
             border-radius: 6px;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
+            background-color: #fafafa;
         }
-        .rating-options { display: flex; gap: 20px; }
-        .rating-options label { display: flex; flex-direction: column; align-items: center; font-weight: normal; cursor: pointer; margin-bottom: 0;}
+        .rating-question { font-weight: 600; margin-bottom: 5px; color: var(--text-main); }
+        .rating-options { 
+            display: flex; 
+            gap: 10px; 
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+        
+        /* Стилизация радиокнопок под красивые кружки */
+        .rating-label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+        .rating-label input[type="radio"] { display: none; /* Прячем стандартный кружок */ }
+        .rating-label:hover { background-color: rgba(57, 181, 74, 0.1); }
+        
+        /* Состояние выбранной оценки */
+        .rating-label input[type="radio"]:checked + span {
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
-        /* ========================================= */
-        /* МЕДИАЗАПРОСЫ ДЛЯ МОБИЛЬНОЙ ВЕРСТКИ (ТЕЛЕФОНЫ) */
-        /* ========================================= */
+        /* МЕДИАЗАПРОСЫ ДЛЯ МОБИЛЬНОЙ ВЕРСТКИ */
         @media (max-width: 768px) {
             body { padding: 10px; }
             .card { padding: 15px; }
-            
-            /* Делаем сетку одноколоночной */
             .grid-2 { grid-template-columns: 1fr; gap: 10px; }
-            
-            /* Адаптация самооценки */
-            .rating-row {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            .rating-options {
-                margin-top: 15px;
-                width: 100%;
-                justify-content: space-between;
-            }
+            .rating-options { justify-content: space-between; width: 100%; }
         }
     </style>
 </head>
 <body>
-<div align="center">
-<img src="https://amanat24.kz/_nuxt/img/logo.2b6daef.svg">
+<div align="center" style="margin-bottom: 20px;">
+    <img src="https://amanat24.kz/_nuxt/img/logo.2b6daef.svg" alt="Amanat24" style="max-width: 200px;">
 </div>
 <div class="container">
     <div style="text-align: center; margin-bottom: 30px;">
@@ -262,9 +232,9 @@
             <input type="text" name="okr_main" placeholder="Какова главная цель?">
             
             <label style="margin-top: 15px;">3 ключевых результата:</label>
-            <div style="display: flex; align-items: center;"><span style="width: 25px; font-weight: bold;">1.</span><input type="text" name="okr_kr1"></div>
-            <div style="display: flex; align-items: center;"><span style="width: 25px; font-weight: bold;">2.</span><input type="text" name="okr_kr2"></div>
-            <div style="display: flex; align-items: center;"><span style="width: 25px; font-weight: bold;">3.</span><input type="text" name="okr_kr3"></div>
+            <div style="display: flex; align-items: center;"><span style="width: 25px; font-weight: bold; color: var(--primary-color);">1.</span><input type="text" name="okr_kr1"></div>
+            <div style="display: flex; align-items: center;"><span style="width: 25px; font-weight: bold; color: var(--primary-color);">2.</span><input type="text" name="okr_kr2"></div>
+            <div style="display: flex; align-items: center;"><span style="width: 25px; font-weight: bold; color: var(--primary-color);">3.</span><input type="text" name="okr_kr3"></div>
         </div>
 
         <!-- 2. МЕРОПРИЯТИЯ -->
@@ -272,13 +242,17 @@
             <h2 class="card-title"><span class="block-number">2</span> Выполненные мероприятия</h2>
             <div class="table-wrapper">
                 <table>
-                    <tr><th width="30%">Мероприятие</th><th width="20%">Количество</th><th width="50%">Результат</th></tr>
-                    <tr><td class="row-header">Холодные звонки</td><td><input type="number" name="ev_call_qty" min="0"></td><td><input type="text" name="ev_call_res"></td></tr>
-                    <tr><td class="row-header">Онлайн-встречи</td><td><input type="number" name="ev_online_qty" min="0"></td><td><input type="text" name="ev_online_res"></td></tr>
-                    <tr><td class="row-header">Личные встречи</td><td><input type="number" name="ev_offline_qty" min="0"></td><td><input type="text" name="ev_offline_res"></td></tr>
-                    <tr><td class="row-header">Обучения</td><td><input type="number" name="ev_edu_qty" min="0"></td><td><input type="text" name="ev_edu_res"></td></tr>
-                    <tr><td class="row-header">Повторные контакты</td><td><input type="number" name="ev_follow_qty" min="0"></td><td><input type="text" name="ev_follow_res"></td></tr>
-                    <tr><td class="row-header">Другое</td><td><input type="number" name="ev_other_qty" min="0"></td><td><input type="text" name="ev_other_res"></td></tr>
+                    <thead>
+                        <tr><th width="30%">Мероприятие</th><th width="20%">Количество</th><th width="50%">Результат</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td class="row-header">Холодные звонки</td><td><input type="number" name="ev_call_qty" min="0"></td><td><input type="text" name="ev_call_res"></td></tr>
+                        <tr><td class="row-header">Онлайн-встречи</td><td><input type="number" name="ev_online_qty" min="0"></td><td><input type="text" name="ev_online_res"></td></tr>
+                        <tr><td class="row-header">Личные встречи</td><td><input type="number" name="ev_offline_qty" min="0"></td><td><input type="text" name="ev_offline_res"></td></tr>
+                        <tr><td class="row-header">Обучения</td><td><input type="number" name="ev_edu_qty" min="0"></td><td><input type="text" name="ev_edu_res"></td></tr>
+                        <tr><td class="row-header">Повторные контакты</td><td><input type="number" name="ev_follow_qty" min="0"></td><td><input type="text" name="ev_follow_res"></td></tr>
+                        <tr><td class="row-header">Другое</td><td><input type="number" name="ev_other_qty" min="0"></td><td><input type="text" name="ev_other_res"></td></tr>
+                    </tbody>
                 </table>
             </div>
         </div>
@@ -288,11 +262,15 @@
             <h2 class="card-title"><span class="block-number">3</span> Основные результаты недели</h2>
             <div class="table-wrapper">
                 <table>
-                    <tr><th width="50%">Показатель</th><th width="50%">Факт</th></tr>
-                    <tr><td class="row-header">Подключено новых агентов</td><td><input type="number" name="res_new" min="0"></td></tr>
-                    <tr><td class="row-header">Выписано полисов</td><td><input type="number" name="res_pol" min="0"></td></tr>
-                    <tr><td class="row-header">Страховая премия</td><td><input type="number" name="res_prem" min="0" step="0.01"></td></tr>
-                    <tr><td class="row-header">АВ</td><td><input type="number" name="res_av" min="0" step="0.01"></td></tr>
+                    <thead>
+                        <tr><th width="50%">Показатель</th><th width="50%">Факт</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td class="row-header">Подключено новых агентов</td><td><input type="number" name="res_new" min="0"></td></tr>
+                        <tr><td class="row-header">Выписано полисов</td><td><input type="number" name="res_pol" min="0"></td></tr>
+                        <tr><td class="row-header">Страховая премия</td><td><input type="number" name="res_prem" min="0" step="0.01"></td></tr>
+                        <tr><td class="row-header">АВ</td><td><input type="number" name="res_av" min="0" step="0.01"></td></tr>
+                    </tbody>
                 </table>
             </div>
         </div>
@@ -302,14 +280,18 @@
             <h2 class="card-title"><span class="block-number">4</span> Работа с действующими агентами</h2>
             <div class="table-wrapper">
                 <table id="tbl_current">
-                    <tr><th>Агент</th><th width="15%">Полисы</th><th>Что сделано</th><th>Следующий шаг</th><th width="30px"></th></tr>
-                    <tr>
-                        <td><input type="text" name="ca_agent[]"></td>
-                        <td><input type="number" name="ca_pol[]" min="0"></td>
-                        <td><input type="text" name="ca_done[]"></td>
-                        <td><input type="text" name="ca_next[]"></td>
-                        <td style="text-align: center;"><button type="button" class="btn-remove" onclick="removeRow(this)">×</button></td>
-                    </tr>
+                    <thead>
+                        <tr><th>Агент</th><th width="15%">Полисы</th><th>Что сделано</th><th>Следующий шаг</th><th width="30px"></th></tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><input type="text" name="ca_agent[]"></td>
+                            <td><input type="number" name="ca_pol[]" min="0"></td>
+                            <td><input type="text" name="ca_done[]"></td>
+                            <td><input type="text" name="ca_next[]"></td>
+                            <td style="text-align: center;"><button type="button" class="btn-remove" onclick="removeRow(this)">×</button></td>
+                        </tr>
+                    </tbody>
                 </table>
             </div>
             <button type="button" class="btn-add" onclick="addRow('tbl_current')">+ Добавить агента</button>
@@ -320,13 +302,17 @@
             <h2 class="card-title"><span class="block-number">5</span> Развитие агентской базы (Новые партнеры)</h2>
             <div class="table-wrapper">
                 <table id="tbl_new">
-                    <tr><th>Компания</th><th>Статус</th><th>Следующее действие</th><th width="30px"></th></tr>
-                    <tr>
-                        <td><input type="text" name="np_comp[]"></td>
-                        <td><input type="text" name="np_stat[]"></td>
-                        <td><input type="text" name="np_next[]"></td>
-                        <td style="text-align: center;"><button type="button" class="btn-remove" onclick="removeRow(this)">×</button></td>
-                    </tr>
+                    <thead>
+                        <tr><th>Компания</th><th>Статус</th><th>Следующее действие</th><th width="30px"></th></tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><input type="text" name="np_comp[]"></td>
+                            <td><input type="text" name="np_stat[]"></td>
+                            <td><input type="text" name="np_next[]"></td>
+                            <td style="text-align: center;"><button type="button" class="btn-remove" onclick="removeRow(this)">×</button></td>
+                        </tr>
+                    </tbody>
                 </table>
             </div>
             <button type="button" class="btn-add" onclick="addRow('tbl_new')">+ Добавить партнера</button>
@@ -335,6 +321,7 @@
         <!-- 6. САМООЦЕНКА -->
         <div class="card">
             <h2 class="card-title"><span class="block-number">6</span> Самооценка недели</h2>
+            <p class="hint" style="margin-left: 5px;">Оцените свою работу по шкале от 1 до 5.</p>
             <div id="ratingsContainer"></div>
         </div>
 
@@ -343,23 +330,27 @@
             <h2 class="card-title"><span class="block-number">7</span> Инсайт недели</h2>
             <div class="table-wrapper">
                 <table>
-                    <tr><th width="40%">Вопрос</th><th width="60%">Ответ</th></tr>
-                    <tr>
-                        <td class="row-header">Что нового узнали о рынке?<br><span class="hint">Что предлагали конкуренты?</span></td>
-                        <td><textarea name="in_market" rows="2"></textarea></td>
-                    </tr>
-                    <tr>
-                        <td class="row-header">Что чаще всего спрашивают клиенты?<br><span class="hint">Какой вопрос поставил в тупик?</span></td>
-                        <td><textarea name="in_questions" rows="2"></textarea></td>
-                    </tr>
-                    <tr>
-                        <td class="row-header">Какое возражение встречалось чаще всего?<br><span class="hint">Как удалось отработать?</span></td>
-                        <td><textarea name="in_objections" rows="2"></textarea></td>
-                    </tr>
-                    <tr>
-                        <td class="row-header">Что мешает продавать продукт?</td>
-                        <td><textarea name="in_problems" rows="2"></textarea></td>
-                    </tr>
+                    <thead>
+                        <tr><th width="40%">Вопрос</th><th width="60%">Ответ</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="row-header">Что нового узнали о рынке?<br><span class="hint" style="font-weight: normal; margin-top:4px;">Что предлагали конкуренты?</span></td>
+                            <td><textarea name="in_market" rows="2"></textarea></td>
+                        </tr>
+                        <tr>
+                            <td class="row-header">Что чаще всего спрашивают клиенты?<br><span class="hint" style="font-weight: normal; margin-top:4px;">Какой вопрос поставил в тупик?</span></td>
+                            <td><textarea name="in_questions" rows="2"></textarea></td>
+                        </tr>
+                        <tr>
+                            <td class="row-header">Какое возражение встречалось чаще всего?<br><span class="hint" style="font-weight: normal; margin-top:4px;">Как удалось отработать?</span></td>
+                            <td><textarea name="in_objections" rows="2"></textarea></td>
+                        </tr>
+                        <tr>
+                            <td class="row-header">Что мешает продавать продукт?</td>
+                            <td><textarea name="in_problems" rows="2"></textarea></td>
+                        </tr>
+                    </tbody>
                 </table>
             </div>
         </div>
@@ -369,14 +360,18 @@
             <h2 class="card-title"><span class="block-number">8</span> План мероприятий на следующую неделю</h2>
             <div class="table-wrapper">
                 <table id="tbl_plan">
-                    <tr><th>Мероприятие</th><th>Цель</th><th width="15%">Дата</th><th>Ожидаемый результат</th><th width="30px"></th></tr>
-                    <tr>
-                        <td><input type="text" name="nw_task[]"></td>
-                        <td><input type="text" name="nw_goal[]"></td>
-                        <td><input type="date" name="nw_date[]"></td>
-                        <td><input type="text" name="nw_result[]"></td>
-                        <td style="text-align: center;"><button type="button" class="btn-remove" onclick="removeRow(this)">×</button></td>
-                    </tr>
+                    <thead>
+                        <tr><th>Мероприятие</th><th>Цель</th><th width="15%">Дата</th><th>Ожидаемый результат</th><th width="30px"></th></tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><input type="text" name="nw_task[]"></td>
+                            <td><input type="text" name="nw_goal[]"></td>
+                            <td><input type="date" name="nw_date[]"></td>
+                            <td><input type="text" name="nw_result[]"></td>
+                            <td style="text-align: center;"><button type="button" class="btn-remove" onclick="removeRow(this)">×</button></td>
+                        </tr>
+                    </tbody>
                 </table>
             </div>
             <button type="button" class="btn-add" onclick="addRow('tbl_plan')">+ Добавить задачу</button>
@@ -387,18 +382,22 @@
             <h2 class="card-title"><span class="block-number">9</span> Проблемы</h2>
             <div class="table-wrapper">
                 <table id="tbl_problems">
-                    <tr>
-                        <th width="40%">Описание проблемы</th>
-                        <th width="30%">Кто может помочь</th>
-                        <th width="30%">Что теряем из-за проблемы</th>
-                        <th width="30px"></th>
-                    </tr>
-                    <tr>
-                        <td><textarea name="pr_desc[]" rows="2"></textarea></td>
-                        <td><textarea name="pr_help[]" rows="2"></textarea></td>
-                        <td><textarea name="pr_lost[]" rows="2"></textarea></td>
-                        <td style="text-align: center;"><button type="button" class="btn-remove" onclick="removeRow(this)">×</button></td>
-                    </tr>
+                    <thead>
+                        <tr>
+                            <th width="40%">Описание проблемы</th>
+                            <th width="30%">Кто может помочь</th>
+                            <th width="30%">Что теряем из-за проблемы</th>
+                            <th width="30px"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><textarea name="pr_desc[]" rows="2"></textarea></td>
+                            <td><textarea name="pr_help[]" rows="2"></textarea></td>
+                            <td><textarea name="pr_lost[]" rows="2"></textarea></td>
+                            <td style="text-align: center;"><button type="button" class="btn-remove" onclick="removeRow(this)">×</button></td>
+                        </tr>
+                    </tbody>
                 </table>
             </div>
             <button type="button" class="btn-add" onclick="addRow('tbl_problems')">+ Добавить проблему</button>
@@ -417,43 +416,61 @@
 <script>
     document.getElementById('reportDate').valueAsDate = new Date();
 
-    // Генерация самооценки
+    // Генерация самооценки с подсказками
     const ratingsData = [
-        { id: "rate_plan", label: "Выполнение плана (1 — Далеко от плана, 3 — В графике, 5 — Иду на перевыполнение)" },
-        { id: "rate_new", label: "Работа с новыми клиентами (1 — Не искал новых, 3 — Сделал норму звонков/встреч, 5 — Подключил сильных партнеров) " },
-        { id: "rate_curr", label: "Работа с действующими агентами (1 — Работал только на входящих, 3 — Регулярно обзванивал базу, 5 — Реактивировал уснувших)" },
-        { id: "rate_crm", label: "Качество ведения Bitrix (1 — Есть просроченные задачи и пустые сделки, 5 — Идеальный порядок, все звонки и комментарии зафиксированы )" },
-        { id: "rate_exp", label: "Продуктовая экспертиза (1 — Плавал в вопросах агентов, 5 — Легко отрабатывал возражения, консультировал как эксперт ) " }
+        { id: "rate_plan", label: "Выполнение плана", hint: "1 — Далеко от плана, 3 — В графике, 5 — Иду на перевыполнение" },
+        { id: "rate_new", label: "Работа с новыми клиентами", hint: "1 — Не искал новых, 3 — Сделал норму звонков/встреч, 5 — Подключил сильных партнеров" },
+        { id: "rate_curr", label: "Работа с существующими агентами", hint: "1 — Работал только на входящих, 3 — Регулярно обзванивал базу, 5 — Реактивировал уснувших или увеличил средний чек" },
+        { id: "rate_crm", label: "Качество ведения Bitrix", hint: "1 — Есть просроченные задачи и пустые сделки, 5 — Идеальный порядок, все звонки и комментарии зафиксированы" },
+        { id: "rate_exp", label: "Продуктовая экспертиза", hint: "1 — Плавал в вопросах агентов, 5 — Легко отрабатывал возражения, консультировал как эксперт" }
     ];
+
     const rContainer = document.getElementById('ratingsContainer');
     ratingsData.forEach((item) => {
         let radioHTML = '';
         for(let i=1; i<=5; i++) {
-            radioHTML += `<label><input type="radio" name="${item.id}" value="${i}" required><span style="font-size: 16px;">${i}</span></label>`;
+            radioHTML += `
+            <label class="rating-label">
+                <input type="radio" name="${item.id}" value="${i}" required>
+                <span>${i}</span>
+            </label>`;
         }
         rContainer.innerHTML += `
             <div class="rating-row">
-                <div><strong>${item.label}</strong></div>
+                <div>
+                    <div class="rating-question">${item.label}</div>
+                    <div class="hint">(${item.hint})</div>
+                </div>
                 <div class="rating-options">${radioHTML}</div>
             </div>
         `;
     });
 
+    // ИСПРАВЛЕНО: Добавление строк копирует последнюю строку из tbody
     function addRow(tableId) {
         const tbody = document.getElementById(tableId).querySelector('tbody');
-        const newRow = tbody.rows[0].cloneNode(true);
-        newRow.querySelectorAll('input, textarea').forEach(input => input.value = '');
+        const rows = tbody.querySelectorAll('tr');
+        const lastRow = rows[rows.length - 1]; // Берем последнюю строку с инпутами
+        
+        const newRow = lastRow.cloneNode(true);
+        newRow.querySelectorAll('input, textarea').forEach(input => input.value = ''); // Очищаем значения
         tbody.appendChild(newRow);
     }
     
     function removeRow(btn) {
         const tr = btn.closest('tr');
         const tbody = tr.closest('tbody');
-        if(tbody.querySelectorAll('tr').length > 1) { tr.remove(); } 
-        else { tr.querySelectorAll('input, textarea').forEach(inp => inp.value = ''); }
+        const rows = tbody.querySelectorAll('tr');
+        
+        if(rows.length > 1) { 
+            tr.remove(); 
+        } else { 
+            // Если строка последняя, просто очищаем её
+            tr.querySelectorAll('input, textarea').forEach(inp => inp.value = ''); 
+        }
     }
 
-    // СБОРКА ИДЕАЛЬНОГО HTML-ШАБЛОНА С АДАПТИВНОСТЬЮ ДЛЯ МОБИЛЬНЫХ
+    // СБОРКА ИДЕАЛЬНОГО HTML-ШАБЛОНА
     function buildStaticTemplate() {
         const form = document.getElementById('weeklyReportForm');
         const formData = new FormData(form);
@@ -486,27 +503,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Отчет: ${val('managerName')} - ${val('reportDate')}</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f9; color: #39b54a; margin: 0; padding: 40px 20px; line-height: 1.6; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f9; color: #1f2937; margin: 0; padding: 40px 20px; line-height: 1.6; }
         .container { max-width: 900px; margin: 0 auto; }
         .header { text-align: center; margin-bottom: 40px; }
         .header h1 { color: #39b54a; margin-bottom: 10px; font-size: 28px; }
-        .header p { color: #000000; font-size: 16px; margin: 0; }
+        .header p { color: #39b54a; font-size: 16px; margin: 0; }
         .section { background: #ffffff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 30px; }
-        .section-title { color: #000000; border-bottom: 2px solid #39b54a; padding-bottom: 10px; margin-top: 0; margin-bottom: 20px; font-size: 20px; display: flex; align-items: center; gap: 10px; }
-        .block-number { background: #0b57d0; color: white; border-radius: 50%; width: 28px; height: 28px; display: inline-flex; justify-content: center; align-items: center; font-size: 14px; font-weight: bold; flex-shrink: 0; }
+        .section-title { color: #39b54a; border-bottom: 2px solid #39b54a; padding-bottom: 10px; margin-top: 0; margin-bottom: 20px; font-size: 20px; display: flex; align-items: center; gap: 10px; }
+        .block-number { background: #39b54a; color: white; border-radius: 50%; width: 28px; height: 28px; display: inline-flex; justify-content: center; align-items: center; font-size: 14px; font-weight: bold; flex-shrink: 0; }
         
         .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; min-width: 600px; }
-        th, td { border: 1px solid #d1d5db; padding: 12px; text-align: left; vertical-align: top; }
-        th { background-color: #f8fafc; font-weight: 600; font-size: 14px; color: #374151; }
-        td { font-size: 14px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; min-width: 600px; border: 2px solid #39b54a;}
+        th, td { border: 1px solid #39b54a; padding: 12px; text-align: left; vertical-align: top; }
+        th { background-color: #f8fafc; font-weight: 600; font-size: 14px; color: #39b54a; }
+        td { font-size: 14px; color: #1f2937;}
         .highlight-bg { background-color: #f8fafc; font-weight: 600; width: 40%; }
         
-        ul { padding-left: 20px; margin: 10px 0; }
+        ul { padding-left: 20px; margin: 10px 0; color: #1f2937;}
         li { margin-bottom: 8px; }
         .rating-grid { display: grid; grid-template-columns: 1fr; gap: 10px; }
-        .rating-item { display: flex; justify-content: space-between; padding: 12px 15px; border: 1px solid #e5e7eb; border-radius: 6px; background: #f9fafb; }
-        .rating-score { font-weight: bold; color: #0b57d0; font-size: 16px; }
+        .rating-item { display: flex; justify-content: space-between; padding: 12px 15px; border: 1px solid #39b54a; border-radius: 6px; background: #f9fafb; }
+        .rating-score { font-weight: bold; color: #39b54a; font-size: 16px; }
 
         @media (max-width: 768px) {
             body { padding: 15px 10px; }
@@ -626,9 +643,18 @@
 </html>`;
     }
 
+    function checkRequired() {
+        if(!document.getElementById('managerName').value || !document.getElementById('reportDate').value) {
+            alert("Пожалуйста, заполните ФИО и Дату отчета!");
+            return false;
+        }
+        return true;
+    }
+
     // ДЕЙСТВИЕ: СКАЧАТЬ HTML И ОТПРАВИТЬ В ОБЛАКО
     async function actionHtmlAndCloud() {
-        if(!document.getElementById('managerName').value) return alert("Введите ФИО Менеджера");
+        if(!checkRequired()) return;
+        
         const btn = document.getElementById('btnMain');
         btn.innerText = '⏳ Обработка...';
         btn.disabled = true;
