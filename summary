@@ -1,0 +1,1398 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Сводный отчёт по менеджерам</title>
+<style>
+    :root{
+        --primary:#2ee6a6;
+        --primary-dark:#1fb583;
+        --primary-glow:rgba(46,230,166,.45);
+        --primary-light:rgba(46,230,166,.12);
+        --accent:#29c5ff;
+        --accent-light:rgba(41,197,255,.12);
+        --danger:#ff5f72;
+        --danger-light:rgba(255,95,114,.12);
+        --bg-page:#0b0d11;
+        --bg-card:#14171d;
+        --bg-alt:#1b1f27;
+        --bg-alt2:#232833;
+        --text-main:#eef1f6;
+        --text-muted:#8892a3;
+        --border:#262b35;
+        --border-glow:rgba(46,230,166,.3);
+        --mono:'SFMono-Regular',Consolas,'Roboto Mono',monospace;
+    }
+    *{box-sizing:border-box;}
+    html{scroll-behavior:smooth;}
+    body{
+        font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
+        background-color:var(--bg-page);
+        background-image:
+            radial-gradient(circle at 15% -8%, rgba(46,230,166,.08), transparent 38%),
+            radial-gradient(circle at 92% 8%, rgba(41,197,255,.06), transparent 32%);
+        background-attachment:fixed;
+        color:var(--text-main);
+        margin:0;
+        padding:0 0 60px;
+        line-height:1.5;
+    }
+    ::-webkit-scrollbar{width:10px;height:8px;}
+    ::-webkit-scrollbar-track{background:var(--bg-page);}
+    ::-webkit-scrollbar-thumb{background:var(--border);border-radius:6px;}
+    ::-webkit-scrollbar-thumb:hover{background:var(--primary-dark);}
+    .container{max-width:1200px;margin:0 auto;padding:0 20px;}
+
+    /* ===== TOP BAR ===== */
+    .topbar{
+        background:linear-gradient(135deg,#11141a 0%,#171b22 100%);
+        border-bottom:1px solid var(--border-glow);
+        color:#fff;
+        padding:28px 0;
+        margin-bottom:0;
+        box-shadow:0 4px 30px rgba(46,230,166,0.08);
+    }
+    .topbar h1{margin:0 0 4px;font-size:24px;color:var(--primary);text-shadow:0 0 18px var(--primary-glow);letter-spacing:.02em;}
+    .topbar p{margin:0;color:var(--text-muted);font-size:14px;}
+
+    /* ===== NAV ===== */
+    .mainnav{
+        position:sticky;top:0;z-index:40;background:rgba(11,13,17,0.92);backdrop-filter:blur(8px);
+        border-bottom:1px solid var(--border);box-shadow:0 2px 20px rgba(0,0,0,0.35);
+    }
+    .navinner{display:flex;gap:2px;overflow-x:auto;padding:9px 20px;scrollbar-width:thin;}
+    .navinner::-webkit-scrollbar{height:4px;}
+    .navinner a{
+        white-space:nowrap;padding:7px 13px;border-radius:7px;font-size:13px;font-weight:600;
+        color:var(--text-muted);text-decoration:none;transition:.15s;border:1px solid transparent;
+    }
+    .navinner a:hover{background:var(--primary-light);color:var(--primary);border-color:var(--border-glow);}
+    .navinner a.active{background:var(--primary);color:#07110c;box-shadow:0 0 14px var(--primary-glow);}
+
+    /* ===== CARD ===== */
+    .card{scroll-margin-top:64px;
+        background:var(--bg-card);
+        border:1px solid var(--border);
+        border-radius:12px;
+        padding:22px;
+        box-shadow:0 4px 18px rgba(0,0,0,0.3);
+        margin-bottom:22px;
+        margin-top:22px;
+    }
+    .card h2{
+        margin:0 0 16px;
+        font-size:15px;
+        text-transform:uppercase;
+        letter-spacing:.04em;
+        color:var(--primary);
+        display:flex;
+        align-items:center;
+        gap:8px;
+        padding-bottom:10px;
+        border-bottom:1px solid var(--border);
+    }
+    .card h2 .count-badge{
+        margin-left:auto;
+        background:var(--primary-light);
+        color:var(--primary);
+        font-size:12px;
+        font-weight:700;
+        padding:3px 10px;
+        border-radius:20px;
+        text-transform:none;
+        letter-spacing:0;
+    }
+
+    /* ===== DROPZONE ===== */
+    .dropzone{
+        border:2px dashed var(--border);
+        border-radius:12px;
+        padding:34px 20px;
+        text-align:center;
+        cursor:pointer;
+        transition:.2s;
+        background:var(--bg-alt);
+    }
+    .dropzone.dragover{border-color:var(--primary);background:var(--primary-light);box-shadow:0 0 0 3px var(--primary-light);}
+    .dropzone-icon{font-size:34px;margin-bottom:8px;filter:grayscale(.2);}
+    .dropzone strong{color:var(--primary);}
+    .dropzone small{display:block;color:var(--text-muted);margin-top:6px;}
+    #fileInput{display:none;}
+
+    .file-queue{margin-top:16px;display:flex;flex-direction:column;gap:8px;}
+    .file-row{
+        display:flex;
+        align-items:center;
+        gap:10px;
+        padding:10px 14px;
+        border-radius:8px;
+        background:var(--bg-alt);
+        border:1px solid var(--border);
+        font-size:13px;
+    }
+    .file-row.ok{border-left:3px solid var(--primary);}
+    .file-row.err{border-left:3px solid var(--danger);background:var(--danger-light);}
+    .file-row .fname{color:var(--text-muted);font-size:12px;flex-shrink:0;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:var(--mono);}
+    .file-row .fmeta{font-weight:600;flex-grow:1;color:var(--text-main);}
+    .file-row .ferr{color:var(--danger);font-size:12px;}
+    .file-row .fdel{background:none;border:none;color:var(--danger);font-size:18px;cursor:pointer;font-weight:bold;line-height:1;padding:0 4px;}
+    .queue-actions{display:flex;justify-content:space-between;align-items:center;margin-top:14px;}
+    .btn{
+        border:none;border-radius:7px;padding:9px 16px;font-size:13px;font-weight:700;cursor:pointer;transition:.15s;
+    }
+    .btn-primary{background:var(--primary);color:#07110c;box-shadow:0 0 14px var(--primary-glow);}
+    .btn-primary:hover{background:var(--primary-dark);}
+    .btn-ghost{background:transparent;color:var(--danger);}
+    .btn-ghost:hover{text-decoration:underline;}
+    .btn-outline{background:transparent;border:1px solid var(--border);color:var(--text-main);}
+    .btn-outline:hover{border-color:var(--primary);color:var(--primary);}
+
+    /* ===== EMPTY STATE ===== */
+    .empty-state{text-align:center;padding:50px 20px;color:var(--text-muted);}
+    .empty-state .big-icon{font-size:44px;margin-bottom:10px;opacity:.5;}
+    #dashboard{display:none;}
+
+    /* ===== FILTERS ===== */
+    .filters{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;}
+    .filters .field{display:flex;flex-direction:column;gap:4px;}
+    .filters label{font-size:12px;font-weight:600;color:var(--text-muted);}
+    .filters input[type="text"],.filters input[type="date"],.filters select{
+        padding:8px 10px;border:1px solid var(--border);border-radius:6px;font-size:13px;font-family:inherit;
+        background:var(--bg-alt);color:var(--text-main);
+    }
+    .filters input:focus,.filters select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-light);}
+    .filters input::-webkit-calendar-picker-indicator{filter:invert(.7);}
+
+    .upload-hint{margin-top:12px;font-size:12.5px;color:var(--text-muted);}
+    .upload-hint a{color:var(--primary);font-weight:600;text-decoration:none;}
+    .upload-hint a:hover{text-decoration:underline;}
+
+    /* ===== MULTI-SELECT DROPDOWN (менеджеры) ===== */
+    .msdrop{position:relative;}
+    .ms-btn{
+        padding:8px 12px;border:1px solid var(--border);border-radius:6px;background:var(--bg-alt);font-size:13px;
+        font-family:inherit;cursor:pointer;display:flex;align-items:center;gap:8px;min-width:190px;justify-content:space-between;
+        color:var(--text-main);
+    }
+    .ms-btn:hover{border-color:var(--primary);}
+    .ms-btn.has-selection{border-color:var(--primary);color:var(--primary);background:var(--primary-light);}
+    .ms-arrow{font-size:10px;opacity:.6;}
+    .ms-panel{
+        display:none;position:absolute;top:calc(100% + 6px);left:0;background:var(--bg-card);border:1px solid var(--border);
+        border-radius:9px;box-shadow:0 10px 30px rgba(0,0,0,0.5);width:280px;z-index:30;padding:10px;
+    }
+    .ms-panel.open{display:block;}
+    .ms-search{width:100%;padding:7px 9px;border:1px solid var(--border);border-radius:6px;font-size:12.5px;margin-bottom:8px;font-family:inherit;background:var(--bg-alt);color:var(--text-main);}
+    .ms-actions{display:flex;justify-content:space-between;margin-bottom:8px;}
+    .ms-actions button{background:none;border:none;color:var(--accent);font-size:12px;font-weight:600;cursor:pointer;padding:0;}
+    .ms-actions button:hover{text-decoration:underline;}
+    .ms-list{max-height:220px;overflow-y:auto;display:flex;flex-direction:column;gap:2px;}
+    .ms-item{display:flex;align-items:center;gap:8px;padding:6px 6px;border-radius:6px;font-size:13px;cursor:pointer;color:var(--text-main);}
+    .ms-item:hover{background:var(--bg-alt);}
+    .ms-item input{margin:0;accent-color:var(--primary);}
+    .ms-empty{font-size:12.5px;color:var(--text-muted);text-align:center;padding:10px 0;}
+
+    /* ===== DYNAMICS LINE CHARTS ===== */
+    .dyn-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:24px;}
+    @media (max-width:960px){.dyn-grid{grid-template-columns:1fr;}}
+    .dyn-box{border:1px solid var(--border);border-radius:10px;padding:14px;background:var(--bg-alt);}
+    .dyn-box .dyn-title{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;color:var(--text-muted);margin-bottom:2px;}
+    .dyn-box .dyn-total{font-size:12px;color:var(--text-muted);margin-bottom:10px;}
+    .linechart-single{text-align:center;padding:14px 0;}
+    .linechart-single .lc-value{font-size:22px;font-weight:700;color:var(--primary);font-family:var(--mono);}
+    .linechart-single .lc-label{font-size:12px;color:var(--text-muted);margin-top:2px;}
+
+    /* ===== FILES (перенесено вниз) ===== */
+    #sec-files summary{cursor:pointer;font-size:15px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--primary);list-style:none;display:flex;align-items:center;gap:8px;}
+    #sec-files summary::-webkit-details-marker{display:none;}
+    #sec-files summary::before{content:'▸';font-size:12px;transition:.15s;}
+    #sec-files[open] summary::before{content:'▾';}
+
+    /* ===== KPI GRID ===== */
+    .kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;}
+    .kpi{
+        background:var(--bg-alt);border:1px solid var(--border);border-top:2px solid var(--primary-dark);border-radius:10px;padding:16px;
+        transition:.15s;
+    }
+    .kpi:hover{border-top-color:var(--primary);box-shadow:0 0 20px rgba(46,230,166,.08);}
+    .kpi .kpi-label{font-size:11.5px;text-transform:uppercase;letter-spacing:.03em;color:var(--text-muted);font-weight:600;margin-bottom:8px;}
+    .kpi .kpi-value{font-size:24px;font-weight:700;color:var(--primary);font-family:var(--mono);}
+    .kpi .kpi-value.accent{color:var(--accent);}
+    .kpi .kpi-sub{font-size:11px;color:var(--text-muted);margin-top:4px;}
+
+    /* ===== CHARTS (чистый HTML/CSS, без внешних библиотек) ===== */
+    .charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:28px;}
+    @media (max-width:860px){.charts-grid{grid-template-columns:1fr;}}
+    .bar-chart{display:flex;flex-direction:column;gap:13px;}
+    .bar-row{display:grid;grid-template-columns:150px 1fr 44px;align-items:center;gap:10px;}
+    .bar-row .bar-label{font-size:12.5px;color:var(--text-main);}
+    .bar-track{background:#0e1116;border:1px solid var(--border);border-radius:6px;height:14px;overflow:hidden;}
+    .bar-fill{height:100%;border-radius:6px;transition:width .5s ease;min-width:2px;}
+    .bar-fill.rating{background:var(--accent);box-shadow:0 0 10px rgba(41,197,255,.6);}
+    .bar-fill.activity{background:var(--primary);box-shadow:0 0 10px rgba(46,230,166,.6);}
+    .bar-row .bar-value{text-align:right;font-weight:700;font-size:12.5px;color:var(--text-main);font-family:var(--mono);}
+    .bar-chart-empty{color:var(--text-muted);font-size:13px;text-align:center;padding:20px;}
+
+    /* ===== TABLE ===== */
+    .table-wrap{width:100%;overflow-x:auto;}
+    table{width:100%;border-collapse:collapse;font-size:13px;min-width:760px;}
+    th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--border);vertical-align:top;}
+    thead th{
+        background:var(--bg-alt);color:var(--primary);font-weight:700;font-size:11.5px;
+        text-transform:uppercase;letter-spacing:.04em;cursor:pointer;user-select:none;white-space:nowrap;
+    }
+    thead th.sortable:hover{color:#fff;}
+    thead th .arrow{opacity:.4;font-size:10px;margin-left:3px;}
+    thead th.sorted .arrow{opacity:1;}
+    tbody tr:hover{background:var(--bg-alt);}
+    tbody tr.clickable{cursor:pointer;}
+    .num{text-align:right;font-variant-numeric:tabular-nums;font-family:var(--mono);}
+    .badge-score{
+        display:inline-block;background:var(--accent-light);color:var(--accent);font-weight:700;
+        padding:2px 8px;border-radius:12px;font-size:12px;font-family:var(--mono);
+    }
+    .muted{color:var(--text-muted);}
+
+    /* ===== TABS ===== */
+    .tabs{display:flex;gap:4px;margin-bottom:18px;flex-wrap:wrap;}
+    .tab-btn{
+        background:var(--bg-alt);border:1px solid var(--border);padding:9px 16px;border-radius:8px;
+        font-size:13px;font-weight:600;cursor:pointer;color:var(--text-muted);
+    }
+    .tab-btn.active{background:var(--primary);border-color:var(--primary);color:#07110c;}
+    .tab-panel{display:none;}
+    .tab-panel.active{display:block;}
+
+    /* ===== LIST CARDS (plans / insights) ===== */
+    .item-list{display:flex;flex-direction:column;gap:10px;}
+    .item-card{border:1px solid var(--border);border-radius:8px;padding:12px 14px;background:var(--bg-alt);}
+    .item-card.plan{border-left:3px solid var(--primary);}
+    .item-card .item-head{display:flex;justify-content:space-between;font-size:12px;color:var(--text-muted);margin-bottom:6px;font-weight:600;}
+    .item-card .item-body{font-size:13px;color:var(--text-main);}
+    .item-card .item-body b{color:var(--primary);}
+    .item-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;font-size:13px;}
+    @media (max-width:700px){.item-row{grid-template-columns:1fr;}}
+
+    /* ===== MODAL ===== */
+    .modal-overlay{
+        display:none;position:fixed;inset:0;background:rgba(2,3,5,0.78);
+        z-index:1000;align-items:flex-start;justify-content:center;padding:40px 16px;overflow-y:auto;
+    }
+    .modal-overlay.open{display:flex;}
+    .modal-box{
+        background:var(--bg-card);border:1px solid var(--border-glow);border-radius:12px;max-width:820px;width:100%;padding:0;overflow:hidden;
+        box-shadow:0 20px 60px rgba(0,0,0,0.6);
+    }
+    .modal-header{
+        background:var(--primary);color:#07110c;padding:18px 24px;display:flex;justify-content:space-between;align-items:center;
+    }
+    .modal-header h3{margin:0;font-size:17px;}
+    .modal-close{background:rgba(0,0,0,0.15);border:none;color:#07110c;width:30px;height:30px;border-radius:50%;font-size:16px;cursor:pointer;}
+    .modal-body{padding:24px;max-height:70vh;overflow-y:auto;}
+    .modal-section{margin-bottom:20px;}
+    .modal-section h4{
+        color:var(--primary);font-size:12.5px;text-transform:uppercase;letter-spacing:.04em;
+        margin:0 0 8px;padding-bottom:6px;border-bottom:1px solid var(--border);
+    }
+    .modal-section table{min-width:0;}
+    .modal-section ul{margin:6px 0;padding-left:20px;color:var(--text-main);}
+
+    /* ===== FULL REPORTS PER MANAGER ===== */
+    .full-reports-list{display:flex;flex-direction:column;gap:12px;}
+    .full-report-item{border:1px solid var(--border);border-radius:10px;overflow:hidden;background:var(--bg-alt);}
+    .full-report-item summary{
+        list-style:none;cursor:pointer;padding:14px 16px;display:flex;align-items:center;gap:12px;
+        flex-wrap:wrap;font-weight:700;background:var(--bg-alt2);
+    }
+    .full-report-item summary::-webkit-details-marker{display:none;}
+    .full-report-item summary::before{content:'▸';color:var(--primary);font-size:13px;transition:.15s;flex-shrink:0;}
+    .full-report-item[open] summary::before{content:'▾';}
+    .full-report-item summary .frm-name{color:var(--text-main);}
+    .full-report-item summary .frm-date{color:var(--text-muted);font-weight:600;font-size:13px;font-family:var(--mono);}
+    .full-report-item summary .frm-badges{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;}
+    .full-report-item summary .frm-badge{
+        font-size:11.5px;font-weight:700;padding:2px 9px;border-radius:20px;background:var(--primary-light);color:var(--primary);font-family:var(--mono);
+    }
+    .full-report-item .frm-body{padding:20px;border-top:1px solid var(--border);}
+.logo{
+margin:40px 40px 40px 40px;}
+    footer{text-align:center;color:var(--text-muted);font-size:12px;margin-top:30px;}
+</style>
+</head>
+<body>
+<div class="logo" align="center">
+<img src="https://static.tildacdn.pro/tild3439-3233-4837-b761-353438663639/adp-logo.svg">
+</div>
+<div class="topbar">
+    <div class="container">
+        <h1 align="center">📊 Сводный отчёт по менеджерам</h1>
+  
+    </div>
+</div>
+
+<nav class="mainnav" id="mainNav">
+    <div class="container navinner" id="navInner">
+        <a href="#sec-upload">📥 Загрузка</a>
+        <a href="#sec-filters">🔍 Фильтры</a>
+        <a href="#sec-kpi">📈 Показатели</a>
+        <a href="#sec-charts">📊 Графики</a>
+        <a href="#sec-dynamics">📉 Динамика</a>
+        <a href="#sec-table">👥 Менеджеры</a>
+        <a href="#sec-full">📋 Полные отчёты</a>
+        <a href="#sec-details">🗂 Детали</a>
+        <a href="#sec-files">📁 Файлы</a>
+    </div>
+</nav>
+
+<div class="container">
+
+    <!-- UPLOAD CARD -->
+    <div class="card" id="sec-upload">
+        <h2>📥 Загрузка отчётов</h2>
+        <div class="dropzone" id="dropzone">
+            <div class="dropzone-icon">🗂️</div>
+            <strong>Перетащите HTML-файлы отчётов сюда</strong> или нажмите, чтобы выбрать
+            <small>Можно загрузить сразу несколько файлов. Поддерживаются только .html-отчёты, сформированные формой менеджера.</small>
+        </div>
+        <input type="file" id="fileInput" accept=".html,.htm" multiple>
+        <div class="upload-hint" id="uploadHint" style="display:none;"></div>
+    </div>
+
+    <!-- EMPTY STATE -->
+    <div class="card empty-state" id="emptyState">
+        <div class="big-icon">📄</div>
+        <div><strong>Пока нет загруженных отчётов</strong></div>
+        <div>Добавьте файлы выше, чтобы увидеть сводку по всем менеджерам.</div>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div id="dashboard">
+
+        <!-- FILTERS -->
+        <div class="card" id="sec-filters">
+            <h2>🔍 Фильтры</h2>
+            <div class="filters">
+                <div class="field msdrop" id="managerDropdownWrap">
+                    <label>Менеджер</label>
+                    <button type="button" class="ms-btn" id="managerDropdownBtn">
+                        <span id="managerDropdownLabel">Все менеджеры</span><span class="ms-arrow">▾</span>
+                    </button>
+                    <div class="ms-panel" id="managerDropdownPanel">
+                        <input type="text" class="ms-search" id="managerSearchInput" placeholder="Поиск менеджера...">
+                        <div class="ms-actions">
+                            <button type="button" id="msSelectAll">Выбрать все</button>
+                            <button type="button" id="msClearAll">Снять все</button>
+                        </div>
+                        <div class="ms-list" id="managerCheckboxList"></div>
+                    </div>
+                </div>
+                <div class="field">
+                    <label>Дата с</label>
+                    <input type="date" id="fFrom">
+                </div>
+                <div class="field">
+                    <label>Дата по</label>
+                    <input type="date" id="fTo">
+                </div>
+                <div class="field">
+                    <button class="btn btn-outline" id="resetFiltersBtn">Сбросить фильтры</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- KPI -->
+        <div class="card" id="sec-kpi">
+            <h2>📈 Ключевые показатели <span class="count-badge" id="kpiRange"></span></h2>
+            <div class="kpi-grid" id="kpiGrid"></div>
+        </div>
+
+        <!-- CHARTS -->
+        <div class="card" id="sec-charts">
+            <h2>📊 Графики</h2>
+            <div class="charts-grid">
+                <div>
+                    <div style="font-size:13px;font-weight:600;margin-bottom:12px;color:var(--text-muted);">Средняя самооценка по категориям (из 5)</div>
+                    <div class="bar-chart" id="ratingsChart"></div>
+                </div>
+                <div>
+                    <div style="font-size:13px;font-weight:600;margin-bottom:12px;color:var(--text-muted);">Активность по видам работ (сумма)</div>
+                    <div class="bar-chart" id="activityChart"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- DYNAMICS -->
+        <div class="card" id="sec-dynamics">
+            <h2>📉 Динамика по неделям</h2>
+            <div class="dyn-grid">
+                <div class="dyn-box">
+                    <div class="dyn-title">Премия, тнг</div>
+                    <div class="dyn-total" id="dynPremiumTotal"></div>
+                    <div id="dynPremium"></div>
+                </div>
+                <div class="dyn-box">
+                    <div class="dyn-title">Выписано полисов</div>
+                    <div class="dyn-total" id="dynPoliciesTotal"></div>
+                    <div id="dynPolicies"></div>
+                </div>
+                <div class="dyn-box">
+                    <div class="dyn-title">АВ, тнг</div>
+                    <div class="dyn-total" id="dynAvTotal"></div>
+                    <div id="dynAv"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MAIN TABLE -->
+        <div class="card" id="sec-table">
+            <h2>👥 Отчёты по менеджерам <span class="count-badge" id="tableCount"></span></h2>
+            <div class="table-wrap">
+                <table id="mainTable">
+                    <thead>
+                        <tr>
+                            <th class="sortable" data-key="manager">Менеджер <span class="arrow">▲</span></th>
+                            <th class="sortable" data-key="date">Дата <span class="arrow">▲</span></th>
+                            <th class="sortable num" data-key="calls">Звонки <span class="arrow">▲</span></th>
+                            <th class="sortable num" data-key="meetings">Встречи <span class="arrow">▲</span></th>
+                            <th class="sortable num" data-key="newAgents">Новые агенты <span class="arrow">▲</span></th>
+                            <th class="sortable num" data-key="policies">Полисы <span class="arrow">▲</span></th>
+                            <th class="sortable num" data-key="premium">Премия <span class="arrow">▲</span></th>
+                            <th class="sortable num" data-key="av">АВ <span class="arrow">▲</span></th>
+                            <th class="sortable num" data-key="avgRating">Оценка <span class="arrow">▲</span></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody id="mainTableBody"></tbody>
+                </table>
+            </div>
+            <div class="queue-actions">
+                <span></span>
+                <button class="btn btn-outline" id="exportCsvBtn">⬇ Экспорт в CSV</button>
+            </div>
+        </div>
+
+        <!-- FULL REPORTS PER MANAGER -->
+        <div class="card" id="sec-full">
+            <h2>📋 Полные отчёты по менеджерам <span class="count-badge" id="fullReportsCount"></span></h2>
+            <p class="muted" style="margin:-8px 0 16px;font-size:12.5px;">Все 9 разделов из каждого отчёта, без сокращений — по одному блоку на менеджера. Нажмите на заголовок, чтобы свернуть/развернуть.</p>
+            <div id="fullReportsList" class="full-reports-list"></div>
+        </div>
+
+        <!-- TABS -->
+        <div class="card" id="sec-details">
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="plans">🗓 Планы на неделю</button>
+                <button class="tab-btn" data-tab="partners">🤝 Новые партнёры</button>
+                <button class="tab-btn" data-tab="agents">👤 Действующие агенты</button>
+                <button class="tab-btn" data-tab="insights">💡 Инсайты</button>
+            </div>
+
+            <div class="tab-panel active" id="panel-plans">
+                <div class="item-list" id="listPlans"></div>
+            </div>
+            <div class="tab-panel" id="panel-partners">
+                <div class="table-wrap"><table><thead><tr><th>Менеджер</th><th>Компания</th><th>Статус</th><th>Действие</th></tr></thead><tbody id="listPartners"></tbody></table></div>
+            </div>
+            <div class="tab-panel" id="panel-agents">
+                <div class="table-wrap"><table><thead><tr><th>Менеджер</th><th>Агент</th><th class="num">Полисы</th><th>Сделано</th><th>Следующий шаг</th></tr></thead><tbody id="listAgents"></tbody></table></div>
+            </div>
+            <div class="tab-panel" id="panel-insights">
+                <div class="item-list" id="listInsights"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- FILES (перенесено вниз, чтобы не мешать) -->
+    <div class="card" id="sec-files">
+        <details id="filesDetails">
+            <summary>Загруженные файлы <span class="count-badge" id="queueCount">0 файлов</span></summary>
+            <div class="file-queue" id="fileQueue" style="margin-top:14px;"></div>
+            <div class="queue-actions" id="queueActions" style="display:none;">
+                <span class="muted" style="font-size:12px;" id="queueSummary"></span>
+                <button class="btn btn-ghost" id="clearAllBtn">✕ Очистить все файлы</button>
+            </div>
+        </details>
+    </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay">
+    <div class="modal-box">
+        <div class="modal-header">
+            <h3 id="modalTitle">Отчёт менеджера</h3>
+            <button class="modal-close" id="modalCloseBtn">✕</button>
+        </div>
+        <div class="modal-body" id="modalBody"></div>
+    </div>
+</div>
+
+<footer>Сводка формируется локально в браузере на основе загруженных HTML-файлов отчётов.</footer>
+
+<script>
+/* ==================================================================
+   ХРАНИЛИЩЕ (только в памяти вкладки — данные не сохраняются)
+   ================================================================== */
+let files = [];     // [{id, name, status:'ok'|'err', report|error}]
+let reports = [];   // успешно распарсенные отчёты
+let sortState = { key: 'date', dir: 'desc' };
+let selectedManagers = new Set(); // пусто = все менеджеры
+
+const EVENT_DEFS = [
+    { key:'call',    name:'Холодные звонки' },
+    { key:'online',  name:'Онлайн-встречи' },
+    { key:'offline', name:'Личные встречи' },
+    { key:'edu',     name:'Обучения' },
+    { key:'follow',  name:'Повторные контакты' },
+    { key:'other',   name:'Другое' },
+];
+const RATING_DEFS = [
+    { key:'plan',         name:'Выполнение плана' },
+    { key:'newClients',   name:'Работа с новыми клиентами' },
+    { key:'currentAgents',name:'Работа с действ. агентами' },
+    { key:'crm',          name:'Ведение Bitrix24' },
+    { key:'expertise',    name:'Продуктовая экспертиза' },
+];
+
+/* ==================================================================
+   ПАРСИНГ ОДНОГО HTML-ОТЧЁТА
+   ================================================================== */
+function cleanText(t){
+    const v = (t || '').replace(/\s+/g,' ').trim();
+    return (v === '' || v === '—') ? '—' : v;
+}
+function parseNum(text){
+    const t = (text || '').trim();
+    if (t === '—' || t === '') return null;
+    const n = parseFloat(t.replace(/\s/g,'').replace(',', '.'));
+    return isNaN(n) ? null : n;
+}
+function escapeHtml(str){
+    return String(str).replace(/[&<>"']/g, ch => ({
+        '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+    }[ch]));
+}
+
+function parseReport(htmlText, fileName){
+    const doc = new DOMParser().parseFromString(htmlText, 'text/html');
+
+    const headerP = doc.querySelector('.header p');
+    if (!headerP || !/Менеджер/.test(headerP.textContent)) {
+        throw new Error('Не найден блок «Менеджер / Дата» — похоже, это не файл отчёта менеджера.');
+    }
+    const headerText = headerP.textContent;
+    const managerMatch = headerText.match(/Менеджер:\s*(.*?)\s*\|/);
+    const dateMatch = headerText.match(/Дата:\s*([\d.\-\/]+)/);
+    const manager = managerMatch ? managerMatch[1].trim() : 'Не указан';
+    const date = dateMatch ? dateMatch[1].trim() : '';
+    if (!manager || manager === '—') throw new Error('Не удалось определить ФИО менеджера.');
+
+    const data = {
+        fileName, manager, date,
+        okr:{ main:'—', kr:[] },
+        events:[], results:{}, currentAgents:[], newPartners:[],
+        ratings:{}, insights:{}, plan:[], problems:[]
+    };
+
+    const sections = doc.querySelectorAll('.section');
+    if (sections.length === 0) throw new Error('В файле не найдены блоки отчёта (.section).');
+
+    sections.forEach(section => {
+        const numEl = section.querySelector('.block-number');
+        const num = numEl ? numEl.textContent.trim() : '';
+
+        if (num === '1'){
+            const ps = section.querySelectorAll('p');
+            if (ps[0]) data.okr.main = cleanText(ps[0].textContent.replace('Главная цель:',''));
+            data.okr.kr = Array.from(section.querySelectorAll('ul li')).map(li => cleanText(li.textContent));
+        }
+        else if (num === '2'){
+            const rows = Array.from(section.querySelectorAll('table tr')).slice(1);
+            rows.forEach((row,i) => {
+                const tds = row.querySelectorAll('td');
+                if (tds.length < 3) return;
+                data.events.push({
+                    key: EVENT_DEFS[i] ? EVENT_DEFS[i].key : 'row'+i,
+                    qty: parseNum(tds[1].textContent),
+                    result: cleanText(tds[2].textContent)
+                });
+            });
+        }
+        else if (num === '3'){
+            const rows = section.querySelectorAll('table tr');
+            const keys = ['newAgents','policies','premium','av'];
+            rows.forEach((row,i) => {
+                const tds = row.querySelectorAll('td');
+                if (tds.length < 2) return;
+                data.results[keys[i]] = parseNum(tds[1].textContent);
+            });
+        }
+        else if (num === '4'){
+            const rows = Array.from(section.querySelectorAll('table tr')).slice(1);
+            rows.forEach(row => {
+                const tds = row.querySelectorAll('td');
+                if (tds.length < 4) return;
+                data.currentAgents.push({
+                    agent: cleanText(tds[0].textContent),
+                    policies: parseNum(tds[1].textContent),
+                    done: cleanText(tds[2].textContent),
+                    next: cleanText(tds[3].textContent)
+                });
+            });
+        }
+        else if (num === '5'){
+            const rows = Array.from(section.querySelectorAll('table tr')).slice(1);
+            rows.forEach(row => {
+                const tds = row.querySelectorAll('td');
+                if (tds.length < 3) return;
+                data.newPartners.push({
+                    company: cleanText(tds[0].textContent),
+                    status: cleanText(tds[1].textContent),
+                    next: cleanText(tds[2].textContent)
+                });
+            });
+        }
+        else if (num === '6'){
+            const items = section.querySelectorAll('.rating-item');
+            items.forEach((item,i) => {
+                const scoreEl = item.querySelector('.rating-score');
+                const score = scoreEl ? parseNum(scoreEl.textContent.split('/')[0]) : null;
+                const key = RATING_DEFS[i] ? RATING_DEFS[i].key : 'r'+i;
+                data.ratings[key] = score;
+            });
+        }
+        else if (num === '7'){
+            const rows = section.querySelectorAll('table tr');
+            const keys = ['market','questions','objections','problems'];
+            rows.forEach((row,i) => {
+                const tds = row.querySelectorAll('td');
+                if (tds.length < 2) return;
+                data.insights[keys[i]] = cleanText(tds[1].textContent);
+            });
+        }
+        else if (num === '8'){
+            const rows = Array.from(section.querySelectorAll('table tr')).slice(1);
+            rows.forEach(row => {
+                const tds = row.querySelectorAll('td');
+                if (tds.length < 4) return;
+                data.plan.push({
+                    task: cleanText(tds[0].textContent),
+                    goal: cleanText(tds[1].textContent),
+                    date: cleanText(tds[2].textContent),
+                    result: cleanText(tds[3].textContent)
+                });
+            });
+        }
+        else if (num === '9'){
+            const rows = Array.from(section.querySelectorAll('table tr')).slice(1);
+            rows.forEach(row => {
+                const tds = row.querySelectorAll('td');
+                if (tds.length < 3) return;
+                data.problems.push({
+                    desc: cleanText(tds[0].textContent),
+                    help: cleanText(tds[1].textContent),
+                    lost: cleanText(tds[2].textContent)
+                });
+            });
+        }
+    });
+
+    return data;
+}
+
+/* ==================================================================
+   ЗАГРУЗКА ФАЙЛОВ
+   ================================================================== */
+const dropzone = document.getElementById('dropzone');
+const fileInput = document.getElementById('fileInput');
+
+dropzone.addEventListener('click', () => fileInput.click());
+dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.classList.add('dragover'); });
+dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
+dropzone.addEventListener('drop', e => {
+    e.preventDefault();
+    dropzone.classList.remove('dragover');
+    handleFiles(e.dataTransfer.files);
+});
+fileInput.addEventListener('change', e => { handleFiles(e.target.files); fileInput.value = ''; });
+
+function handleFiles(fileList){
+    Array.from(fileList).forEach(file => {
+        const reader = new FileReader();
+        reader.onload = e => {
+            const entry = { id: Date.now()+'-'+Math.random().toString(36).slice(2), name: file.name };
+            try {
+                const report = parseReport(e.target.result, file.name);
+                entry.status = 'ok';
+                entry.report = report;
+                // дедуп: тот же менеджер + дата -> заменяем более старую запись
+                const dupIdx = files.findIndex(f => f.status==='ok' && f.report.manager===report.manager && f.report.date===report.date);
+                if (dupIdx !== -1){
+                    entry.replaced = true;
+                    files[dupIdx] = entry;
+                } else {
+                    files.push(entry);
+                }
+            } catch(err){
+                entry.status = 'err';
+                entry.error = err.message || 'Не удалось разобрать файл.';
+                files.push(entry);
+            }
+            rebuildReports();
+            renderAll();
+        };
+        reader.readAsText(file, 'UTF-8');
+    });
+}
+
+function removeFile(id){
+    files = files.filter(f => f.id !== id);
+    rebuildReports();
+    renderAll();
+}
+
+function rebuildReports(){
+    reports = files.filter(f => f.status === 'ok').map(f => f.report);
+}
+
+document.getElementById('clearAllBtn').addEventListener('click', () => {
+    if (files.length && !confirm('Удалить все загруженные файлы из сводки?')) return;
+    files = [];
+    rebuildReports();
+    renderAll();
+});
+
+/* ==================================================================
+   РЕНДЕР: ОЧЕРЕДЬ ФАЙЛОВ
+   ================================================================== */
+function renderQueue(){
+    const q = document.getElementById('fileQueue');
+    const countBadge = document.getElementById('queueCount');
+    const actions = document.getElementById('queueActions');
+    const summary = document.getElementById('queueSummary');
+    const hint = document.getElementById('uploadHint');
+
+    countBadge.textContent = files.length + (files.length===1?' файл':' файлов');
+    q.innerHTML = files.map(f => {
+        if (f.status === 'ok'){
+            return `<div class="file-row ok">
+                <span class="fname">${escapeHtml(f.name)}</span>
+                <span class="fmeta">${escapeHtml(f.report.manager)} — ${escapeHtml(f.report.date || '—')}${f.replaced ? ' <span class="muted">(заменён дубликат)</span>' : ''}</span>
+                <button class="fdel" onclick="removeFile('${f.id}')" title="Удалить">×</button>
+            </div>`;
+        }
+        return `<div class="file-row err">
+            <span class="fname">${escapeHtml(f.name)}</span>
+            <span class="ferr">⚠ ${escapeHtml(f.error)}</span>
+            <button class="fdel" onclick="removeFile('${f.id}')" title="Удалить">×</button>
+        </div>`;
+    }).join('');
+
+    actions.style.display = files.length ? 'flex' : 'none';
+    const okCount = files.filter(f=>f.status==='ok').length;
+    const errCount = files.length - okCount;
+    summary.textContent = `Успешно разобрано: ${okCount}` + (errCount ? `, с ошибкой: ${errCount}` : '');
+
+    if (files.length){
+        hint.style.display = 'block';
+        hint.innerHTML = `Загружено файлов: <b>${okCount}</b>` + (errCount ? ` <span style="color:var(--danger);">(ошибок: ${errCount})</span>` : '') + ` · <a href="#sec-files">посмотреть список ↓</a>`;
+    } else {
+        hint.style.display = 'none';
+    }
+
+    // при появлении ошибки — раскрываем список файлов, чтобы её было видно сразу
+    if (errCount > 0) document.getElementById('filesDetails').open = true;
+}
+
+/* ==================================================================
+   ФИЛЬТРАЦИЯ
+   ================================================================== */
+function getFilteredReports(){
+    const from = document.getElementById('fFrom').value;
+    const to = document.getElementById('fTo').value;
+    return reports.filter(r => {
+        if (selectedManagers.size && !selectedManagers.has(r.manager)) return false;
+        if (from && r.date && r.date < from) return false;
+        if (to && r.date && r.date > to) return false;
+        return true;
+    });
+}
+
+['fFrom','fTo'].forEach(id => {
+    document.getElementById(id).addEventListener('input', renderAll);
+});
+document.getElementById('resetFiltersBtn').addEventListener('click', () => {
+    document.getElementById('fFrom').value = '';
+    document.getElementById('fTo').value = '';
+    selectedManagers.clear();
+    document.getElementById('managerSearchInput').value = '';
+    renderAll();
+});
+
+/* ==================================================================
+   МУЛЬТИСЕЛЕКТ: ВЫБОР МЕНЕДЖЕРОВ
+   ================================================================== */
+const msBtn = document.getElementById('managerDropdownBtn');
+const msPanel = document.getElementById('managerDropdownPanel');
+const msSearchInput = document.getElementById('managerSearchInput');
+
+msBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    msPanel.classList.toggle('open');
+    if (msPanel.classList.contains('open')) msSearchInput.focus();
+});
+document.addEventListener('click', (e) => {
+    if (!document.getElementById('managerDropdownWrap').contains(e.target)) {
+        msPanel.classList.remove('open');
+    }
+});
+msSearchInput.addEventListener('input', () => renderManagerChecklist());
+document.getElementById('msSelectAll').addEventListener('click', () => {
+    selectedManagers.clear(); // пусто трактуется как "все выбраны"
+    renderAll();
+});
+document.getElementById('msClearAll').addEventListener('click', () => {
+    // "Сбросить" — выбрать ни одного (пустой результат), в отличие от "Все" (пусто = все)
+    const allManagers = Array.from(new Set(reports.map(r => r.manager)));
+    if (allManagers.length === 0) return;
+    selectedManagers = new Set(['__none__']);
+    renderAll();
+});
+
+function renderManagerDropdownLabel(){
+    const total = new Set(reports.map(r => r.manager)).size;
+    const label = document.getElementById('managerDropdownLabel');
+    if (selectedManagers.size === 0 || selectedManagers.size >= total){
+        label.textContent = 'Все менеджеры';
+        msBtn.classList.remove('has-selection');
+    } else if (selectedManagers.has('__none__')){
+        label.textContent = 'Никто не выбран';
+        msBtn.classList.add('has-selection');
+    } else {
+        label.textContent = `Выбрано: ${selectedManagers.size}`;
+        msBtn.classList.add('has-selection');
+    }
+}
+
+function renderManagerChecklist(){
+    const search = msSearchInput.value.trim().toLowerCase();
+    const managers = Array.from(new Set(reports.map(r => r.manager))).sort((a,b)=>a.localeCompare(b,'ru'));
+    const list = document.getElementById('managerCheckboxList');
+    const filtered = managers.filter(m => m.toLowerCase().includes(search));
+
+    if (managers.length === 0){
+        list.innerHTML = `<div class="ms-empty">Сначала загрузите отчёты</div>`;
+        return;
+    }
+    if (filtered.length === 0){
+        list.innerHTML = `<div class="ms-empty">Ничего не найдено</div>`;
+        return;
+    }
+    list.innerHTML = filtered.map(m => {
+        const checked = selectedManagers.size === 0 ? true : (selectedManagers.has(m) && !selectedManagers.has('__none__'));
+        const safeId = 'mgr_' + btoa(unescape(encodeURIComponent(m))).replace(/[^a-zA-Z0-9]/g,'');
+        return `<label class="ms-item" for="${safeId}">
+            <input type="checkbox" id="${safeId}" data-manager="${escapeHtml(m)}" ${checked?'checked':''}>
+            <span>${escapeHtml(m)}</span>
+        </label>`;
+    }).join('');
+
+    list.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+        cb.addEventListener('change', () => {
+            const manager = cb.dataset.manager;
+            const allManagers = Array.from(new Set(reports.map(r => r.manager)));
+            selectedManagers.delete('__none__');
+            if (selectedManagers.size === 0){
+                // было "все выбраны" -> при снятии одной галочки формируем явный набор из остальных
+                if (!cb.checked){
+                    allManagers.forEach(m => { if (m !== manager) selectedManagers.add(m); });
+                }
+            } else {
+                if (cb.checked) selectedManagers.add(manager);
+                else selectedManagers.delete(manager);
+            }
+            if (selectedManagers.size >= allManagers.length) selectedManagers.clear();
+            renderAll();
+        });
+    });
+}
+
+/* ==================================================================
+   ВСПОМОГАТЕЛЬНЫЕ РАСЧЁТЫ ПО ОТЧЁТУ
+   ================================================================== */
+function eventQty(report, key){
+    const ev = report.events.find(e => e.key === key);
+    return ev ? ev.qty : null;
+}
+function reportRow(report){
+    const calls = eventQty(report,'call') || 0;
+    const meetings = (eventQty(report,'online')||0) + (eventQty(report,'offline')||0);
+    const ratingVals = Object.values(report.ratings).filter(v => v!=null);
+    const avgRating = ratingVals.length ? ratingVals.reduce((a,b)=>a+b,0)/ratingVals.length : null;
+    return {
+        manager: report.manager,
+        date: report.date,
+        calls, meetings,
+        newAgents: report.results.newAgents,
+        policies: report.results.policies,
+        premium: report.results.premium,
+        av: report.results.av,
+        avgRating,
+        _report: report
+    };
+}
+function fmtNum(n){
+    if (n === null || n === undefined || isNaN(n)) return '—';
+    return Number(n).toLocaleString('ru-RU');
+}
+
+/* ==================================================================
+   РЕНДЕР: ДИНАМИКА ПО НЕДЕЛЯМ (премия / полисы / АВ)
+   ================================================================== */
+function shortDate(d){
+    const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(d);
+    return m ? `${m[3]}.${m[2]}` : (d || '—');
+}
+
+function buildTimeSeries(filtered, resultKey){
+    const byDate = {};
+    filtered.forEach(r => {
+        const v = r.results[resultKey];
+        if (v == null) return;
+        const d = r.date || 'без даты';
+        byDate[d] = (byDate[d] || 0) + v;
+    });
+    return Object.keys(byDate).sort().map(d => ({ label: d, value: byDate[d] }));
+}
+
+function renderLineChart(containerId, series, opts){
+    const el = document.getElementById(containerId);
+    if (series.length === 0){
+        el.innerHTML = `<div class="bar-chart-empty">${opts.emptyText}</div>`;
+        return;
+    }
+    if (series.length === 1){
+        el.innerHTML = `<div class="linechart-single">
+            <div class="lc-value">${series[0].value.toLocaleString('ru-RU')}${opts.suffix||''}</div>
+            <div class="lc-label">${escapeHtml(shortDate(series[0].label))} · недостаточно периодов для динамики</div>
+        </div>`;
+        return;
+    }
+
+    const W = 320, H = 150, padL = 8, padR = 8, padT = 14, padB = 22;
+    const values = series.map(s => s.value);
+    const maxV = Math.max(...values, 0);
+    const minV = Math.min(...values, 0);
+    const range = (maxV - minV) || 1;
+    const stepX = (W - padL - padR) / (series.length - 1);
+
+    const pts = series.map((s,i) => ({
+        x: padL + i*stepX,
+        y: padT + (H - padT - padB) * (1 - (s.value - minV) / range),
+        ...s
+    }));
+
+    const pathD = pts.map((p,i) => (i===0?'M':'L') + p.x.toFixed(1) + ',' + p.y.toFixed(1)).join(' ');
+    const areaD = pathD +
+        ` L${pts[pts.length-1].x.toFixed(1)},${(H-padB).toFixed(1)}` +
+        ` L${pts[0].x.toFixed(1)},${(H-padB).toFixed(1)} Z`;
+
+    const dots = pts.map(p => `
+        <circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="3.5" fill="${opts.color}" stroke="#fff" stroke-width="1.5">
+            <title>${escapeHtml(shortDate(p.label))}: ${p.value.toLocaleString('ru-RU')}${opts.suffix||''}</title>
+        </circle>
+    `).join('');
+
+    const labels = pts.filter((p,i) => i===0 || i===pts.length-1 || pts.length<=6).map(p => `
+        <text x="${p.x.toFixed(1)}" y="${H-4}" font-size="9" text-anchor="middle" fill="#6b7280">${escapeHtml(shortDate(p.label))}</text>
+    `).join('');
+
+    el.innerHTML = `
+        <svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;display:block;">
+            <line x1="${padL}" y1="${H-padB}" x2="${W-padR}" y2="${H-padB}" stroke="#e5e7eb"/>
+            <path d="${areaD}" fill="${opts.color}" opacity="0.08" stroke="none"/>
+            <path d="${pathD}" fill="none" stroke="${opts.color}" stroke-width="2.2"/>
+            ${dots}
+            ${labels}
+        </svg>
+    `;
+}
+
+function renderDynamics(filtered){
+    const defs = [
+        { key:'premium',  container:'dynPremium',  totalEl:'dynPremiumTotal',  color:'#39b54a', suffix:' тнг', label:'премии' },
+        { key:'policies', container:'dynPolicies', totalEl:'dynPoliciesTotal', color:'#0b57d0', suffix:' шт.', label:'полисам' },
+        { key:'av',       container:'dynAv',       totalEl:'dynAvTotal',       color:'#dc2626', suffix:' тнг', label:'АВ' },
+    ];
+    defs.forEach(d => {
+        const series = buildTimeSeries(filtered, d.key);
+        const total = series.reduce((s,p)=>s+p.value,0);
+        document.getElementById(d.totalEl).textContent = series.length
+            ? `Итого: ${total.toLocaleString('ru-RU')}${d.suffix} за ${series.length} ${series.length===1?'неделю':'недели/недель'}`
+            : '';
+        renderLineChart(d.container, series, { color:d.color, suffix:d.suffix, emptyText:`Нет данных по ${d.label} в выбранных отчётах` });
+    });
+}
+
+/* ==================================================================
+   РЕНДЕР: KPI
+   ================================================================== */
+function renderKpis(filtered){
+    const grid = document.getElementById('kpiGrid');
+
+    const sumEvent = key => filtered.reduce((s,r)=> s + (eventQty(r,key)||0), 0);
+    const totalCalls = sumEvent('call');
+    const totalMeetings = sumEvent('online') + sumEvent('offline');
+    const totalEdu = sumEvent('edu');
+    const totalFollow = sumEvent('follow');
+    const totalNewAgents = filtered.reduce((s,r)=> s + (r.results.newAgents||0), 0);
+    const totalPolicies = filtered.reduce((s,r)=> s + (r.results.policies||0), 0);
+    const totalPremium = filtered.reduce((s,r)=> s + (r.results.premium||0), 0);
+    const totalAv = filtered.reduce((s,r)=> s + (r.results.av||0), 0);
+
+    const allRatings = filtered.flatMap(r => Object.values(r.ratings).filter(v=>v!=null));
+    const avgRating = allRatings.length ? (allRatings.reduce((a,b)=>a+b,0)/allRatings.length) : null;
+
+    const dates = filtered.map(r=>r.date).filter(Boolean).sort();
+    document.getElementById('kpiRange').textContent = dates.length ? `${dates[0]} — ${dates[dates.length-1]}` : '—';
+
+    const kpis = [
+        { label:'Звонков всего', value: fmtNum(totalCalls) },
+        { label:'Встреч всего', value: fmtNum(totalMeetings), sub:'онлайн + личные' },
+        { label:'Обучений всего', value: fmtNum(totalEdu) },
+        { label:'Повторных контактов', value: fmtNum(totalFollow) },
+        { label:'Новых агентов подключено', value: fmtNum(totalNewAgents), accent:true },
+        { label:'Полисов выписано', value: fmtNum(totalPolicies), accent:true },
+        { label:'Премия, тнг', value: fmtNum(totalPremium), accent:true },
+        { label:'АВ, тнг', value: fmtNum(totalAv), accent:true },
+        { label:'Средняя самооценка', value: avgRating!=null ? avgRating.toFixed(2)+' / 5' : '—' },
+    ];
+
+    grid.innerHTML = kpis.map(k => `
+        <div class="kpi">
+            <div class="kpi-label">${k.label}</div>
+            <div class="kpi-value ${k.accent?'accent':''}">${k.value}</div>
+            ${k.sub?`<div class="kpi-sub">${k.sub}</div>`:''}
+        </div>
+    `).join('');
+}
+
+/* ==================================================================
+   РЕНДЕР: ГРАФИКИ
+   ================================================================== */
+function renderBarChart(containerId, items, opts){
+    // items: [{ label, value, count }]  opts: { max, decimals, cls, emptyText, suffix }
+    const el = document.getElementById(containerId);
+    const hasAny = items.some(it => it.count > 0);
+    if (!hasAny){
+        el.innerHTML = `<div class="bar-chart-empty">${opts.emptyText}</div>`;
+        return;
+    }
+    const max = opts.max || Math.max(1, ...items.map(it => it.value));
+    el.innerHTML = items.map(it => {
+        const pct = max > 0 ? Math.max(0, Math.min(100, (it.value / max) * 100)) : 0;
+        const valueText = it.count > 0
+            ? it.value.toFixed(opts.decimals) + (opts.suffix || '')
+            : '—';
+        return `
+        <div class="bar-row">
+            <span class="bar-label">${escapeHtml(it.label)}</span>
+            <div class="bar-track"><div class="bar-fill ${opts.cls}" style="width:${it.count>0?pct:0}%"></div></div>
+            <span class="bar-value">${valueText}</span>
+        </div>`;
+    }).join('');
+}
+
+function renderCharts(filtered){
+    const ratingItems = RATING_DEFS.map(def => {
+        const vals = filtered.map(r => r.ratings[def.key]).filter(v => v!=null);
+        const avg = vals.length ? vals.reduce((a,b)=>a+b,0)/vals.length : 0;
+        return { label: def.name, value: avg, count: vals.length };
+    });
+    renderBarChart('ratingsChart', ratingItems, {
+        max: 5, decimals: 1, cls: 'rating', suffix: ' / 5',
+        emptyText: 'Нет заполненных оценок самооценки в выбранных отчётах'
+    });
+
+    const activityItems = EVENT_DEFS.map(def => {
+        const vals = filtered.map(r => eventQty(r, def.key)).filter(v => v!=null);
+        const sum = vals.reduce((a,b)=>a+b,0);
+        return { label: def.name, value: sum, count: vals.length };
+    });
+    renderBarChart('activityChart', activityItems, {
+        decimals: 0, cls: 'activity',
+        emptyText: 'Нет данных по активностям в выбранных отчётах'
+    });
+}
+
+/* ==================================================================
+   РЕНДЕР: ГЛАВНАЯ ТАБЛИЦА
+   ================================================================== */
+function renderMainTable(filtered){
+    const rows = filtered.map(reportRow);
+    rows.sort((a,b) => {
+        let va = a[sortState.key], vb = b[sortState.key];
+        if (va == null) va = sortState.key==='manager'||sortState.key==='date' ? '' : -Infinity;
+        if (vb == null) vb = sortState.key==='manager'||sortState.key==='date' ? '' : -Infinity;
+        if (typeof va === 'string') { va = va.toLowerCase(); vb = vb.toLowerCase(); }
+        if (va < vb) return sortState.dir==='asc' ? -1 : 1;
+        if (va > vb) return sortState.dir==='asc' ? 1 : -1;
+        return 0;
+    });
+
+    document.getElementById('tableCount').textContent = rows.length + (rows.length===1?' отчёт':' отчётов');
+    document.getElementById('mainTableBody').innerHTML = rows.map((row,i) => `
+        <tr class="clickable" onclick="openModal(${filtered.indexOf(row._report)})">
+            <td>${escapeHtml(row.manager)}</td>
+            <td>${escapeHtml(row.date || '—')}</td>
+            <td class="num">${fmtNum(row.calls)}</td>
+            <td class="num">${fmtNum(row.meetings)}</td>
+            <td class="num">${fmtNum(row.newAgents)}</td>
+            <td class="num">${fmtNum(row.policies)}</td>
+            <td class="num">${fmtNum(row.premium)}</td>
+            <td class="num">${fmtNum(row.av)}</td>
+            <td class="num">${row.avgRating!=null ? `<span class="badge-score">${row.avgRating.toFixed(1)}</span>` : '—'}</td>
+            <td class="muted">Подробнее →</td>
+        </tr>
+    `).join('') || `<tr><td colspan="10" class="muted" style="text-align:center;padding:24px;">Нет отчётов, соответствующих фильтру</td></tr>`;
+
+    document.querySelectorAll('#mainTable thead th.sortable').forEach(th => {
+        th.classList.toggle('sorted', th.dataset.key === sortState.key);
+        th.querySelector('.arrow').textContent = (th.dataset.key === sortState.key && sortState.dir==='desc') ? '▼' : '▲';
+    });
+}
+
+document.querySelectorAll('#mainTable thead th.sortable').forEach(th => {
+    th.addEventListener('click', () => {
+        const key = th.dataset.key;
+        if (sortState.key === key) sortState.dir = sortState.dir === 'asc' ? 'desc' : 'asc';
+        else { sortState.key = key; sortState.dir = 'asc'; }
+        renderAll();
+    });
+});
+
+/* ==================================================================
+   РЕНДЕР: ВКЛАДКИ (проблемы / планы / партнёры / агенты / инсайты)
+   ================================================================== */
+document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+        document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('panel-'+btn.dataset.tab).classList.add('active');
+    });
+});
+
+function renderPlans(filtered){
+    const all = [];
+    filtered.forEach(r => r.plan.forEach(p => all.push({ ...p, manager:r.manager, date:r.date })));
+    document.getElementById('listPlans').innerHTML = all.length ? all.map(p => `
+        <div class="item-card plan">
+            <div class="item-head"><span>${escapeHtml(p.manager)}</span><span>план на ${escapeHtml(p.date||'—')}</span></div>
+            <div class="item-body item-row">
+                <div><b>Мероприятие:</b> ${escapeHtml(p.task)}</div>
+                <div><b>Цель:</b> ${escapeHtml(p.goal)}</div>
+                <div><b>Ожидание:</b> ${escapeHtml(p.result)}</div>
+            </div>
+        </div>
+    `).join('') : `<div class="muted" style="text-align:center;padding:20px;">Планов не найдено</div>`;
+}
+
+function renderPartners(filtered){
+    const all = [];
+    filtered.forEach(r => r.newPartners.forEach(p => all.push({ ...p, manager:r.manager })));
+    document.getElementById('listPartners').innerHTML = all.length ? all.map(p => `
+        <tr><td>${escapeHtml(p.manager)}</td><td>${escapeHtml(p.company)}</td><td>${escapeHtml(p.status)}</td><td>${escapeHtml(p.next)}</td></tr>
+    `).join('') : `<tr><td colspan="4" class="muted" style="text-align:center;">Нет данных</td></tr>`;
+}
+
+function renderAgents(filtered){
+    const all = [];
+    filtered.forEach(r => r.currentAgents.forEach(a => all.push({ ...a, manager:r.manager })));
+    document.getElementById('listAgents').innerHTML = all.length ? all.map(a => `
+        <tr><td>${escapeHtml(a.manager)}</td><td>${escapeHtml(a.agent)}</td><td class="num">${fmtNum(a.policies)}</td><td>${escapeHtml(a.done)}</td><td>${escapeHtml(a.next)}</td></tr>
+    `).join('') : `<tr><td colspan="5" class="muted" style="text-align:center;">Нет данных</td></tr>`;
+}
+
+function renderInsights(filtered){
+    const labels = { market:'Что нового узнали о рынке?', questions:'Частые вопросы клиентов', objections:'Частые возражения', problems:'Что мешает продавать' };
+    const withData = filtered.filter(r => Object.values(r.insights).some(v => v && v !== '—'));
+    document.getElementById('listInsights').innerHTML = withData.length ? withData.map(r => `
+        <div class="item-card">
+            <div class="item-head"><span>${escapeHtml(r.manager)}</span><span>${escapeHtml(r.date||'—')}</span></div>
+            <div class="item-body">
+                ${Object.keys(labels).map(k => r.insights[k] && r.insights[k]!=='—' ? `<div style="margin-bottom:4px;"><b>${labels[k]}:</b> ${escapeHtml(r.insights[k])}</div>` : '').join('')}
+            </div>
+        </div>
+    `).join('') : `<div class="muted" style="text-align:center;padding:20px;">Инсайтов не найдено</div>`;
+}
+
+/* ==================================================================
+   МОДАЛКА С ПОЛНЫМ ОТЧЁТОМ
+   ================================================================== */
+function buildReportSectionsHtml(r){
+    const eventsRows = EVENT_DEFS.map(def => {
+        const ev = r.events.find(e=>e.key===def.key) || {};
+        return `<tr><td>${def.name}</td><td class="num">${fmtNum(ev.qty)}</td><td>${escapeHtml(ev.result||'—')}</td></tr>`;
+    }).join('');
+
+    const agentsRows = r.currentAgents.length ? r.currentAgents.map(a=>`<tr><td>${escapeHtml(a.agent)}</td><td class="num">${fmtNum(a.policies)}</td><td>${escapeHtml(a.done)}</td><td>${escapeHtml(a.next)}</td></tr>`).join('') : `<tr><td colspan="4" class="muted" style="text-align:center;">Нет данных</td></tr>`;
+    const partnersRows = r.newPartners.length ? r.newPartners.map(p=>`<tr><td>${escapeHtml(p.company)}</td><td>${escapeHtml(p.status)}</td><td>${escapeHtml(p.next)}</td></tr>`).join('') : `<tr><td colspan="3" class="muted" style="text-align:center;">Нет данных</td></tr>`;
+    const planRows = r.plan.length ? r.plan.map(p=>`<tr><td>${escapeHtml(p.task)}</td><td>${escapeHtml(p.goal)}</td><td>${escapeHtml(p.date)}</td><td>${escapeHtml(p.result)}</td></tr>`).join('') : `<tr><td colspan="4" class="muted" style="text-align:center;">Нет данных</td></tr>`;
+
+    return `
+        <div class="modal-section">
+            <h4>1. Личный OKR недели</h4>
+            <p><b>Главная цель:</b> ${escapeHtml(r.okr.main)}</p>
+            <ul>${r.okr.kr.map(k=>`<li>${escapeHtml(k)}</li>`).join('')}</ul>
+        </div>
+        <div class="modal-section">
+            <h4>2. Выполненные мероприятия</h4>
+            <table><thead><tr><th>Мероприятие</th><th class="num">Кол-во</th><th>Результат</th></tr></thead><tbody>${eventsRows}</tbody></table>
+        </div>
+        <div class="modal-section">
+            <h4>3. Основные результаты</h4>
+            <table><tbody>
+                <tr><td class="muted">Подключено агентов</td><td class="num">${fmtNum(r.results.newAgents)}</td></tr>
+                <tr><td class="muted">Выписано полисов</td><td class="num">${fmtNum(r.results.policies)}</td></tr>
+                <tr><td class="muted">Премия (тнг)</td><td class="num">${fmtNum(r.results.premium)}</td></tr>
+                <tr><td class="muted">АВ (тнг)</td><td class="num">${fmtNum(r.results.av)}</td></tr>
+            </tbody></table>
+        </div>
+        <div class="modal-section">
+            <h4>4. Работа с действующими агентами</h4>
+            <table><thead><tr><th>Агент</th><th class="num">Полисы</th><th>Сделано</th><th>Шаг</th></tr></thead><tbody>${agentsRows}</tbody></table>
+        </div>
+        <div class="modal-section">
+            <h4>5. Развитие базы (новые партнёры)</h4>
+            <table><thead><tr><th>Компания</th><th>Статус</th><th>Действие</th></tr></thead><tbody>${partnersRows}</tbody></table>
+        </div>
+        <div class="modal-section">
+            <h4>6. Самооценка</h4>
+            <table><tbody>
+                ${RATING_DEFS.map(d=>`<tr><td class="muted">${d.name}</td><td class="num">${r.ratings[d.key]!=null ? r.ratings[d.key]+' / 5' : '—'}</td></tr>`).join('')}
+            </tbody></table>
+        </div>
+        <div class="modal-section">
+            <h4>7. Инсайты</h4>
+            <table><tbody>
+                <tr><td class="muted" style="width:45%;">Рынок</td><td>${escapeHtml(r.insights.market||'—')}</td></tr>
+                <tr><td class="muted">Вопросы клиентов</td><td>${escapeHtml(r.insights.questions||'—')}</td></tr>
+                <tr><td class="muted">Возражения</td><td>${escapeHtml(r.insights.objections||'—')}</td></tr>
+                <tr><td class="muted">Мешает продавать</td><td>${escapeHtml(r.insights.problems||'—')}</td></tr>
+            </tbody></table>
+        </div>
+        <div class="modal-section" style="margin-bottom:0;">
+            <h4>8. План на следующую неделю</h4>
+            <table><thead><tr><th>Мероприятие</th><th>Цель</th><th>Дата</th><th>Ожидание</th></tr></thead><tbody>${planRows}</tbody></table>
+        </div>
+    `;
+}
+
+function openModal(idx){
+    const filtered = getFilteredReports();
+    const r = filtered[idx];
+    if (!r) return;
+    document.getElementById('modalTitle').textContent = `${r.manager} — ${r.date || '—'}`;
+    document.getElementById('modalBody').innerHTML = buildReportSectionsHtml(r);
+    document.getElementById('modalOverlay').classList.add('open');
+}
+document.getElementById('modalCloseBtn').addEventListener('click', closeModal);
+document.getElementById('modalOverlay').addEventListener('click', e => { if (e.target.id==='modalOverlay') closeModal(); });
+function closeModal(){ document.getElementById('modalOverlay').classList.remove('open'); }
+
+function renderFullReports(filtered){
+    const sorted = [...filtered].sort((a,b) => {
+        const byName = a.manager.localeCompare(b.manager, 'ru');
+        if (byName !== 0) return byName;
+        return (b.date||'').localeCompare(a.date||'');
+    });
+    document.getElementById('fullReportsCount').textContent = sorted.length + (sorted.length===1?' отчёт':' отчётов');
+    document.getElementById('fullReportsList').innerHTML = sorted.length ? sorted.map((r,i) => {
+        const row = reportRow(r);
+        return `
+        <details class="full-report-item" ${sorted.length<=5?'open':''}>
+            <summary>
+                <span class="frm-name">${escapeHtml(r.manager)}</span>
+                <span class="frm-date">${escapeHtml(r.date||'—')}</span>
+                <span class="frm-badges">
+                    <span class="frm-badge">Премия: ${fmtNum(row.premium)}</span>
+                    <span class="frm-badge">Полисы: ${fmtNum(row.policies)}</span>
+                    <span class="frm-badge">Оценка: ${row.avgRating!=null?row.avgRating.toFixed(1):'—'}</span>
+                </span>
+            </summary>
+            <div class="frm-body">${buildReportSectionsHtml(r)}</div>
+        </details>`;
+    }).join('') : `<div class="muted" style="text-align:center;padding:20px;">Нет отчётов, соответствующих фильтру</div>`;
+}
+
+/* ==================================================================
+   ЭКСПОРТ В CSV
+   ================================================================== */
+document.getElementById('exportCsvBtn').addEventListener('click', () => {
+    const filtered = getFilteredReports();
+    const rows = filtered.map(reportRow);
+    const header = ['Менеджер','Дата','Звонки','Встречи','Новые агенты','Полисы','Премия','АВ','Средняя оценка'];
+    const lines = [header.join(';')];
+    rows.forEach(r => {
+        lines.push([r.manager, r.date, r.calls, r.meetings, r.newAgents ?? '', r.policies ?? '', r.premium ?? '', r.av ?? '', r.avgRating!=null ? r.avgRating.toFixed(2) : '']
+            .map(v => `"${String(v).replace(/"/g,'""')}"`).join(';'));
+    });
+    const blob = new Blob(['\uFEFF' + lines.join('\r\n')], { type:'text/csv;charset=utf-8' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'Сводка_по_менеджерам_' + new Date().toISOString().slice(0,10) + '.csv';
+    a.click();
+});
+
+/* ==================================================================
+   ГЛАВНЫЙ РЕНДЕР
+   ================================================================== */
+function renderAll(){
+    renderQueue();
+    renderManagerDropdownLabel();
+    renderManagerChecklist();
+    const filtered = getFilteredReports();
+
+    document.getElementById('dashboard').style.display = reports.length ? 'block' : 'none';
+    document.getElementById('emptyState').style.display = reports.length ? 'none' : 'block';
+    if (!reports.length) return;
+
+    renderKpis(filtered);
+    renderCharts(filtered);
+    renderDynamics(filtered);
+    renderMainTable(filtered);
+    renderFullReports(filtered);
+    renderPlans(filtered);
+    renderPartners(filtered);
+    renderAgents(filtered);
+    renderInsights(filtered);
+}
+
+renderAll();
+
+/* ==================================================================
+   NAV: подсветка активного раздела при прокрутке
+   ================================================================== */
+(function initScrollSpy(){
+    const navLinks = Array.from(document.querySelectorAll('#navInner a'));
+    if (!navLinks.length) return;
+    const navHeight = document.getElementById('mainNav').offsetHeight;
+    function onScroll(){
+        let currentId = null;
+        for (const link of navLinks){
+            const sec = document.querySelector(link.getAttribute('href'));
+            if (sec && sec.offsetParent !== null && sec.getBoundingClientRect().top - navHeight <= 80){
+                currentId = link.getAttribute('href');
+            }
+        }
+        navLinks.forEach(l => l.classList.toggle('active', l.getAttribute('href') === currentId));
+    }
+    window.addEventListener('scroll', onScroll, { passive:true });
+    onScroll();
+})();
+</script>
+
+</body>
+</html>
