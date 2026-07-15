@@ -49,12 +49,12 @@
         background:linear-gradient(135deg,#11141a 0%,#171b22 100%);
         border-bottom:1px solid var(--border-glow);
         color:#fff;
-        padding:28px 0;
+        padding:16px 0;
         margin-bottom:0;
         box-shadow:0 4px 30px rgba(46,230,166,0.08);
     }
-    .topbar h1{margin:0 0 4px;font-size:24px;color:var(--primary);text-shadow:0 0 18px var(--primary-glow);letter-spacing:.02em;}
-    .topbar p{margin:0;color:var(--text-muted);font-size:14px;}
+    .topbar .container{display:flex;align-items:center;}
+    .topbar .logo{height:34px;display:block;}
 
     /* ===== NAV ===== */
     .mainnav{
@@ -74,23 +74,28 @@
     .card{scroll-margin-top:64px;
         background:var(--bg-card);
         border:1px solid var(--border);
+        border-top:3px solid var(--primary-dark);
         border-radius:12px;
-        padding:22px;
+        padding:30px 32px;
         box-shadow:0 4px 18px rgba(0,0,0,0.3);
-        margin-bottom:22px;
-        margin-top:22px;
+        margin-bottom:26px;
+        margin-top:26px;
     }
     .card h2{
-        margin:0 0 16px;
-        font-size:15px;
+        margin:0 0 20px;
+        font-size:17px;
         text-transform:uppercase;
         letter-spacing:.04em;
         color:var(--primary);
         display:flex;
         align-items:center;
-        gap:8px;
-        padding-bottom:10px;
+        gap:12px;
+        padding-bottom:12px;
         border-bottom:1px solid var(--border);
+    }
+    .card h2 .slide-num{
+        font-family:var(--mono);font-size:30px;font-weight:800;color:var(--primary);
+        opacity:.28;line-height:1;letter-spacing:0;text-transform:none;flex-shrink:0;
     }
     .card h2 .count-badge{
         margin-left:auto;
@@ -225,13 +230,13 @@
     .charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:28px;}
     @media (max-width:860px){.charts-grid{grid-template-columns:1fr;}}
     .bar-chart{display:flex;flex-direction:column;gap:13px;}
-    .bar-row{display:grid;grid-template-columns:150px 1fr 44px;align-items:center;gap:10px;}
+    .bar-row{display:grid;grid-template-columns:150px 1fr 58px;align-items:center;gap:10px;}
     .bar-row .bar-label{font-size:12.5px;color:var(--text-main);}
     .bar-track{background:#0e1116;border:1px solid var(--border);border-radius:6px;height:14px;overflow:hidden;}
     .bar-fill{height:100%;border-radius:6px;transition:width .5s ease;min-width:2px;}
     .bar-fill.rating{background:var(--accent);box-shadow:0 0 10px rgba(41,197,255,.6);}
     .bar-fill.activity{background:var(--primary);box-shadow:0 0 10px rgba(46,230,166,.6);}
-    .bar-row .bar-value{text-align:right;font-weight:700;font-size:12.5px;color:var(--text-main);font-family:var(--mono);}
+    .bar-row .bar-value{text-align:right;font-weight:700;font-size:12.5px;color:var(--text-main);font-family:var(--mono);white-space:nowrap;}
     .bar-chart-empty{color:var(--text-muted);font-size:13px;text-align:center;padding:20px;}
 
     /* ===== TABLE ===== */
@@ -298,6 +303,36 @@
     .modal-section table{min-width:0;}
     .modal-section ul{margin:6px 0;padding-left:20px;color:var(--text-main);}
 
+    /* ===== DELTA MINI (динамика к пред. неделе) ===== */
+    .delta-mini{display:flex;align-items:center;gap:9px;}
+    .delta-bars{display:flex;flex-direction:column;gap:3px;width:64px;flex-shrink:0;}
+    .delta-bar{height:5px;border-radius:3px;background:var(--border);min-width:2px;}
+    .delta-bar.prev{background:#4a5160;}
+    .delta-bar.curr{background:var(--primary);box-shadow:0 0 6px rgba(46,230,166,.5);}
+    .delta-badge{font-family:var(--mono);font-size:11.5px;font-weight:700;padding:2px 8px;border-radius:10px;white-space:nowrap;}
+    .delta-badge.up{background:rgba(46,230,166,.15);color:var(--primary);}
+    .delta-badge.down{background:rgba(255,95,114,.15);color:var(--danger);}
+    .delta-badge.flat{background:var(--bg-alt2);color:var(--text-muted);}
+    .delta-badge.na{background:var(--bg-alt2);color:var(--text-muted);font-style:italic;font-weight:500;font-size:11px;}
+
+    /* ===== ПРОСМОТРЩИК ПОЛНОГО ОТЧЁТА ===== */
+    .viewer-controls{display:flex;flex-wrap:wrap;gap:24px;align-items:flex-end;margin-bottom:18px;}
+    .viewer-select{
+        padding:8px 12px;border:1px solid var(--border);border-radius:6px;background:var(--bg-alt);
+        color:var(--text-main);font-size:13px;font-family:inherit;min-width:230px;
+    }
+    .viewer-select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-light);}
+    .viewer-nav{display:flex;align-items:center;gap:12px;}
+    .viewer-nav .btn:disabled{opacity:.35;cursor:not-allowed;}
+    .date-chips{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:24px;padding-bottom:18px;border-bottom:1px solid var(--border);}
+    .date-chip{
+        background:var(--bg-alt);border:1px solid var(--border);color:var(--text-muted);font-family:var(--mono);
+        font-size:12px;font-weight:600;padding:5px 12px;border-radius:20px;cursor:pointer;transition:.15s;
+    }
+    .date-chip:hover{border-color:var(--primary);color:var(--primary);}
+    .date-chip.active{background:var(--primary);border-color:var(--primary);color:#07110c;box-shadow:0 0 10px var(--primary-glow);}
+    .viewer-print-header{display:none;}
+
     /* ===== FULL REPORTS PER MANAGER ===== */
     .full-reports-list{display:flex;flex-direction:column;gap:12px;}
     .full-report-item{border:1px solid var(--border);border-radius:10px;overflow:hidden;background:var(--bg-alt);}
@@ -315,25 +350,173 @@
         font-size:11.5px;font-weight:700;padding:2px 9px;border-radius:20px;background:var(--primary-light);color:var(--primary);font-family:var(--mono);
     }
     .full-report-item .frm-body{padding:20px;border-top:1px solid var(--border);}
-.logo{
-margin:40px 40px 40px 40px;}
+
+    /* ===== ВЕРДИКТ НЕДЕЛИ (элементарная аналитика) ===== */
+    .verdict-panel{border-radius:10px;padding:16px 18px;margin-bottom:22px;border:1px solid var(--border);background:var(--bg-alt);}
+    .verdict-panel.good{border-color:rgba(46,230,166,.4);background:rgba(46,230,166,.07);}
+    .verdict-panel.average{border-color:rgba(255,193,7,.4);background:rgba(255,193,7,.06);}
+    .verdict-panel.weak{border-color:rgba(255,95,114,.4);background:rgba(255,95,114,.07);}
+    .verdict-panel.nodata{border-color:var(--border);background:var(--bg-alt);}
+    .verdict-title{font-weight:700;font-size:14px;color:var(--text-main);margin:0 0 12px;display:flex;align-items:center;gap:10px;}
+    .verdict-badge{font-size:11px;font-weight:800;padding:3px 10px;border-radius:20px;text-transform:uppercase;letter-spacing:.03em;white-space:nowrap;}
+    .verdict-badge.good{background:rgba(46,230,166,.18);color:var(--primary);}
+    .verdict-badge.average{background:rgba(255,193,7,.18);color:#ffc107;}
+    .verdict-badge.weak{background:rgba(255,95,114,.18);color:var(--danger);}
+    .verdict-badge.nodata{background:var(--bg-alt2);color:var(--text-muted);}
+    .verdict-note{font-size:12.5px;color:var(--text-muted);}
+    .verdict-factors{display:flex;flex-direction:column;gap:7px;}
+    .verdict-factor{display:grid;grid-template-columns:18px 1fr auto;gap:10px;align-items:center;font-size:12.5px;}
+    .verdict-factor .vf-icon{font-size:11px;text-align:center;}
+    .verdict-factor.up .vf-icon{color:var(--primary);}
+    .verdict-factor.down .vf-icon{color:var(--danger);}
+    .verdict-factor.flat .vf-icon{color:var(--text-muted);}
+    .verdict-factor .vf-label{color:var(--text-main);}
+    .verdict-factor .vf-detail{color:var(--text-muted);font-family:var(--mono);font-size:11.5px;white-space:nowrap;}
+    @media (max-width:640px){.verdict-factor{grid-template-columns:16px 1fr;} .verdict-factor .vf-detail{grid-column:2;}}
+
     footer{text-align:center;color:var(--text-muted);font-size:12px;margin-top:30px;}
+
+    /* ===== COVER SLIDE ===== */
+    .cover-slide{
+        text-align:center;
+        border-top:none;
+        background:linear-gradient(160deg,#171b22 0%,#11141a 100%);
+        padding:46px 32px 40px;
+        position:relative;
+        overflow:hidden;
+    }
+    .cover-slide::before{
+        content:'';position:absolute;inset:0;
+        background:radial-gradient(circle at 50% 0%, rgba(46,230,166,.12), transparent 55%);
+        pointer-events:none;
+    }
+    .cover-eyebrow{
+        font-family:var(--mono);font-size:12.5px;letter-spacing:.15em;text-transform:uppercase;
+        color:var(--accent);font-weight:700;margin-bottom:10px;
+    }
+    .cover-title{
+        font-size:36px;margin:0 0 10px;color:#fff;font-weight:800;letter-spacing:-.01em;
+    }
+    .cover-title .hl{color:var(--primary);text-shadow:0 0 22px var(--primary-glow);}
+    .cover-subtitle{color:var(--text-muted);font-size:14.5px;margin:0 0 30px;position:relative;}
+    .cover-hero-grid{
+        display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;
+        max-width:800px;margin:0 auto 30px;position:relative;
+    }
+    .cover-hero-item{
+        background:rgba(255,255,255,0.03);border:1px solid var(--border-glow);border-radius:12px;padding:18px 12px;
+    }
+    .cover-hero-value{font-size:28px;font-weight:800;color:var(--primary);font-family:var(--mono);text-shadow:0 0 16px rgba(46,230,166,.3);}
+    .cover-hero-label{font-size:11.5px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.04em;margin-top:6px;}
+    .cover-actions{display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap;position:relative;}
+    .cover-meta{font-size:12px;color:var(--text-muted);}
+
+    /* ===== FLOATING PRINT BUTTON ===== */
+    .print-fab{
+        position:fixed;bottom:24px;right:24px;z-index:50;
+        background:var(--primary);color:#07110c;border:none;border-radius:50px;
+        padding:12px 20px;font-size:13px;font-weight:700;cursor:pointer;
+        box-shadow:0 6px 22px rgba(46,230,166,.35);display:flex;align-items:center;gap:8px;
+    }
+    .print-fab:hover{background:var(--primary-dark);}
+
+    /* ===== PRINT / PDF EXPORT ===== */
+    @media print{
+        @page{ size: A4 landscape; margin: 12mm; }
+        body{background:#fff !important;color:#161a1f !important;background-image:none !important;}
+        .topbar{background:#fff !important;border-bottom:1px solid #e2e5e9 !important;box-shadow:none !important;padding:8px 0 !important;}
+        .mainnav, #sec-upload, #sec-filters, #sec-files, .print-fab, .modal-overlay,
+        .filters, .queue-actions, #resetFiltersBtn, .btn, .ms-panel{display:none !important;}
+        .cover-actions{display:none !important;}
+        .card{
+            background:#fff !important;border:1px solid #d7dbe0 !important;border-top:3px solid #159a63 !important;
+            box-shadow:none !important;color:#161a1f !important;padding:16px 18px !important;margin:0 0 14px !important;
+        }
+        .cover-slide{background:#fff !important;text-align:left !important;padding:0 0 16px !important;}
+        .cover-slide::before{display:none !important;}
+        .cover-title{color:#159a63 !important;}
+        .cover-title .hl{color:#159a63 !important;text-shadow:none !important;}
+        .cover-subtitle{color:#555 !important;}
+        .cover-hero-item{background:#f4f7f6 !important;border:1px solid #d7dbe0 !important;}
+        .cover-hero-value{color:#159a63 !important;text-shadow:none !important;}
+        .cover-hero-label{color:#666 !important;}
+        .card h2{color:#159a63 !important;border-bottom-color:#e2e5e9 !important;}
+        .card h2 .slide-num{color:#159a63 !important;opacity:.35 !important;}
+        .card h2 .count-badge{background:#eaf7f0 !important;color:#159a63 !important;}
+        .kpi{background:#f4f7f6 !important;border:1px solid #d7dbe0 !important;border-top-color:#159a63 !important;page-break-inside:avoid;}
+        .kpi-value{color:#159a63 !important;text-shadow:none !important;}
+        .kpi-value.accent{color:#0b6fae !important;}
+        .kpi-label,.kpi-sub{color:#666 !important;}
+        table{color:#161a1f !important;}
+        th,td{border-color:#e2e5e9 !important;}
+        thead th{background:#f0f3f2 !important;color:#159a63 !important;}
+        tbody tr:hover{background:none !important;}
+        tr{page-break-inside:avoid;}
+        .muted{color:#777 !important;}
+        .badge-score{background:#e9f4fb !important;color:#0b6fae !important;}
+        .bar-row .bar-label,.bar-row .bar-value{color:#161a1f !important;}
+        .bar-track{background:#eee !important;border-color:#d7dbe0 !important;}
+        .bar-fill.rating{background:#0b6fae !important;box-shadow:none !important;}
+        .bar-fill.activity{background:#159a63 !important;box-shadow:none !important;}
+        .dyn-box{background:#f4f7f6 !important;border:1px solid #d7dbe0 !important;page-break-inside:avoid;}
+        .dyn-title{color:#444 !important;}
+        .dyn-total,.dyn-box .lc-label{color:#777 !important;}
+        .linechart-single .lc-value{color:#159a63 !important;}
+        .delta-bar.prev{background:#ccc !important;}
+        .delta-bar.curr{background:#159a63 !important;box-shadow:none !important;}
+        .delta-badge.up{background:#e7f9f0 !important;color:#0a7a52 !important;}
+        .delta-badge.down{background:#fdeced !important;color:#b3283a !important;}
+        .delta-badge.flat,.delta-badge.na{background:#f1f1f1 !important;color:#666 !important;}
+        .item-card{background:#fafbfb !important;border:1px solid #e2e5e9 !important;page-break-inside:avoid;}
+        .item-card.plan{border-left:3px solid #159a63 !important;}
+        .item-card .item-body{color:#161a1f !important;}
+        .item-card .item-body b{color:#159a63 !important;}
+        .item-card .item-head{color:#777 !important;}
+        .tabs{display:none !important;}
+        .tab-panel{display:block !important;margin-bottom:16px;page-break-inside:avoid;}
+        .tab-panel::before{content:attr(data-print-label);display:block;font-weight:800;text-transform:uppercase;
+            letter-spacing:.04em;font-size:12.5px;color:#159a63;margin-bottom:10px;border-bottom:1px solid #e2e5e9;padding-bottom:6px;}
+        .full-report-item{background:#fff !important;border:1px solid #d7dbe0 !important;}
+        .full-report-item summary{background:#f4f7f6 !important;color:#161a1f !important;page-break-inside:avoid;page-break-after:avoid;}
+        .full-report-item summary::before{color:#159a63 !important;}
+        .full-report-item summary .frm-name{color:#161a1f !important;}
+        .full-report-item summary .frm-date,.full-report-item summary .frm-date{color:#666 !important;}
+        .frm-badge{background:#eaf7f0 !important;color:#159a63 !important;}
+        .frm-body{border-top:1px solid #e2e5e9 !important;}
+        .modal-section{page-break-inside:avoid;margin-bottom:14px;}
+        .modal-section h4{color:#159a63 !important;border-bottom-color:#e2e5e9 !important;}
+        .modal-section ul{color:#161a1f !important;}
+        .verdict-panel{background:#f4f7f6 !important;border:1px solid #d7dbe0 !important;page-break-inside:avoid;}
+        .verdict-panel.good{border-color:#8fd9b8 !important;background:#eefaf3 !important;}
+        .verdict-panel.average{border-color:#ffe08a !important;background:#fffaeb !important;}
+        .verdict-panel.weak{border-color:#f5b3ba !important;background:#fdf1f2 !important;}
+        .verdict-title{color:#161a1f !important;}
+        .verdict-badge.good{background:#dff5e8 !important;color:#0a7a52 !important;}
+        .verdict-badge.average{background:#fff3cd !important;color:#8a6d00 !important;}
+        .verdict-badge.weak{background:#fbe0e2 !important;color:#b3283a !important;}
+        .verdict-badge.nodata{background:#eee !important;color:#666 !important;}
+        .verdict-note{color:#666 !important;}
+        .verdict-factor .vf-label{color:#161a1f !important;}
+        .verdict-factor .vf-detail{color:#666 !important;}
+        .verdict-factor.up .vf-icon{color:#0a7a52 !important;}
+        .verdict-factor.down .vf-icon{color:#b3283a !important;}
+        .verdict-factor.flat .vf-icon{color:#888 !important;}
+        .viewer-controls, .date-chips{display:none !important;}
+        .viewer-print-header{display:block !important;font-weight:800;font-size:14px;color:#159a63 !important;margin-bottom:14px;}
+        footer{display:none !important;}
+    }
 </style>
 </head>
 <body>
-<div class="logo" align="center">
-<img src="https://static.tildacdn.pro/tild3439-3233-4837-b761-353438663639/adp-logo.svg">
-</div>
+
 <div class="topbar">
     <div class="container">
-        <h1 align="center">📊 Сводный отчёт по менеджерам</h1>
-  
+        <img class="logo" src="https://static.tildacdn.pro/tild3439-3233-4837-b761-353438663639/adp-logo.svg" alt="Logo">
     </div>
 </div>
 
 <nav class="mainnav" id="mainNav">
     <div class="container navinner" id="navInner">
-        <a href="#sec-upload">📥 Загрузка</a>
         <a href="#sec-filters">🔍 Фильтры</a>
         <a href="#sec-kpi">📈 Показатели</a>
         <a href="#sec-charts">📊 Графики</a>
@@ -341,37 +524,39 @@ margin:40px 40px 40px 40px;}
         <a href="#sec-table">👥 Менеджеры</a>
         <a href="#sec-full">📋 Полные отчёты</a>
         <a href="#sec-details">🗂 Детали</a>
+        <a href="#sec-upload">📥 Загрузка</a>
         <a href="#sec-files">📁 Файлы</a>
     </div>
 </nav>
 
 <div class="container">
 
-    <!-- UPLOAD CARD -->
-    <div class="card" id="sec-upload">
-        <h2>📥 Загрузка отчётов</h2>
-        <div class="dropzone" id="dropzone">
-            <div class="dropzone-icon">🗂️</div>
-            <strong>Перетащите HTML-файлы отчётов сюда</strong> или нажмите, чтобы выбрать
-            <small>Можно загрузить сразу несколько файлов. Поддерживаются только .html-отчёты, сформированные формой менеджера.</small>
-        </div>
-        <input type="file" id="fileInput" accept=".html,.htm" multiple>
-        <div class="upload-hint" id="uploadHint" style="display:none;"></div>
-    </div>
-
     <!-- EMPTY STATE -->
     <div class="card empty-state" id="emptyState">
         <div class="big-icon">📄</div>
         <div><strong>Пока нет загруженных отчётов</strong></div>
-        <div>Добавьте файлы выше, чтобы увидеть сводку по всем менеджерам.</div>
+        <div>Загрузите HTML-файлы отчётов, чтобы увидеть сводку по всем менеджерам.</div>
+        <a href="#sec-upload" class="btn btn-primary" style="display:inline-block;margin-top:16px;text-decoration:none;">📥 Перейти к загрузке ↓</a>
     </div>
 
     <!-- DASHBOARD -->
     <div id="dashboard">
 
+        <!-- COVER SLIDE -->
+        <div class="card cover-slide" id="sec-cover">
+            <div class="cover-eyebrow">Сводный отчёт · Отдел продаж</div>
+            <h1 class="cover-title">Итоги недели <span class="hl" id="coverPeriod"></span></h1>
+            <p class="cover-subtitle" id="coverSubtitle"></p>
+            <div class="cover-hero-grid" id="coverHeroGrid"></div>
+            <div class="cover-actions">
+                <button class="btn btn-primary" id="printBtnCover">🖨 Экспорт в PDF</button>
+                <span class="cover-meta" id="coverMeta"></span>
+            </div>
+        </div>
+
         <!-- FILTERS -->
         <div class="card" id="sec-filters">
-            <h2>🔍 Фильтры</h2>
+            <h2><span class="slide-num">01</span>🔍 Фильтры</h2>
             <div class="filters">
                 <div class="field msdrop" id="managerDropdownWrap">
                     <label>Менеджер</label>
@@ -403,13 +588,13 @@ margin:40px 40px 40px 40px;}
 
         <!-- KPI -->
         <div class="card" id="sec-kpi">
-            <h2>📈 Ключевые показатели <span class="count-badge" id="kpiRange"></span></h2>
+            <h2><span class="slide-num">02</span>📈 Ключевые показатели <span class="count-badge" id="kpiRange"></span></h2>
             <div class="kpi-grid" id="kpiGrid"></div>
         </div>
 
         <!-- CHARTS -->
         <div class="card" id="sec-charts">
-            <h2>📊 Графики</h2>
+            <h2><span class="slide-num">03</span>📊 Графики</h2>
             <div class="charts-grid">
                 <div>
                     <div style="font-size:13px;font-weight:600;margin-bottom:12px;color:var(--text-muted);">Средняя самооценка по категориям (из 5)</div>
@@ -424,7 +609,7 @@ margin:40px 40px 40px 40px;}
 
         <!-- DYNAMICS -->
         <div class="card" id="sec-dynamics">
-            <h2>📉 Динамика по неделям</h2>
+            <h2><span class="slide-num">04</span>📉 Динамика по неделям</h2>
             <div class="dyn-grid">
                 <div class="dyn-box">
                     <div class="dyn-title">Премия, тнг</div>
@@ -446,7 +631,7 @@ margin:40px 40px 40px 40px;}
 
         <!-- MAIN TABLE -->
         <div class="card" id="sec-table">
-            <h2>👥 Отчёты по менеджерам <span class="count-badge" id="tableCount"></span></h2>
+            <h2><span class="slide-num">05</span>👥 Отчёты по менеджерам <span class="count-badge" id="tableCount"></span></h2>
             <div class="table-wrap">
                 <table id="mainTable">
                     <thead>
@@ -472,15 +657,31 @@ margin:40px 40px 40px 40px;}
             </div>
         </div>
 
-        <!-- FULL REPORTS PER MANAGER -->
+        <!-- FULL REPORT VIEWER -->
         <div class="card" id="sec-full">
-            <h2>📋 Полные отчёты по менеджерам <span class="count-badge" id="fullReportsCount"></span></h2>
-            <p class="muted" style="margin:-8px 0 16px;font-size:12.5px;">Все 9 разделов из каждого отчёта, без сокращений — по одному блоку на менеджера. Нажмите на заголовок, чтобы свернуть/развернуть.</p>
-            <div id="fullReportsList" class="full-reports-list"></div>
+            <h2><span class="slide-num">06</span>📋 Полный отчёт менеджера <span class="count-badge" id="fullReportsCount"></span></h2>
+            <div class="viewer-controls">
+                <div class="field">
+                    <label>Менеджер</label>
+                    <select id="viewerManagerSelect" class="viewer-select"></select>
+                </div>
+                <div class="field">
+                    <label>Позиция в истории</label>
+                    <div class="viewer-nav">
+                        <button type="button" class="btn btn-outline" id="viewerNavPrev">◀ Пред. неделя</button>
+                        <span class="muted" id="viewerPositionLabel" style="font-family:var(--mono);font-size:12.5px;"></span>
+                        <button type="button" class="btn btn-outline" id="viewerNavNext">След. неделя ▶</button>
+                    </div>
+                </div>
+            </div>
+            <div class="date-chips" id="viewerDateChips"></div>
+            <div class="viewer-print-header" id="viewerPrintHeader"></div>
+            <div id="viewerBody"></div>
         </div>
 
         <!-- TABS -->
         <div class="card" id="sec-details">
+            <h2><span class="slide-num">07</span>🗂 Дополнительные данные</h2>
             <div class="tabs">
                 <button class="tab-btn active" data-tab="plans">🗓 Планы на неделю</button>
                 <button class="tab-btn" data-tab="partners">🤝 Новые партнёры</button>
@@ -488,20 +689,32 @@ margin:40px 40px 40px 40px;}
                 <button class="tab-btn" data-tab="insights">💡 Инсайты</button>
             </div>
 
-            <div class="tab-panel active" id="panel-plans">
+            <div class="tab-panel active" id="panel-plans" data-print-label="🗓 Планы на следующую неделю">
                 <div class="item-list" id="listPlans"></div>
             </div>
-            <div class="tab-panel" id="panel-partners">
+            <div class="tab-panel" id="panel-partners" data-print-label="🤝 Новые партнёры">
                 <div class="table-wrap"><table><thead><tr><th>Менеджер</th><th>Компания</th><th>Статус</th><th>Действие</th></tr></thead><tbody id="listPartners"></tbody></table></div>
             </div>
-            <div class="tab-panel" id="panel-agents">
+            <div class="tab-panel" id="panel-agents" data-print-label="👤 Действующие агенты">
                 <div class="table-wrap"><table><thead><tr><th>Менеджер</th><th>Агент</th><th class="num">Полисы</th><th>Сделано</th><th>Следующий шаг</th></tr></thead><tbody id="listAgents"></tbody></table></div>
             </div>
-            <div class="tab-panel" id="panel-insights">
+            <div class="tab-panel" id="panel-insights" data-print-label="💡 Инсайты">
                 <div class="item-list" id="listInsights"></div>
             </div>
         </div>
 
+    </div>
+
+    <!-- UPLOAD CARD (внизу — чтобы не мешать чтению сводки) -->
+    <div class="card" id="sec-upload">
+        <h2>📥 Загрузка отчётов</h2>
+        <div class="dropzone" id="dropzone">
+            <div class="dropzone-icon">🗂️</div>
+            <strong>Перетащите HTML-файлы отчётов сюда</strong> или нажмите, чтобы выбрать
+            <small>Можно загрузить сразу несколько файлов. Поддерживаются только .html-отчёты, сформированные формой менеджера.</small>
+        </div>
+        <input type="file" id="fileInput" accept=".html,.htm" multiple>
+        <div class="upload-hint" id="uploadHint" style="display:none;"></div>
     </div>
 
     <!-- FILES (перенесено вниз, чтобы не мешать) -->
@@ -529,6 +742,8 @@ margin:40px 40px 40px 40px;}
 </div>
 
 <footer>Сводка формируется локально в браузере на основе загруженных HTML-файлов отчётов.</footer>
+
+<button class="print-fab" id="printFab" title="Экспорт в PDF">🖨 PDF</button>
 
 <script>
 /* ==================================================================
@@ -948,6 +1163,167 @@ function fmtNum(n){
 }
 
 /* ==================================================================
+   НЕДЕЛЯ ОТЧЁТА: группировка по ISO-неделе (пн–вс), чтобы отчёт,
+   сданный в четверг, и отчёт, сданный в пятницу той же недели,
+   считались одной и той же неделей (допуск ±1 день на дату сдачи)
+   ================================================================== */
+function weekKeyOf(dateStr){
+    if (!dateStr) return null;
+    const d = new Date(dateStr + 'T00:00:00');
+    if (isNaN(d.getTime())) return dateStr;
+    const target = new Date(d.getTime());
+    const dayNr = (d.getDay() + 6) % 7; // Пн=0 ... Вс=6
+    target.setDate(target.getDate() - dayNr + 3); // четверг этой недели
+    const firstThursday = new Date(target.getFullYear(), 0, 4);
+    const fDayNr = (firstThursday.getDay() + 6) % 7;
+    firstThursday.setDate(firstThursday.getDate() - fDayNr + 3);
+    const week = 1 + Math.round((target - firstThursday) / (7*24*3600*1000));
+    return `${target.getFullYear()}-W${String(week).padStart(2,'0')}`;
+}
+
+function findPreviousReport(managerName, beforeDate){
+    if (!beforeDate) return null;
+    const currentWeek = weekKeyOf(beforeDate);
+    const candidates = reports.filter(r => r.manager === managerName && r.date && r.date < beforeDate && weekKeyOf(r.date) !== currentWeek);
+    if (!candidates.length) return null;
+    candidates.sort((a,b) => b.date.localeCompare(a.date));
+    return candidates[0];
+}
+
+const GROWTH_THRESHOLD = 0.03; // 3% — минимальное изменение, которое считаем ростом/падением
+
+/* Определяет направление изменения между предыдущим и текущим значением
+   с порогом в 3%: изменение внутри ±3% считается "без изменений" (flat) */
+function pctChangeDir(curr, prev, threshold){
+    threshold = threshold == null ? GROWTH_THRESHOLD : threshold;
+    if (curr == null || prev == null) return 'na';
+    if (prev === 0) return curr === 0 ? 'flat' : 'up';
+    const change = (curr - prev) / Math.abs(prev);
+    if (change >= threshold) return 'up';
+    if (change <= -threshold) return 'down';
+    return 'flat';
+}
+
+function buildDeltaMini(curr, prev){
+    if (curr === null || curr === undefined) return '<span class="muted">—</span>';
+    if (prev === null || prev === undefined) return `<span class="delta-badge na">нет пред. недели</span>`;
+    const delta = curr - prev;
+    const max = Math.max(Math.abs(curr), Math.abs(prev), 1);
+    const prevPct = (Math.abs(prev)/max)*100;
+    const currPct = (Math.abs(curr)/max)*100;
+    const cls = pctChangeDir(curr, prev);
+    const sign = delta > 0 ? '+' : '';
+    return `
+        <div class="delta-mini" title="Предыдущая неделя: ${fmtNum(prev)}">
+            <div class="delta-bars">
+                <div class="delta-bar prev" style="width:${prevPct}%"></div>
+                <div class="delta-bar curr" style="width:${currPct}%"></div>
+            </div>
+            <span class="delta-badge ${cls}">${sign}${fmtNum(delta)}</span>
+        </div>`;
+}
+
+/* ==================================================================
+   ЭЛЕМЕНТАРНАЯ АНАЛИТИКА: итог недели менеджера
+   Сравниваем неделю отчёта с предыдущей неделей того же менеджера по:
+   подключённым агентам, работе с действующей базой, премии, полисам
+   и динамике самооценки. Рост/падение считаем при изменении от 3%,
+   меньшее отклонение считается "без изменений". Начисляем баллы.
+   ================================================================== */
+function computeWeeklyVerdict(r, prev){
+    if (!prev) return { verdict:'nodata', score:null, factors:[] };
+
+    const factors = [];
+    let score = 0;
+
+    // 1. Подключено новых агентов — самый весомый фактор (рост в 2х+ = сильный сигнал)
+    {
+        const curr = r.results.newAgents, base = prev.results.newAgents;
+        let dir='flat', pts=0, detail='нет данных';
+        if (curr!=null && base!=null){
+            detail = `${fmtNum(base)} → ${fmtNum(curr)}`;
+            if (base === 0 && curr > 0){ dir='up'; pts=2; }
+            else if (base > 0 && curr >= base*2){ dir='up'; pts=2; }
+            else {
+                dir = pctChangeDir(curr, base);
+                pts = dir==='up' ? 1 : dir==='down' ? -1 : 0;
+            }
+        }
+        score += pts;
+        factors.push({ label:'Подключено новых агентов', dir, detail, weight: base>0 && curr>=base*2 ? '×2 и более' : null });
+    }
+    // 2. Работа с действующей базой (кол-во агентов, с которыми велась работа за неделю)
+    {
+        const curr = r.currentAgents.length, base = prev.currentAgents.length;
+        const dir = pctChangeDir(curr, base);
+        const pts = dir==='up' ? 1 : dir==='down' ? -1 : 0;
+        score += pts;
+        factors.push({ label:'Работа с действующей базой', dir, detail:`${base} → ${curr} агентов` });
+    }
+    // 3. Объём премии
+    {
+        const curr = r.results.premium, base = prev.results.premium;
+        const dir = pctChangeDir(curr, base);
+        const pts = dir==='up' ? 1 : dir==='down' ? -1 : 0;
+        score += pts;
+        factors.push({ label:'Объём премии', dir, detail: (curr!=null&&base!=null) ? `${fmtNum(base)} → ${fmtNum(curr)} тнг` : 'нет данных' });
+    }
+    // 4. Выписано полисов
+    {
+        const curr = r.results.policies, base = prev.results.policies;
+        const dir = pctChangeDir(curr, base);
+        const pts = dir==='up' ? 1 : dir==='down' ? -1 : 0;
+        score += pts;
+        factors.push({ label:'Выписано полисов', dir, detail: (curr!=null&&base!=null) ? `${fmtNum(base)} → ${fmtNum(curr)} шт.` : 'нет данных' });
+    }
+    // 5. Динамика самооценки
+    {
+        const currVals = Object.values(r.ratings).filter(v=>v!=null);
+        const baseVals = Object.values(prev.ratings).filter(v=>v!=null);
+        const currAvg = currVals.length ? currVals.reduce((a,b)=>a+b,0)/currVals.length : null;
+        const baseAvg = baseVals.length ? baseVals.reduce((a,b)=>a+b,0)/baseVals.length : null;
+        const dir = pctChangeDir(currAvg, baseAvg);
+        const pts = dir==='up' ? 1 : dir==='down' ? -1 : 0;
+        score += pts;
+        factors.push({ label:'Самооценка недели', dir, detail: (currAvg!=null&&baseAvg!=null) ? `${baseAvg.toFixed(1)} → ${currAvg.toFixed(1)}` : 'нет данных' });
+    }
+
+    const verdict = score >= 3 ? 'good' : score >= 0 ? 'average' : 'weak';
+    return { verdict, score, factors };
+}
+
+function verdictMeta(v){
+    return {
+        good:    { label:'Хорошая неделя', cls:'good' },
+        average: { label:'Средняя неделя', cls:'average' },
+        weak:    { label:'Слабая неделя',  cls:'weak' },
+        nodata:  { label:'Нет данных для сравнения', cls:'nodata' },
+    }[v];
+}
+
+function buildVerdictPanelHtml(verdictObj){
+    const meta = verdictMeta(verdictObj.verdict);
+    if (verdictObj.verdict === 'nodata'){
+        return `<div class="verdict-panel nodata">
+            <div class="verdict-title">📊 Итог недели <span class="verdict-badge nodata">${meta.label}</span></div>
+            <div class="verdict-note">Нет отчёта того же менеджера за предыдущую неделю — сравнивать пока не с чем.</div>
+        </div>`;
+    }
+    const icons = { up:'▲', down:'▼', flat:'●' };
+    const rows = verdictObj.factors.map(f => `
+        <div class="verdict-factor ${f.dir}">
+            <span class="vf-icon">${icons[f.dir]}</span>
+            <span class="vf-label">${escapeHtml(f.label)}${f.weight?` <span class="muted">(${escapeHtml(f.weight)})</span>`:''}</span>
+            <span class="vf-detail">${escapeHtml(f.detail)}</span>
+        </div>
+    `).join('');
+    return `<div class="verdict-panel ${meta.cls}">
+        <div class="verdict-title">📊 Итог недели <span class="verdict-badge ${meta.cls}">${meta.label}</span></div>
+        <div class="verdict-factors">${rows}</div>
+    </div>`;
+}
+
+/* ==================================================================
    РЕНДЕР: ДИНАМИКА ПО НЕДЕЛЯМ (премия / полисы / АВ)
    ================================================================== */
 function shortDate(d){
@@ -956,14 +1332,16 @@ function shortDate(d){
 }
 
 function buildTimeSeries(filtered, resultKey){
-    const byDate = {};
+    const buckets = {};
     filtered.forEach(r => {
         const v = r.results[resultKey];
-        if (v == null) return;
-        const d = r.date || 'без даты';
-        byDate[d] = (byDate[d] || 0) + v;
+        if (v == null || !r.date) return;
+        const wk = weekKeyOf(r.date);
+        if (!buckets[wk]) buckets[wk] = { sum:0, maxDate:r.date };
+        buckets[wk].sum += v;
+        if (r.date > buckets[wk].maxDate) buckets[wk].maxDate = r.date;
     });
-    return Object.keys(byDate).sort().map(d => ({ label: d, value: byDate[d] }));
+    return Object.keys(buckets).sort().map(wk => ({ label: buckets[wk].maxDate, value: buckets[wk].sum }));
 }
 
 function renderLineChart(containerId, series, opts){
@@ -1038,6 +1416,36 @@ function renderDynamics(filtered){
 /* ==================================================================
    РЕНДЕР: KPI
    ================================================================== */
+function renderCover(filtered){
+    const managers = new Set(filtered.map(r=>r.manager)).size;
+    const dates = filtered.map(r=>r.date).filter(Boolean).sort();
+    const periodText = dates.length ? `${dates[0]} — ${dates[dates.length-1]}` : '—';
+    document.getElementById('coverPeriod').textContent = periodText;
+    document.getElementById('coverSubtitle').textContent =
+        `${filtered.length} ${filtered.length===1?'отчёт':'отчётов'} · ${managers} ${managers===1?'менеджер':'менеджеров'} · сформировано ${new Date().toLocaleDateString('ru-RU')}`;
+
+    const totalPolicies = filtered.reduce((s,r)=> s + (r.results.policies||0), 0);
+    const totalPremium = filtered.reduce((s,r)=> s + (r.results.premium||0), 0);
+    const totalAv = filtered.reduce((s,r)=> s + (r.results.av||0), 0);
+    const totalNewAgents = filtered.reduce((s,r)=> s + (r.results.newAgents||0), 0);
+    const allRatings = filtered.flatMap(r => Object.values(r.ratings).filter(v=>v!=null));
+    const avgRating = allRatings.length ? (allRatings.reduce((a,b)=>a+b,0)/allRatings.length) : null;
+
+    const hero = [
+        { label:'Премия, тнг', value: fmtNum(totalPremium) },
+        { label:'Полисов выписано', value: fmtNum(totalPolicies) },
+        { label:'АВ, тнг', value: fmtNum(totalAv) },
+        { label:'Новых агентов', value: fmtNum(totalNewAgents) },
+        { label:'Средняя оценка', value: avgRating!=null ? avgRating.toFixed(1)+' / 5' : '—' },
+    ];
+    document.getElementById('coverHeroGrid').innerHTML = hero.map(h => `
+        <div class="cover-hero-item">
+            <div class="cover-hero-value">${h.value}</div>
+            <div class="cover-hero-label">${h.label}</div>
+        </div>
+    `).join('');
+}
+
 function renderKpis(filtered){
     const grid = document.getElementById('kpiGrid');
 
@@ -1232,9 +1640,13 @@ function renderInsights(filtered){
    МОДАЛКА С ПОЛНЫМ ОТЧЁТОМ
    ================================================================== */
 function buildReportSectionsHtml(r){
+    const prev = findPreviousReport(r.manager, r.date);
+    const verdict = computeWeeklyVerdict(r, prev);
+
     const eventsRows = EVENT_DEFS.map(def => {
         const ev = r.events.find(e=>e.key===def.key) || {};
-        return `<tr><td>${def.name}</td><td class="num">${fmtNum(ev.qty)}</td><td>${escapeHtml(ev.result||'—')}</td></tr>`;
+        const prevQty = prev ? eventQty(prev, def.key) : null;
+        return `<tr><td>${def.name}</td><td class="num">${fmtNum(ev.qty)}</td><td>${buildDeltaMini(ev.qty, prevQty)}</td><td>${escapeHtml(ev.result||'—')}</td></tr>`;
     }).join('');
 
     const agentsRows = r.currentAgents.length ? r.currentAgents.map(a=>`<tr><td>${escapeHtml(a.agent)}</td><td class="num">${fmtNum(a.policies)}</td><td>${escapeHtml(a.done)}</td><td>${escapeHtml(a.next)}</td></tr>`).join('') : `<tr><td colspan="4" class="muted" style="text-align:center;">Нет данных</td></tr>`;
@@ -1242,6 +1654,7 @@ function buildReportSectionsHtml(r){
     const planRows = r.plan.length ? r.plan.map(p=>`<tr><td>${escapeHtml(p.task)}</td><td>${escapeHtml(p.goal)}</td><td>${escapeHtml(p.date)}</td><td>${escapeHtml(p.result)}</td></tr>`).join('') : `<tr><td colspan="4" class="muted" style="text-align:center;">Нет данных</td></tr>`;
 
     return `
+        ${buildVerdictPanelHtml(verdict)}
         <div class="modal-section">
             <h4>1. Личный OKR недели</h4>
             <p><b>Главная цель:</b> ${escapeHtml(r.okr.main)}</p>
@@ -1249,15 +1662,15 @@ function buildReportSectionsHtml(r){
         </div>
         <div class="modal-section">
             <h4>2. Выполненные мероприятия</h4>
-            <table><thead><tr><th>Мероприятие</th><th class="num">Кол-во</th><th>Результат</th></tr></thead><tbody>${eventsRows}</tbody></table>
+            <table><thead><tr><th>Мероприятие</th><th class="num">Кол-во</th><th>Динамика к пред. неделе</th><th>Результат</th></tr></thead><tbody>${eventsRows}</tbody></table>
         </div>
         <div class="modal-section">
             <h4>3. Основные результаты</h4>
-            <table><tbody>
-                <tr><td class="muted">Подключено агентов</td><td class="num">${fmtNum(r.results.newAgents)}</td></tr>
-                <tr><td class="muted">Выписано полисов</td><td class="num">${fmtNum(r.results.policies)}</td></tr>
-                <tr><td class="muted">Премия (тнг)</td><td class="num">${fmtNum(r.results.premium)}</td></tr>
-                <tr><td class="muted">АВ (тнг)</td><td class="num">${fmtNum(r.results.av)}</td></tr>
+            <table><thead><tr><th>Показатель</th><th class="num">Значение</th><th>Динамика к пред. неделе</th></tr></thead><tbody>
+                <tr><td class="muted">Подключено агентов</td><td class="num">${fmtNum(r.results.newAgents)}</td><td>${buildDeltaMini(r.results.newAgents, prev?prev.results.newAgents:null)}</td></tr>
+                <tr><td class="muted">Выписано полисов</td><td class="num">${fmtNum(r.results.policies)}</td><td>${buildDeltaMini(r.results.policies, prev?prev.results.policies:null)}</td></tr>
+                <tr><td class="muted">Премия (тнг)</td><td class="num">${fmtNum(r.results.premium)}</td><td>${buildDeltaMini(r.results.premium, prev?prev.results.premium:null)}</td></tr>
+                <tr><td class="muted">АВ (тнг)</td><td class="num">${fmtNum(r.results.av)}</td><td>${buildDeltaMini(r.results.av, prev?prev.results.av:null)}</td></tr>
             </tbody></table>
         </div>
         <div class="modal-section">
@@ -1302,30 +1715,82 @@ document.getElementById('modalCloseBtn').addEventListener('click', closeModal);
 document.getElementById('modalOverlay').addEventListener('click', e => { if (e.target.id==='modalOverlay') closeModal(); });
 function closeModal(){ document.getElementById('modalOverlay').classList.remove('open'); }
 
+let viewerManager = null;
+let viewerDate = null;
+
 function renderFullReports(filtered){
-    const sorted = [...filtered].sort((a,b) => {
-        const byName = a.manager.localeCompare(b.manager, 'ru');
-        if (byName !== 0) return byName;
-        return (b.date||'').localeCompare(a.date||'');
-    });
-    document.getElementById('fullReportsCount').textContent = sorted.length + (sorted.length===1?' отчёт':' отчётов');
-    document.getElementById('fullReportsList').innerHTML = sorted.length ? sorted.map((r,i) => {
-        const row = reportRow(r);
-        return `
-        <details class="full-report-item" ${sorted.length<=5?'open':''}>
-            <summary>
-                <span class="frm-name">${escapeHtml(r.manager)}</span>
-                <span class="frm-date">${escapeHtml(r.date||'—')}</span>
-                <span class="frm-badges">
-                    <span class="frm-badge">Премия: ${fmtNum(row.premium)}</span>
-                    <span class="frm-badge">Полисы: ${fmtNum(row.policies)}</span>
-                    <span class="frm-badge">Оценка: ${row.avgRating!=null?row.avgRating.toFixed(1):'—'}</span>
-                </span>
-            </summary>
-            <div class="frm-body">${buildReportSectionsHtml(r)}</div>
-        </details>`;
-    }).join('') : `<div class="muted" style="text-align:center;padding:20px;">Нет отчётов, соответствующих фильтру</div>`;
+    const managers = [...new Set(filtered.map(r=>r.manager))].sort((a,b)=>a.localeCompare(b,'ru'));
+    document.getElementById('fullReportsCount').textContent = filtered.length + (filtered.length===1?' отчёт':' отчётов');
+
+    const managerSelect = document.getElementById('viewerManagerSelect');
+    const chipsEl = document.getElementById('viewerDateChips');
+    const bodyEl = document.getElementById('viewerBody');
+    const printHeaderEl = document.getElementById('viewerPrintHeader');
+    const prevBtn = document.getElementById('viewerNavPrev');
+    const nextBtn = document.getElementById('viewerNavNext');
+    const posLabel = document.getElementById('viewerPositionLabel');
+
+    if (!managers.length){
+        managerSelect.innerHTML = '';
+        chipsEl.innerHTML = '';
+        posLabel.textContent = '';
+        prevBtn.disabled = true; nextBtn.disabled = true;
+        bodyEl.innerHTML = `<div class="muted" style="text-align:center;padding:20px;">Нет отчётов, соответствующих фильтру</div>`;
+        printHeaderEl.textContent = '';
+        return;
+    }
+
+    if (!viewerManager || !managers.includes(viewerManager)){ viewerManager = managers[0]; viewerDate = null; }
+    managerSelect.innerHTML = managers.map(m => `<option value="${escapeHtml(m)}" ${m===viewerManager?'selected':''}>${escapeHtml(m)}</option>`).join('');
+
+    const managerDates = filtered.filter(r => r.manager === viewerManager).map(r => r.date).filter(Boolean).sort(); // по возрастанию
+    if (!managerDates.length){
+        chipsEl.innerHTML = '';
+        posLabel.textContent = '';
+        prevBtn.disabled = true; nextBtn.disabled = true;
+        bodyEl.innerHTML = `<div class="muted" style="text-align:center;padding:20px;">У этого менеджера нет отчётов с датой в текущей выборке</div>`;
+        printHeaderEl.textContent = '';
+        return;
+    }
+    if (!viewerDate || !managerDates.includes(viewerDate)) viewerDate = managerDates[managerDates.length-1]; // по умолчанию — последняя неделя
+
+    chipsEl.innerHTML = managerDates.slice().reverse().map(d =>
+        `<button type="button" class="date-chip ${d===viewerDate?'active':''}" data-date="${d}">${escapeHtml(shortDate(d))}</button>`
+    ).join('');
+
+    const idx = managerDates.indexOf(viewerDate);
+    prevBtn.disabled = idx <= 0;
+    nextBtn.disabled = idx >= managerDates.length - 1;
+    posLabel.textContent = `неделя ${idx+1} из ${managerDates.length}`;
+
+    const report = filtered.find(r => r.manager === viewerManager && r.date === viewerDate);
+    bodyEl.innerHTML = report ? buildReportSectionsHtml(report) : `<div class="muted">Отчёт не найден</div>`;
+    printHeaderEl.textContent = report ? `Менеджер: ${report.manager} · Неделя: ${report.date}` : '';
 }
+
+document.getElementById('viewerManagerSelect').addEventListener('change', e => {
+    viewerManager = e.target.value;
+    viewerDate = null;
+    renderAll();
+});
+document.getElementById('viewerDateChips').addEventListener('click', e => {
+    const btn = e.target.closest('.date-chip');
+    if (!btn) return;
+    viewerDate = btn.dataset.date;
+    renderAll();
+});
+document.getElementById('viewerNavPrev').addEventListener('click', () => {
+    const filtered = getFilteredReports();
+    const dates = filtered.filter(r => r.manager === viewerManager).map(r => r.date).filter(Boolean).sort();
+    const idx = dates.indexOf(viewerDate);
+    if (idx > 0){ viewerDate = dates[idx-1]; renderAll(); }
+});
+document.getElementById('viewerNavNext').addEventListener('click', () => {
+    const filtered = getFilteredReports();
+    const dates = filtered.filter(r => r.manager === viewerManager).map(r => r.date).filter(Boolean).sort();
+    const idx = dates.indexOf(viewerDate);
+    if (idx < dates.length - 1){ viewerDate = dates[idx+1]; renderAll(); }
+});
 
 /* ==================================================================
    ЭКСПОРТ В CSV
@@ -1360,6 +1825,7 @@ function renderAll(){
     if (!reports.length) return;
 
     renderKpis(filtered);
+    renderCover(filtered);
     renderCharts(filtered);
     renderDynamics(filtered);
     renderMainTable(filtered);
@@ -1371,6 +1837,25 @@ function renderAll(){
 }
 
 renderAll();
+
+/* ==================================================================
+   ЭКСПОРТ В PDF (печать браузера) — раскрываем все <details> перед печатью
+   ================================================================== */
+document.getElementById('printBtnCover').addEventListener('click', () => window.print());
+document.getElementById('printFab').addEventListener('click', () => window.print());
+
+window.addEventListener('beforeprint', () => {
+    document.querySelectorAll('details').forEach(d => {
+        d.dataset.wasOpen = d.open ? '1' : '0';
+        d.open = true;
+    });
+});
+window.addEventListener('afterprint', () => {
+    document.querySelectorAll('details').forEach(d => {
+        d.open = d.dataset.wasOpen === '1';
+        delete d.dataset.wasOpen;
+    });
+});
 
 /* ==================================================================
    NAV: подсветка активного раздела при прокрутке
