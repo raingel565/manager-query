@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ЖЕЛЕЗНЫЙ ЖУРНАЛ · Тренировки с гантелями</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#101012;
+    --surface:#19191c;
+    --surface-2:#212125;
+    --line:#2b2b30;
+    --text:#f2f1ec;
+    --muted:#8d8d95;
+    --muted-2:#5c5c63;
+    --lime:#d4ff3f;
+    --lime-dim:#8fae2e;
+    --coral:#ff5d5d;
+    --coral-dim:#7a3232;
+    --radius:14px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(1200px 600px at 90% -10%, rgba(212,255,63,0.06), transparent 60%),
+      radial-gradient(900px 500px at -10% 10%, rgba(255,93,93,0.05), transparent 55%),
+      var(--bg);
+    color:var(--text);
+    font-family:'Inter',sans-serif;
+    min-height:100vh;
+    padding-bottom:140px;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:640px;margin:0 auto;padding:20px 16px 40px;}
+
+  /* ===== Header ===== */
+  header.top{
+    display:flex;align-items:baseline;justify-content:space-between;
+    padding:6px 2px 18px;
+    border-bottom:1px solid var(--line);
+    margin-bottom:18px;
+  }
+  .brand{
+    font-family:'Bebas Neue',sans-serif;
+    font-size:30px;letter-spacing:1.5px;line-height:1;
+    color:var(--text);
+  }
+  .brand span{color:var(--lime);}
+  .brand small{
+    display:block;font-family:'Inter',sans-serif;font-size:11px;letter-spacing:2px;
+    color:var(--muted);text-transform:uppercase;margin-top:4px;font-weight:600;
+  }
+  .today{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted-2);text-align:right;}
+
+  /* ===== Tabs ===== */
+  .tabs{display:flex;gap:8px;margin-bottom:18px;}
+  .tab{
+    flex:1;background:var(--surface);border:1px solid var(--line);
+    color:var(--muted);font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1px;
+    padding:12px 6px 10px;border-radius:var(--radius);cursor:pointer;text-align:center;
+    transition:all .15s ease;
+  }
+  .tab .tsub{display:block;font-family:'Inter',sans-serif;font-size:9.5px;letter-spacing:.5px;
+    text-transform:uppercase;font-weight:600;margin-top:2px;color:var(--muted-2);}
+  .tab.active{
+    background:linear-gradient(180deg, rgba(212,255,63,.14), rgba(212,255,63,.04));
+    border-color:var(--lime);color:var(--lime);
+  }
+  .tab.active .tsub{color:var(--lime-dim);}
+
+  /* ===== Workout head ===== */
+  .wtitle{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:.5px;margin:4px 0 2px;}
+  .wsub{color:var(--muted);font-size:13.5px;margin:0 0 16px;line-height:1.5;}
+  .reset-btn{
+    display:inline-flex;align-items:center;gap:6px;background:transparent;color:var(--muted-2);
+    border:1px solid var(--line);border-radius:8px;padding:6px 10px;font-size:11.5px;
+    font-family:'Inter',sans-serif;font-weight:600;cursor:pointer;letter-spacing:.3px;margin-bottom:18px;
+  }
+  .reset-btn:hover{color:var(--coral);border-color:var(--coral-dim);}
+
+  /* progress bar */
+  .progress-row{display:flex;align-items:center;gap:10px;margin-bottom:18px;}
+  .progress-track{flex:1;height:6px;background:var(--surface-2);border-radius:4px;overflow:hidden;}
+  .progress-fill{height:100%;background:linear-gradient(90deg,var(--lime-dim),var(--lime));width:0%;transition:width .3s ease;}
+  .progress-label{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);white-space:nowrap;}
+
+  /* ===== Exercise card ===== */
+  .card{
+    background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+    padding:16px;margin-bottom:14px;position:relative;overflow:hidden;
+  }
+  .card.done-all::before{
+    content:"";position:absolute;top:0;left:0;bottom:0;width:3px;background:var(--lime);
+  }
+  .card-head{display:flex;gap:12px;align-items:flex-start;}
+  .num{
+    font-family:'Bebas Neue',sans-serif;font-size:15px;color:var(--muted-2);
+    background:var(--surface-2);border:1px solid var(--line);border-radius:8px;
+    min-width:28px;height:28px;display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  }
+  .card-title-wrap{flex:1;min-width:0;}
+  .card-title{font-size:15.5px;font-weight:700;line-height:1.3;}
+  .card-meta{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--lime-dim);margin-top:3px;}
+  .card-why{color:var(--muted);font-size:12.5px;margin-top:6px;line-height:1.5;}
+
+  /* media */
+  .media{
+    margin-top:12px;border-radius:10px;overflow:hidden;border:1px dashed var(--line);
+    background:var(--surface-2);
+  }
+  .media img{display:block;width:100%;max-height:420px;object-fit:contain;background:var(--surface-2);}
+  .media.empty{
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:4px;padding:18px 12px;color:var(--muted-2);text-align:center;
+  }
+  .media.empty .mtitle{font-size:12px;font-weight:600;color:var(--muted);}
+  .media.empty code{
+    font-family:'JetBrains Mono',monospace;font-size:10.5px;background:var(--bg);
+    padding:2px 6px;border-radius:4px;border:1px solid var(--line);color:var(--lime-dim);
+  }
+
+  /* weight inputs */
+  .weight-row{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;}
+  .weight-field{flex:1;min-width:110px;}
+  .weight-field label{
+    display:block;font-size:10.5px;color:var(--muted-2);text-transform:uppercase;
+    letter-spacing:.5px;font-weight:700;margin-bottom:5px;
+  }
+  .weight-field .inp-wrap{position:relative;}
+  .weight-field input{
+    width:100%;background:var(--surface-2);border:1px solid var(--line);border-radius:8px;
+    color:var(--text);font-family:'JetBrains Mono',monospace;font-size:14px;padding:8px 30px 8px 10px;
+  }
+  .weight-field input:focus{outline:none;border-color:var(--lime-dim);}
+  .weight-field .unit{position:absolute;right:10px;top:50%;transform:translateY(-50%);
+    font-size:11px;color:var(--muted-2);pointer-events:none;}
+
+  /* editable config row: подходы / повторения / отдых */
+  .cfg-row{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap;}
+  .cfg-field{flex:1;min-width:86px;}
+  .cfg-field.wide{flex:2;min-width:140px;}
+  .cfg-field label{
+    display:block;font-size:10px;color:var(--muted-2);text-transform:uppercase;
+    letter-spacing:.5px;font-weight:700;margin-bottom:5px;
+  }
+  .cfg-field input{
+    width:100%;background:var(--surface-2);border:1px solid var(--line);border-radius:8px;
+    color:var(--lime-dim);font-family:'JetBrains Mono',monospace;font-size:13px;padding:8px 10px;
+  }
+  .cfg-field input:focus{outline:none;border-color:var(--lime-dim);color:var(--lime);}
+
+  /* sets row */
+  .sets-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;}
+  .set-btn{
+    font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;
+    background:var(--surface-2);border:1px solid var(--line);color:var(--muted);
+    border-radius:9px;padding:9px 4px;cursor:pointer;flex:1;min-width:52px;text-align:center;
+    transition:all .12s ease;
+  }
+  .set-btn.done{background:linear-gradient(180deg, rgba(212,255,63,.22), rgba(212,255,63,.08));
+    border-color:var(--lime-dim);color:var(--lime);}
+  .set-btn .sn{display:block;font-size:9px;color:var(--muted-2);letter-spacing:.5px;margin-bottom:2px;}
+  .set-btn.done .sn{color:var(--lime-dim);}
+  .set-btn.timed{font-family:'JetBrains Mono',monospace;}
+
+  .card-actions{display:flex;gap:8px;margin-top:12px;}
+  .rest-btn{
+    flex:1;background:transparent;border:1px solid var(--coral-dim);color:var(--coral);
+    border-radius:9px;padding:9px 8px;font-size:12.5px;font-weight:700;cursor:pointer;
+    font-family:'Inter',sans-serif;letter-spacing:.2px;
+  }
+  .rest-btn:hover{background:rgba(255,93,93,.08);}
+  .rest-select{
+    background:var(--surface-2);border:1px solid var(--line);color:var(--muted);
+    border-radius:9px;font-family:'JetBrains Mono',monospace;font-size:12px;padding:0 8px;
+  }
+
+  /* warmup card */
+  .warmup-check{
+    margin-top:12px;display:flex;align-items:center;gap:10px;cursor:pointer;
+    background:var(--surface-2);border:1px solid var(--line);border-radius:9px;padding:10px 12px;
+  }
+  .warmup-check .box{width:18px;height:18px;border-radius:5px;border:1px solid var(--muted-2);flex-shrink:0;}
+  .warmup-check.done .box{background:var(--lime);border-color:var(--lime);}
+  .warmup-check span.wtext{font-size:13px;color:var(--muted);}
+  .warmup-check.done span.wtext{color:var(--text);}
+
+  /* ===== Bottom timer panel ===== */
+  .timer-panel{
+    position:fixed;left:0;right:0;bottom:0;
+    background:var(--surface);border-top:1px solid var(--line);
+    box-shadow:0 -10px 40px rgba(0,0,0,.5);
+    transform:translateY(110%);transition:transform .28s cubic-bezier(.2,.8,.2,1);
+    z-index:50;padding:16px 16px calc(16px + env(safe-area-inset-bottom));
+  }
+  .timer-panel.open{transform:translateY(0);}
+  .tp-inner{max-width:640px;margin:0 auto;display:flex;align-items:center;gap:16px;}
+  .tp-ring-wrap{position:relative;width:78px;height:78px;flex-shrink:0;}
+  .tp-ring-wrap svg{transform:rotate(-90deg);width:78px;height:78px;}
+  .tp-ring-bg{fill:none;stroke:var(--surface-2);stroke-width:6;}
+  .tp-ring-fg{fill:none;stroke:var(--coral);stroke-width:6;stroke-linecap:round;transition:stroke-dashoffset .2s linear, stroke .2s;}
+  .tp-time{
+    position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:700;
+  }
+  .tp-info{flex:1;min-width:0;}
+  .tp-label{font-size:10.5px;text-transform:uppercase;letter-spacing:1px;color:var(--muted-2);font-weight:700;}
+  .tp-name{font-size:14px;font-weight:700;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .tp-controls{display:flex;gap:6px;margin-top:8px;}
+  .tp-btn{
+    background:var(--surface-2);border:1px solid var(--line);color:var(--text);
+    border-radius:7px;padding:6px 9px;font-size:11.5px;font-weight:700;cursor:pointer;
+    font-family:'Inter',sans-serif;
+  }
+  .tp-btn.primary{background:var(--coral);border-color:var(--coral);color:#1a0505;}
+  .tp-close{
+    background:none;border:none;color:var(--muted-2);font-size:20px;cursor:pointer;
+    padding:4px 6px;line-height:1;flex-shrink:0;
+  }
+  .timer-panel.work .tp-ring-fg{stroke:var(--lime);}
+  .timer-panel.work .tp-btn.primary{background:var(--lime);border-color:var(--lime);}
+
+  footer.hint{
+    text-align:center;color:var(--muted-2);font-size:11px;margin-top:26px;line-height:1.6;
+    font-family:'JetBrains Mono',monospace;
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{transition:none !important;}
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand">ЖЕЛЕЗН<span>Ы</span>Й ЖУРНАЛ
+      <small>Гантели · подходы · отдых</small>
+    </div>
+    <div class="today" id="todayLabel"></div>
+  </header>
+
+  <div class="tabs" id="tabs"></div>
+
+  <div class="wtitle" id="wTitle"></div>
+  <p class="wsub" id="wSub"></p>
+
+  <div class="progress-row">
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="progress-label" id="progressLabel">0 / 0 подходов</div>
+  </div>
+
+  <button class="reset-btn" id="resetBtn">↺ Сбросить прогресс тренировки</button>
+
+  <div id="exList"></div>
+
+  <footer class="hint">
+    Чтобы добавить фото/GIF упражнения — впишите ссылку в поле <code>media</code> внутри объекта WORKOUTS в коде страницы (тег &lt;script&gt;).
+  </footer>
+</div>
+
+<!-- ===== Нижняя панель таймера (отдых / работа) ===== -->
+<div class="timer-panel" id="timerPanel">
+  <div class="tp-inner">
+    <div class="tp-ring-wrap">
+      <svg viewBox="0 0 78 78">
+        <circle class="tp-ring-bg" cx="39" cy="39" r="33"></circle>
+        <circle class="tp-ring-fg" id="tpRing" cx="39" cy="39" r="33" stroke-dasharray="207.3" stroke-dashoffset="0"></circle>
+      </svg>
+      <div class="tp-time" id="tpTime">00:00</div>
+    </div>
+    <div class="tp-info">
+      <div class="tp-label" id="tpLabel">ОТДЫХ</div>
+      <div class="tp-name" id="tpName">—</div>
+      <div class="tp-controls">
+        <button class="tp-btn" id="tpMinus">−15с</button>
+        <button class="tp-btn primary" id="tpPause">Пауза</button>
+        <button class="tp-btn" id="tpPlus">+15с</button>
+        <button class="tp-btn" id="tpSkip">Пропустить</button>
+      </div>
+    </div>
+    <button class="tp-close" id="tpClose">✕</button>
+  </div>
+</div>
+
+<script>
+/* ======================================================================
+   ДАННЫЕ ТРЕНИРОВОК
+   Чтобы добавить картинку/гифку к упражнению — впиши прямую ссылку
+   (заканчивается на .gif / .jpg / .png / .webp) в поле media: '...'
+   Пример: media: 'https://example.com/incline-db-press.gif'
+   Если оставить media: '' — покажется плашка-заглушка.
+   ====================================================================== */
+const WORKOUTS = {
+  A: {
+    title: 'Тренировка А',
+    sub: 'База и пропорции — базовые жимы и горизонтальные тяги под нужный угол.',
+    exercises: [
+      { id:'a0', kind:'warmup', name:'Разминка (5–10 мин)',
+        why:'Вращения суставов, отжимания от пола (легкие, 2×15).', media:'' },
+      { id:'a1', kind:'reps', name:'Жим гантелей на наклонной скамье (30–45°)',
+        why:'Формирует верх груди, который виден на фото и критичен для V-силуэта.',
+        sets:4, reps:'8–12 повторений', rest:90, media:'https://croppio.com/images/exercises/Dumbbell%20Incline%20Bench%20Press.webp' },
+      { id:'a2', kind:'reps', name:'Болгарские сплит-приседания с гантелями',
+        why:'Убийца ног без огромных весов. Строит атлетичные, сухие квадрицепсы.',
+        sets:3, reps:'10–12 на каждую ногу', rest:90, media:'https://gymbot.ru/wp-content/uploads/2024/06/ezgif-1-feceee6974.gif' },
+      { id:'a3', kind:'reps', name:'Жим гантелей стоя',
+        why:'Удар по передним дельтам и трицепсам — «крышка» плеча.',
+        sets:4, reps:'10–12 повторений', rest:90, media:'https://i.pinimg.com/originals/44/ee/2b/44ee2b4e68ef87e15f29859cd5c233db.gif?nii=t' },
+      { id:'a4', kind:'reps', name:'Планка с гантелями (Rowing Plank)',
+        why:'Интегрирует пресс (кор) и спину, имитируя стабилизацию для статических элементов.',
+        sets:3, reps:'10–12 на каждую руку', rest:75, media:'' },
+    ]
+  },
+  B: {
+    title: 'Тренировка Б',
+    sub: 'Изоляция и детализация — «картинка» и проработка слабых зон.',
+    exercises: [
+      { id:'b0', kind:'warmup', name:'Разминка (5–10 мин)',
+        why:'Суставная гимнастика, лёгкая кардио-активация.', media:'' },
+      { id:'b1', kind:'reps', name:'Жим гантелей на горизонтальной скамье (с паузой внизу)',
+        why:'Общая проработка груди, пауза увеличивает время под нагрузкой.',
+        sets:3, reps:'10–12 повторений', rest:90, media:'' },
+      { id:'b2', kind:'reps', name:'Румынская тяга с гантелями',
+        why:'Единственное полноценное упражнение на гантелях для задней поверхности бедра и поясницы.',
+        sets:3, reps:'10–12 повторений', rest:90, media:'' },
+      { id:'b3', kind:'reps', name:'Махи гантелей в стороны (Lateral Raises)',
+        why:'Упражнение №1 для ширины плеч (средняя дельта). Без него V-силуэта не будет.',
+        sets:4, reps:'12–15 повторений', rest:60, media:'' },
+      { id:'b4', kind:'reps', name:'Французский жим с гантелями лёжа',
+        why:'Изолированная проработка трицепса — ключевая мышца для мощного жима.',
+        sets:3, reps:'10–12 повторений', rest:75, media:'' },
+    ]
+  },
+  V: {
+    title: 'Тренировка В',
+    sub: 'Выносливость и кор — многосуставные движения и высокая интенсивность.',
+    exercises: [
+      { id:'v0', kind:'warmup', name:'Разминка (5–10 мин)',
+        why:'Суставная гимнастика, лёгкая кардио-активация.', media:'' },
+      { id:'v1', kind:'dropset', name:'Жим гантелей на наклонной скамье (дроп-сет)',
+        why:'Максимальный памп верхних грудных. 8–10 повторений тяжёлым весом → сразу сброс веса на 30–50% → ещё 8–10 повторений.',
+        sets:3, reps:'8–10 + 8–10 (дроп)', rest:90, media:'' },
+      { id:'v2', kind:'reps', name:'Кубковые приседания (Goblet Squats)',
+        why:'Высокоповторная база для ног.',
+        sets:3, reps:'15–20 повторений', rest:75, media:'' },
+      { id:'v3', kind:'reps', name:'Разведения гантелей в наклоне (задняя дельта)',
+        why:'Задняя дельта делает плечо «круглым» и предотвращает сутулость.',
+        sets:3, reps:'15–20 повторений', rest:60, media:'' },
+      { id:'v4', kind:'timed', name:'Русский твист с гантелью',
+        why:'Косые мышцы пресса, критичные для рельефа на фото.',
+        sets:3, workTime:40, timeLabel:'30–45 сек', rest:45, media:'' },
+    ]
+  }
+};
+
+/* ===================== STATE / STORAGE ===================== */
+const STORE_KEY = 'ironlog_v1';
+function loadAll(){
+  try{ return JSON.parse(localStorage.getItem(STORE_KEY)) || {}; }catch(e){ return {}; }
+}
+function saveAll(data){ localStorage.setItem(STORE_KEY, JSON.stringify(data)); }
+let DATA = loadAll();
+
+function getExState(wKey, exId, ex){
+  DATA[wKey] = DATA[wKey] || {};
+  if(!DATA[wKey][exId]){
+    DATA[wKey][exId] = {
+      setsDone: ex.sets ? new Array(ex.sets).fill(false) : [],
+      weight: '', weight2: '', warmupDone:false,
+      sets: ex.sets || 0,
+      rest: ex.rest || 0,
+      reps: ex.reps || '',
+      workTime: ex.workTime || 0
+    };
+  }
+  // на случай если упражнение старое (сохранено до добавления настроек)
+  const st = DATA[wKey][exId];
+  if(st.sets === undefined) st.sets = ex.sets || 0;
+  if(st.rest === undefined) st.rest = ex.rest || 0;
+  if(st.reps === undefined) st.reps = ex.reps || '';
+  if(st.workTime === undefined) st.workTime = ex.workTime || 0;
+  return st;
+}
+
+function resizeSetsDone(st, newCount){
+  newCount = Math.max(1, Math.min(30, newCount|0));
+  const arr = st.setsDone.slice(0, newCount);
+  while(arr.length < newCount) arr.push(false);
+  st.setsDone = arr;
+  st.sets = newCount;
+}
+function persist(){ saveAll(DATA); }
+
+let currentWorkout = localStorage.getItem('ironlog_current') || 'A';
+
+/* ===================== AUDIO / VIBRATION ===================== */
+let audioCtx = null;
+function beep(times=3){
+  try{
+    audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+    let t = audioCtx.currentTime;
+    for(let i=0;i<times;i++){
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.value = 880;
+      gain.gain.setValueAtTime(0.0001, t);
+      gain.gain.exponentialRampToValueAtTime(0.3, t+0.02);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t+0.22);
+      osc.connect(gain).connect(audioCtx.destination);
+      osc.start(t);
+      osc.stop(t+0.25);
+      t += 0.32;
+    }
+  }catch(e){ /* audio not available */ }
+  if(navigator.vibrate) navigator.vibrate([200,80,200,80,200]);
+}
+
+/* ===================== BOTTOM TIMER ===================== */
+const panel = document.getElementById('timerPanel');
+const tpTime = document.getElementById('tpTime');
+const tpRing = document.getElementById('tpRing');
+const tpLabel = document.getElementById('tpLabel');
+const tpName = document.getElementById('tpName');
+const tpPause = document.getElementById('tpPause');
+const RING_LEN = 2 * Math.PI * 33;
+
+let timerState = null; // {mode, total, remaining, intervalId, paused, onDone}
+
+function fmt(sec){
+  sec = Math.max(0, Math.round(sec));
+  const m = Math.floor(sec/60).toString().padStart(2,'0');
+  const s = (sec%60).toString().padStart(2,'0');
+  return m+':'+s;
+}
+
+function startTimer({mode, seconds, name, onDone}){
+  stopTimer(false);
+  panel.classList.toggle('work', mode==='work');
+  panel.classList.toggle('open', true);
+  tpLabel.textContent = mode==='work' ? 'ВЫПОЛНЕНИЕ' : 'ОТДЫХ';
+  tpName.textContent = name;
+  timerState = { mode, total: seconds, remaining: seconds, paused:false, onDone };
+  tick();
+  timerState.intervalId = setInterval(()=>{
+    if(timerState.paused) return;
+    timerState.remaining -= 1;
+    if(timerState.remaining <= 0){
+      timerState.remaining = 0;
+      tick();
+      beep(3);
+      const done = timerState.onDone;
+      stopTimer(false);
+      if(done) done();
+      return;
+    }
+    tick();
+  }, 1000);
+}
+function tick(){
+  if(!timerState) return;
+  tpTime.textContent = fmt(timerState.remaining);
+  const frac = timerState.total>0 ? timerState.remaining/timerState.total : 0;
+  tpRing.style.strokeDasharray = RING_LEN;
+  tpRing.style.strokeDashoffset = RING_LEN * (1-frac);
+}
+function stopTimer(closePanel=true){
+  if(timerState && timerState.intervalId) clearInterval(timerState.intervalId);
+  timerState = null;
+  if(closePanel) panel.classList.remove('open');
+}
+document.getElementById('tpClose').onclick = ()=> stopTimer(true);
+document.getElementById('tpSkip').onclick = ()=>{
+  if(timerState){ const done=timerState.onDone; stopTimer(true); if(done) done(); }
+};
+document.getElementById('tpMinus').onclick = ()=>{
+  if(timerState){ timerState.remaining = Math.max(0, timerState.remaining-15); timerState.total = Math.max(timerState.total, timerState.remaining); tick(); }
+};
+document.getElementById('tpPlus').onclick = ()=>{
+  if(timerState){ timerState.remaining += 15; if(timerState.remaining>timerState.total) timerState.total=timerState.remaining; tick(); }
+};
+tpPause.onclick = ()=>{
+  if(!timerState) return;
+  timerState.paused = !timerState.paused;
+  tpPause.textContent = timerState.paused ? 'Продолжить' : 'Пауза';
+};
+
+function startRest(seconds, exerciseName){
+  startTimer({mode:'rest', seconds, name:exerciseName, onDone:null});
+}
+
+/* ===================== RENDER ===================== */
+const tabsEl = document.getElementById('tabs');
+const exListEl = document.getElementById('exList');
+const wTitleEl = document.getElementById('wTitle');
+const wSubEl = document.getElementById('wSub');
+const progressFill = document.getElementById('progressFill');
+const progressLabel = document.getElementById('progressLabel');
+
+function renderTabs(){
+  tabsEl.innerHTML = '';
+  const labels = {A:'А', B:'Б', V:'В'};
+  const subs = {A:'База', B:'Изоляция', V:'Кор'};
+  Object.keys(WORKOUTS).forEach(key=>{
+    const btn = document.createElement('button');
+    btn.className = 'tab' + (key===currentWorkout ? ' active' : '');
+    btn.innerHTML = 'Тренировка '+labels[key]+'<span class="tsub">'+subs[key]+'</span>';
+    btn.onclick = ()=>{
+      currentWorkout = key;
+      localStorage.setItem('ironlog_current', key);
+      stopTimer(true);
+      renderAll();
+    };
+    tabsEl.appendChild(btn);
+  });
+}
+
+function mediaBlock(ex){
+  if(ex.media && ex.media.trim() !== ''){
+    return `<div class="media"><img src="${ex.media}" alt="${ex.name}" loading="lazy"></div>`;
+  }
+  return `<div class="media empty">
+    <div class="mtitle">Нет изображения</div>
+    <code>media: '${ex.id}'</code>
+  </div>`;
+}
+
+function renderExercises(){
+  const w = WORKOUTS[currentWorkout];
+  wTitleEl.textContent = w.title;
+  wSubEl.textContent = w.sub;
+  exListEl.innerHTML = '';
+
+  let totalSets = 0, doneSets = 0;
+
+  w.exercises.forEach((ex, idx)=>{
+    const st = getExState(currentWorkout, ex.id, ex);
+    const card = document.createElement('div');
+    card.className = 'card';
+
+    if(ex.kind === 'warmup'){
+      card.innerHTML = `
+        <div class="card-head">
+          <div class="num">${idx+1}</div>
+          <div class="card-title-wrap">
+            <div class="card-title">${ex.name}</div>
+            <div class="card-why">${ex.why}</div>
+          </div>
+        </div>
+        ${mediaBlock(ex)}
+        <div class="warmup-check ${st.warmupDone?'done':''}" id="wc-${ex.id}">
+          <div class="box"></div><span class="wtext">Разминка выполнена</span>
+        </div>
+      `;
+      exListEl.appendChild(card);
+      card.querySelector('#wc-'+ex.id).onclick = (e)=>{
+        st.warmupDone = !st.warmupDone;
+        persist();
+        renderExercises();
+      };
+      return;
+    }
+
+    totalSets += st.sets;
+    doneSets += st.setsDone.filter(Boolean).length;
+    if(st.setsDone.length && st.setsDone.every(Boolean)) card.classList.add('done-all');
+
+    let metaText = ex.kind==='timed'
+      ? `${st.sets} подхода × ${st.workTime} сек`
+      : `${st.sets} подхода × ${st.reps}`;
+
+    let setsHtml = '';
+    st.setsDone.forEach((done, i)=>{
+      if(ex.kind==='timed'){
+        setsHtml += `<button class="set-btn timed ${done?'done':''}" data-i="${i}">
+          <span class="sn">СЕТ ${i+1}</span>${done ? '✔ '+st.workTime+'с' : '▶ '+st.workTime+'с'}
+        </button>`;
+      } else {
+        setsHtml += `<button class="set-btn ${done?'done':''}" data-i="${i}">
+          <span class="sn">СЕТ ${i+1}</span>${done ? '✔ Готово' : 'Отметить'}
+        </button>`;
+      }
+    });
+
+    const cfgHtml = `
+      <div class="cfg-row">
+        <div class="cfg-field">
+          <label>Подходы</label>
+          <input type="number" min="1" max="30" value="${st.sets}" id="cfgSets-${ex.id}">
+        </div>
+        ${ex.kind==='timed'
+          ? `<div class="cfg-field">
+               <label>Время, сек</label>
+               <input type="number" min="5" max="600" step="5" value="${st.workTime}" id="cfgTime-${ex.id}">
+             </div>`
+          : `<div class="cfg-field wide">
+               <label>Повторения</label>
+               <input type="text" value="${st.reps}" id="cfgReps-${ex.id}">
+             </div>`
+        }
+        <div class="cfg-field">
+          <label>Отдых, сек</label>
+          <input type="number" min="0" max="600" step="5" value="${st.rest}" id="cfgRest-${ex.id}">
+        </div>
+      </div>`;
+
+    let weightHtml = '';
+    if(ex.kind === 'dropset'){
+      weightHtml = `
+        <div class="weight-row">
+          <div class="weight-field">
+            <label>Вес тяжёлый</label>
+            <div class="inp-wrap"><input type="number" step="0.5" min="0" value="${st.weight}" id="w1-${ex.id}"><span class="unit">кг</span></div>
+          </div>
+          <div class="weight-field">
+            <label>Вес лёгкий</label>
+            <div class="inp-wrap"><input type="number" step="0.5" min="0" value="${st.weight2}" id="w2-${ex.id}"><span class="unit">кг</span></div>
+          </div>
+        </div>`;
+    } else {
+      weightHtml = `
+        <div class="weight-row">
+          <div class="weight-field">
+            <label>Вес гантели</label>
+            <div class="inp-wrap"><input type="number" step="0.5" min="0" value="${st.weight}" id="w1-${ex.id}"><span class="unit">кг</span></div>
+          </div>
+        </div>`;
+    }
+
+    card.innerHTML = `
+      <div class="card-head">
+        <div class="num">${idx+1}</div>
+        <div class="card-title-wrap">
+          <div class="card-title">${ex.name}</div>
+          <div class="card-meta">${metaText}</div>
+          <div class="card-why">${ex.why}</div>
+        </div>
+      </div>
+      ${mediaBlock(ex)}
+      ${weightHtml}
+      ${cfgHtml}
+      <div class="sets-row">${setsHtml}</div>
+      <div class="card-actions">
+        <button class="rest-btn" id="rest-${ex.id}">⏱ Отдых ${st.rest}с</button>
+      </div>
+    `;
+    exListEl.appendChild(card);
+
+    // weight inputs
+    const w1 = card.querySelector('#w1-'+ex.id);
+    if(w1) w1.onchange = ()=>{ st.weight = w1.value; persist(); };
+    const w2 = card.querySelector('#w2-'+ex.id);
+    if(w2) w2.onchange = ()=>{ st.weight2 = w2.value; persist(); };
+
+    // config inputs: подходы / повторения / время / отдых
+    const cfgSets = card.querySelector('#cfgSets-'+ex.id);
+    if(cfgSets) cfgSets.onchange = ()=>{
+      resizeSetsDone(st, parseInt(cfgSets.value, 10) || st.sets);
+      persist();
+      renderExercises();
+    };
+    const cfgReps = card.querySelector('#cfgReps-'+ex.id);
+    if(cfgReps) cfgReps.onchange = ()=>{ st.reps = cfgReps.value; persist(); renderExercises(); };
+    const cfgTime = card.querySelector('#cfgTime-'+ex.id);
+    if(cfgTime) cfgTime.onchange = ()=>{
+      st.workTime = Math.max(5, parseInt(cfgTime.value, 10) || st.workTime);
+      persist();
+      renderExercises();
+    };
+    const cfgRest = card.querySelector('#cfgRest-'+ex.id);
+    if(cfgRest) cfgRest.onchange = ()=>{
+      st.rest = Math.max(0, parseInt(cfgRest.value, 10) || 0);
+      persist();
+      renderExercises();
+    };
+
+    // set buttons
+    card.querySelectorAll('.set-btn').forEach(btn=>{
+      const i = parseInt(btn.dataset.i, 10);
+      btn.onclick = ()=>{
+        if(ex.kind === 'timed' && !st.setsDone[i]){
+          startTimer({
+            mode:'work',
+            seconds: st.workTime,
+            name: ex.name + ' · сет ' + (i+1),
+            onDone: ()=>{
+              st.setsDone[i] = true;
+              persist();
+              renderExercises();
+              setTimeout(()=> startRest(st.rest, ex.name), 400);
+            }
+          });
+        } else {
+          st.setsDone[i] = !st.setsDone[i];
+          persist();
+          renderExercises();
+        }
+      };
+    });
+
+    // rest button
+    card.querySelector('#rest-'+ex.id).onclick = ()=> startRest(st.rest, ex.name);
+  });
+
+  progressFill.style.width = totalSets ? (doneSets/totalSets*100)+'%' : '0%';
+  progressLabel.textContent = doneSets+' / '+totalSets+' подходов';
+}
+
+function renderAll(){
+  renderTabs();
+  renderExercises();
+}
+
+document.getElementById('resetBtn').onclick = ()=>{
+  if(!confirm('Сбросить прогресс по текущей тренировке (подходы и вес)?')) return;
+  DATA[currentWorkout] = {};
+  persist();
+  renderAll();
+};
+
+document.getElementById('todayLabel').textContent = new Date().toLocaleDateString('ru-RU', {
+  weekday:'short', day:'numeric', month:'long'
+});
+
+renderAll();
+</script>
+</body>
+</html>
