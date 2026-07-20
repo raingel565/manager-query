@@ -74,11 +74,25 @@
 
   /* ===== Workout head ===== */
   .wtitle{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:.5px;margin:4px 0 2px;}
-  .wsub{color:var(--muted);font-size:13.5px;margin:0 0 16px;line-height:1.5;}
+  .wsub{color:var(--muted);font-size:13.5px;margin:0 0 8px;line-height:1.5;}
+  .stats-line{
+    display:flex;align-items:center;gap:6px;margin-bottom:16px;
+    font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--lime-dim);
+  }
+  .stats-line b{color:var(--lime);font-size:14px;}
+  .actions-row{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap;}
+  .complete-btn{
+    display:inline-flex;align-items:center;gap:6px;
+    background:linear-gradient(180deg, rgba(212,255,63,.22), rgba(212,255,63,.10));
+    color:var(--lime);border:1px solid var(--lime-dim);border-radius:8px;
+    padding:9px 14px;font-size:12.5px;font-weight:700;cursor:pointer;
+    font-family:'Inter',sans-serif;letter-spacing:.2px;
+  }
+  .complete-btn:hover{background:rgba(212,255,63,.28);}
   .reset-btn{
     display:inline-flex;align-items:center;gap:6px;background:transparent;color:var(--muted-2);
-    border:1px solid var(--line);border-radius:8px;padding:6px 10px;font-size:11.5px;
-    font-family:'Inter',sans-serif;font-weight:600;cursor:pointer;letter-spacing:.3px;margin-bottom:18px;
+    border:1px solid var(--line);border-radius:8px;padding:9px 14px;font-size:12.5px;
+    font-family:'Inter',sans-serif;font-weight:600;cursor:pointer;letter-spacing:.3px;
   }
   .reset-btn:hover{color:var(--coral);border-color:var(--coral-dim);}
 
@@ -247,13 +261,17 @@
 
   <div class="wtitle" id="wTitle"></div>
   <p class="wsub" id="wSub"></p>
+  <div class="stats-line" id="statsLine"></div>
 
   <div class="progress-row">
     <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
     <div class="progress-label" id="progressLabel">0 / 0 подходов</div>
   </div>
 
-  <button class="reset-btn" id="resetBtn">↺ Сбросить прогресс тренировки</button>
+  <div class="actions-row">
+    <button class="complete-btn" id="completeBtn">✔ Завершить тренировку</button>
+    <button class="reset-btn" id="resetBtn">↺ Сбросить прогресс</button>
+  </div>
 
   <div id="exList"></div>
 
@@ -303,13 +321,13 @@ const WORKOUTS = {
         why:'Вращения суставов, отжимания от пола (легкие, 2×15).', media:'' },
       { id:'a1', kind:'reps', name:'Жим гантелей на наклонной скамье (30–45°)',
         why:'Формирует верх груди, который виден на фото и критичен для V-силуэта.',
-        sets:4, reps:'8–12 повторений', rest:90, media:'https://croppio.com/images/exercises/Dumbbell%20Incline%20Bench%20Press.webp' },
+        sets:4, reps:'8–12 повторений', rest:90, media:'' },
       { id:'a2', kind:'reps', name:'Болгарские сплит-приседания с гантелями',
         why:'Убийца ног без огромных весов. Строит атлетичные, сухие квадрицепсы.',
-        sets:3, reps:'10–12 на каждую ногу', rest:90, media:'https://gymbot.ru/wp-content/uploads/2024/06/ezgif-1-feceee6974.gif' },
+        sets:3, reps:'10–12 на каждую ногу', rest:90, media:'' },
       { id:'a3', kind:'reps', name:'Жим гантелей стоя',
         why:'Удар по передним дельтам и трицепсам — «крышка» плеча.',
-        sets:4, reps:'10–12 повторений', rest:90, media:'https://i.pinimg.com/originals/44/ee/2b/44ee2b4e68ef87e15f29859cd5c233db.gif?nii=t' },
+        sets:4, reps:'10–12 повторений', rest:90, media:'' },
       { id:'a4', kind:'reps', name:'Планка с гантелями (Rowing Plank)',
         why:'Интегрирует пресс (кор) и спину, имитируя стабилизацию для статических элементов.',
         sets:3, reps:'10–12 на каждую руку', rest:75, media:'' },
@@ -396,6 +414,18 @@ function resizeSetsDone(st, newCount){
 function persist(){ saveAll(DATA); }
 
 let currentWorkout = localStorage.getItem('ironlog_current') || 'A';
+
+/* ===================== СЧЁТЧИК ПРОЙДЕННЫХ ТРЕНИРОВОК ===================== */
+const COMPLETED_KEY = 'ironlog_completed_v1';
+function loadCompleted(){
+  try{
+    const c = JSON.parse(localStorage.getItem(COMPLETED_KEY));
+    if(c && typeof c === 'object') return { A:c.A||0, B:c.B||0, V:c.V||0 };
+  }catch(e){}
+  return { A:0, B:0, V:0 };
+}
+function saveCompleted(c){ localStorage.setItem(COMPLETED_KEY, JSON.stringify(c)); }
+let COMPLETED = loadCompleted();
 
 /* ===================== AUDIO / VIBRATION ===================== */
 let audioCtx = null;
@@ -534,6 +564,10 @@ function renderExercises(){
   wTitleEl.textContent = w.title;
   wSubEl.textContent = w.sub;
   exListEl.innerHTML = '';
+
+  const total = COMPLETED.A + COMPLETED.B + COMPLETED.V;
+  document.getElementById('statsLine').innerHTML =
+    `Эта тренировка пройдена: <b>${COMPLETED[currentWorkout]}</b> раз &nbsp;·&nbsp; всего тренировок: <b>${total}</b>`;
 
   let totalSets = 0, doneSets = 0;
 
@@ -714,6 +748,17 @@ function renderAll(){
   renderTabs();
   renderExercises();
 }
+
+document.getElementById('completeBtn').onclick = ()=>{
+  const w = WORKOUTS[currentWorkout];
+  if(!confirm('Отметить «'+w.title+'» как пройденную? Счётчик тренировок увеличится, а прогресс подходов обнулится для следующей сессии.')) return;
+  COMPLETED[currentWorkout] = (COMPLETED[currentWorkout]||0) + 1;
+  saveCompleted(COMPLETED);
+  localStorage.setItem('ironlog_last_completed_'+currentWorkout, new Date().toISOString());
+  DATA[currentWorkout] = {};
+  persist();
+  renderAll();
+};
 
 document.getElementById('resetBtn').onclick = ()=>{
   if(!confirm('Сбросить прогресс по текущей тренировке (подходы и вес)?')) return;
