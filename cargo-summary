@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Сводка по отчётам менеджеров</title>
+<style>
+  :root{
+    --bg:#F3F5F4; --paper:#FFFFFF; --ink:#1B2420; --ink-soft:#5B6A63; --ink-faint:#8B978F;
+    --line:#DCE3DF; --line-strong:#C3CDC6;
+    --accent:#2F6F5E; --accent-dark:#204F42; --accent-soft:#E4EFEA;
+    --amber:#B8791E; --amber-soft:#FBF0DE; --red:#B8433A; --red-soft:#FBE7E4; --green:#3A7D4C; --green-soft:#E7F3EA;
+    --radius:10px;
+    --mono:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1.5;padding-bottom:60px;}
+  body::before{
+    content:"";position:fixed;inset:0;
+    background-image:linear-gradient(90deg, rgba(47,111,94,0.035) 1px, transparent 1px),
+      linear-gradient(rgba(47,111,94,0.035) 1px, transparent 1px);
+    background-size:28px 28px;pointer-events:none;z-index:0;
+  }
+  .wrap{max-width:1040px;margin:0 auto;padding:0 20px;position:relative;z-index:1;}
+  header.top{padding:38px 0 26px;border-bottom:2px solid var(--ink);margin-bottom:28px;}
+  .eyebrow{font-family:var(--mono);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-dark);display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+  .eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--accent);}
+  h1{font-size:30px;margin:0 0 6px;letter-spacing:-0.01em;font-weight:700;}
+  .sub{color:var(--ink-soft);font-size:14.5px;max-width:64ch;}
+
+  .panel{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:20px;margin-bottom:22px;}
+  .panel h3{margin:0 0 4px;font-size:15px;}
+  .panel .hint{font-size:12.5px;color:var(--ink-soft);margin-bottom:14px;}
+
+  .dropzone{
+    border:2px dashed var(--line-strong);border-radius:10px;padding:28px;text-align:center;
+    cursor:pointer;transition:.15s;color:var(--ink-soft);font-size:13.5px;
+  }
+  .dropzone.drag{border-color:var(--accent);background:var(--accent-soft);color:var(--accent-dark);}
+  .dropzone b{color:var(--ink);}
+
+  .file-list{margin-top:14px;display:flex;flex-direction:column;gap:6px;}
+  .file-row{
+    display:flex;align-items:center;gap:10px;font-size:13px;
+    background:var(--bg);border:1px solid var(--line);border-radius:7px;padding:8px 10px;
+  }
+  .file-row .name{font-weight:600;flex:1;}
+  .file-row .meta{font-family:var(--mono);color:var(--ink-soft);font-size:11.5px;}
+  .file-row .rm{cursor:pointer;color:var(--ink-faint);border:none;background:none;font-size:14px;}
+  .file-row .rm:hover{color:var(--red);}
+  .file-row.bad{border-color:var(--red);}
+  .file-row.bad .meta{color:var(--red);}
+
+  .filters{display:flex;flex-wrap:wrap;gap:16px;align-items:flex-end;}
+  .f-item label{display:block;font-size:11.5px;text-transform:uppercase;letter-spacing:.03em;color:var(--ink-soft);font-weight:700;margin-bottom:6px;}
+  .f-item input[type=date]{font-family:inherit;font-size:14px;border:1px solid var(--line-strong);border-radius:7px;padding:8px 10px;background:var(--bg);}
+  .managers-list{display:flex;flex-wrap:wrap;gap:8px;max-width:520px;}
+  .chip{
+    font-size:12.5px;border:1px solid var(--line-strong);border-radius:20px;padding:6px 12px;cursor:pointer;
+    background:var(--paper);user-select:none;
+  }
+  .chip.on{background:var(--accent);border-color:var(--accent);color:#fff;}
+
+  .btn{font-family:inherit;font-size:13px;font-weight:600;border:1px solid var(--line-strong);background:var(--paper);color:var(--ink);padding:9px 14px;border-radius:8px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:.15s ease;}
+  .btn:hover{border-color:var(--accent);color:var(--accent-dark);}
+  .btn.primary{background:var(--accent);border-color:var(--accent);color:#fff;}
+  .btn.primary:hover{background:var(--accent-dark);border-color:var(--accent-dark);color:#fff;}
+  .btn[disabled]{opacity:.4;cursor:not-allowed;}
+  .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:16px;}
+  .group-toggle{display:flex;border:1px solid var(--line-strong);border-radius:8px;overflow:hidden;}
+  .group-toggle button{border:none;background:var(--paper);padding:8px 12px;font-size:12.5px;cursor:pointer;color:var(--ink-soft);}
+  .group-toggle button.active{background:var(--accent);color:#fff;}
+
+  .stat-row{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:22px;}
+  .stat{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:14px 18px;min-width:130px;}
+  .stat .num{font-size:24px;font-weight:700;font-family:var(--mono);}
+  .stat .lbl{font-size:11.5px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.03em;margin-top:2px;}
+
+  #summaryRoot section.card{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);margin-bottom:18px;overflow:hidden;}
+  #summaryRoot .card-head{padding:16px 20px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px;}
+  #summaryRoot .card-head .idx{font-family:var(--mono);font-size:12px;color:var(--ink-faint);}
+  #summaryRoot .card-head h2{font-size:16px;margin:0;font-weight:700;}
+  #summaryRoot .card-body{padding:16px 20px 20px;}
+
+  table.sumtable{width:100%;border-collapse:collapse;font-size:13.5px;}
+  table.sumtable th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.03em;color:var(--ink-soft);font-weight:700;padding:6px 10px;border-bottom:1px solid var(--line-strong);background:var(--bg);}
+  table.sumtable td{padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top;}
+  table.sumtable tr:last-child td{border-bottom:none;}
+  table.sumtable tr.total-row td{font-weight:700;background:var(--accent-soft);}
+  .mgr-name{font-weight:700;}
+  .prio-tag{display:inline-block;font-size:11px;padding:2px 8px;border-radius:20px;font-weight:600;}
+  .prio-tag.low{background:var(--green-soft);color:var(--green);}
+  .prio-tag.mid, .prio-tag.средний{background:var(--amber-soft);color:var(--amber);}
+  .prio-tag.high{background:var(--red-soft);color:var(--red);}
+
+  .qa-block{margin-bottom:18px;}
+  .qa-block:last-child{margin-bottom:0;}
+  .qa-block h4{font-size:13.5px;margin:0 0 8px;color:var(--accent-dark);}
+  .qa-item{display:grid;grid-template-columns:160px 1fr;gap:10px;padding:6px 0;border-bottom:1px solid var(--line);font-size:13.5px;}
+  .qa-item:last-child{border-bottom:none;}
+  .qa-item .who{font-weight:700;}
+
+  .textlist{display:flex;flex-direction:column;gap:12px;}
+  .textlist .item{border-left:3px solid var(--accent);padding:4px 0 4px 12px;}
+  .textlist .who{font-weight:700;font-size:13px;margin-bottom:3px;}
+  .textlist .txt{font-size:13.5px;white-space:pre-wrap;color:var(--ink-soft);}
+
+  .empty-state{text-align:center;padding:60px 20px;color:var(--ink-faint);}
+  .empty-state .big{font-size:15px;color:var(--ink-soft);margin-bottom:6px;}
+
+  .idx-badge{display:inline-block;font-family:var(--mono);font-weight:700;font-size:13px;padding:3px 9px;border-radius:20px;}
+  .idx-badge.good{background:var(--green-soft);color:var(--green);}
+  .idx-badge.warn{background:var(--amber-soft);color:var(--amber);}
+  .idx-badge.bad{background:var(--red-soft);color:var(--red);}
+  .idx-badge.na{background:var(--bg);color:var(--ink-faint);}
+
+  .rank-num{font-family:var(--mono);color:var(--ink-faint);width:26px;display:inline-block;}
+
+  .accordion-list{display:flex;flex-direction:column;gap:8px;}
+  details.acc-item{
+    background:var(--paper);border:1px solid var(--line);border-radius:10px;overflow:hidden;
+  }
+  details.acc-item[open]{border-color:var(--line-strong);}
+  details.acc-item summary{
+    list-style:none;cursor:pointer;padding:13px 16px;display:flex;align-items:center;gap:10px;
+    font-size:13.5px;user-select:none;
+  }
+  details.acc-item summary::-webkit-details-marker{display:none;}
+  .acc-chevron{display:inline-block;color:var(--ink-faint);transition:transform .15s ease;font-size:11px;}
+  details.acc-item[open] .acc-chevron{transform:rotate(90deg);}
+  .acc-date{color:var(--ink-faint);font-family:var(--mono);font-size:12px;}
+  .acc-body{border-top:1px solid var(--line);background:var(--bg);}
+  iframe.report-frame{width:100%;border:none;display:block;min-height:120px;background:#fff;}
+
+  @media print{
+    .panel, .toolbar, header .toolbar, .no-print{display:none !important;}
+    body{padding-bottom:0;}
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="top">
+    <div class="eyebrow"><span class="dot"></span>Отдел продаж · Сводный отчёт</div>
+    <h1>Сводка по отчётам менеджеров</h1>
+    <div class="sub">Загрузите .html-отчёты, которые менеджеры скачали из опросника (или отправили на Google Диск). Сводка соберёт данные по разделам автоматически — в том числе по разделам, добавленным вручную.</div>
+  </header>
+
+  <div class="panel no-print">
+    <h3>1. Загрузка отчётов</h3>
+    <div class="hint">Перетащите файлы сюда или выберите вручную. Можно добавлять отчёты по одному — старые не пропадают.</div>
+    <div class="dropzone" id="dropzone">
+      <div><b>Перетащите .html-отчёты</b> сюда, или нажмите, чтобы выбрать (старые .json тоже подойдут)</div>
+    </div>
+    <input type="file" id="fileInput" accept=".html,.htm,.json" multiple style="display:none;">
+    <div class="file-list" id="fileList"></div>
+  </div>
+
+  <div class="panel no-print" id="filterPanel" style="display:none;">
+    <h3>2. Фильтры</h3>
+    <div class="hint">Диапазон дат применяется к дате заполнения отчёта. Менеджеров можно исключить из сводки, сняв отметку.</div>
+    <div class="filters">
+      <div class="f-item">
+        <label>Дата заполнения — с</label>
+        <input type="date" id="dateFrom">
+      </div>
+      <div class="f-item">
+        <label>по</label>
+        <input type="date" id="dateTo">
+      </div>
+      <div class="f-item" style="flex:1;min-width:240px;">
+        <label>Менеджеры</label>
+        <div class="managers-list" id="managersList"></div>
+      </div>
+    </div>
+    <div class="toolbar">
+      <div class="group-toggle" id="groupToggle">
+        <button class="active" data-mode="section">По разделам</button>
+        <button data-mode="manager">По менеджерам</button>
+        <button data-mode="full">Полные отчёты</button>
+      </div>
+      <button class="btn primary" id="btnBuild">Собрать сводку</button>
+      <div style="flex:1"></div>
+      <button class="btn" id="btnDownload" disabled>Скачать сводку (HTML)</button>
+      <button class="btn" id="btnPrint" disabled>Печать / PDF</button>
+    </div>
+  </div>
+
+  <div class="stat-row" id="statRow" style="display:none;"></div>
+
+  <div id="summaryRoot"></div>
+</div>
+
+<script>
+/* ---------------------------------------------------------------
+   СОСТОЯНИЕ
+--------------------------------------------------------------- */
+let files = [];      // [{name, report}]
+let excludedManagers = new Set();
+let groupMode = 'section';
+
+const dropzone = document.getElementById('dropzone');
+const fileInput = document.getElementById('fileInput');
+const fileListEl = document.getElementById('fileList');
+
+dropzone.addEventListener('click', ()=>fileInput.click());
+dropzone.addEventListener('dragover', (e)=>{ e.preventDefault(); dropzone.classList.add('drag'); });
+dropzone.addEventListener('dragleave', ()=> dropzone.classList.remove('drag'));
+dropzone.addEventListener('drop', (e)=>{
+  e.preventDefault(); dropzone.classList.remove('drag');
+  handleFiles(e.dataTransfer.files);
+});
+fileInput.addEventListener('change', (e)=>{ handleFiles(e.target.files); e.target.value=''; });
+
+const REPORT_DATA_RE = /<script[^>]*id=["']report-data["'][^>]*>([\s\S]*?)<\/script>/i;
+
+function handleFiles(fileListRaw){
+  Array.from(fileListRaw).forEach(f=>{
+    const lower = f.name.toLowerCase();
+    const isHtml = lower.endsWith('.html') || lower.endsWith('.htm');
+    const isJson = lower.endsWith('.json');
+    if(!isHtml && !isJson) return;
+    const reader = new FileReader();
+    reader.onload = ()=>{
+      let entry = {name:f.name, ok:false, report:null, error:'', rawHtml:null};
+      try{
+        let parsed;
+        if(isJson){
+          parsed = JSON.parse(reader.result);
+        } else {
+          const text = reader.result;
+          const m = text.match(REPORT_DATA_RE);
+          if(!m) throw new Error('В файле не найдены данные отчёта');
+          parsed = JSON.parse(m[1]);
+          entry.rawHtml = text;
+        }
+        if(!parsed.meta || !parsed.sections) throw new Error('Неверная структура отчёта');
+        entry.ok = true;
+        entry.report = parsed;
+      }catch(err){
+        entry.error = 'Не удалось прочитать файл (не найден отчёт)';
+      }
+      files.push(entry);
+      renderFileList();
+      renderFilterPanel();
+    };
+    reader.readAsText(f);
+  });
+}
+
+function findEntryForReport(report){
+  return files.find(f=>f.report===report);
+}
+
+function renderFileList(){
+  fileListEl.innerHTML = '';
+  files.forEach((entry, i)=>{
+    const row = document.createElement('div');
+    row.className = 'file-row' + (entry.ok ? '' : ' bad');
+    const name = document.createElement('div');
+    name.className = 'name';
+    name.textContent = entry.ok ? (entry.report.meta.manager || entry.name) : entry.name;
+    const meta = document.createElement('div');
+    meta.className = 'meta';
+    meta.textContent = entry.ok ? (entry.report.meta.filledDate || '') : entry.error;
+    const rm = document.createElement('button');
+    rm.className = 'rm'; rm.textContent = '✕';
+    rm.onclick = ()=>{ files.splice(i,1); renderFileList(); renderFilterPanel(); };
+    row.appendChild(name); row.appendChild(meta); row.appendChild(rm);
+    fileListEl.appendChild(row);
+  });
+}
+
+/* ---------------------------------------------------------------
+   ФИЛЬТРЫ
+--------------------------------------------------------------- */
+function renderFilterPanel(){
+  const okFiles = files.filter(f=>f.ok);
+  document.getElementById('filterPanel').style.display = okFiles.length ? 'block' : 'none';
+  if(!okFiles.length) return;
+
+  const managers = [...new Set(okFiles.map(f=>f.report.meta.manager || 'Без имени'))].sort((a,b)=>a.localeCompare(b,'ru'));
+  const mgrWrap = document.getElementById('managersList');
+  mgrWrap.innerHTML = '';
+  managers.forEach(m=>{
+    const chip = document.createElement('div');
+    chip.className = 'chip' + (excludedManagers.has(m) ? '' : ' on');
+    chip.textContent = m;
+    chip.onclick = ()=>{
+      if(excludedManagers.has(m)) excludedManagers.delete(m); else excludedManagers.add(m);
+      renderFilterPanel();
+    };
+    mgrWrap.appendChild(chip);
+  });
+
+  const dates = okFiles.map(f=>f.report.meta.filledDate).filter(Boolean).sort();
+  if(dates.length && !document.getElementById('dateFrom').value){
+    document.getElementById('dateFrom').value = dates[0];
+    document.getElementById('dateTo').value = dates[dates.length-1];
+  }
+}
+
+document.getElementById('groupToggle').addEventListener('click', (e)=>{
+  const btn = e.target.closest('button[data-mode]');
+  if(!btn) return;
+  groupMode = btn.dataset.mode;
+  document.querySelectorAll('#groupToggle button').forEach(b=>b.classList.toggle('active', b===btn));
+  buildSummary();
+});
+
+document.getElementById('btnBuild').addEventListener('click', buildSummary);
+
+/* ---------------------------------------------------------------
+   СБОРКА СВОДКИ
+--------------------------------------------------------------- */
+function getFilteredReports(){
+  const from = document.getElementById('dateFrom').value;
+  const to = document.getElementById('dateTo').value;
+  return files.filter(f=>f.ok).map(f=>f.report).filter(r=>{
+    const mgr = r.meta.manager || 'Без имени';
+    if(excludedManagers.has(mgr)) return false;
+    const d = r.meta.filledDate;
+    if(from && d && d < from) return false;
+    if(to && d && d > to) return false;
+    return true;
+  });
+}
+
+function buildSummary(){
+  const reports = getFilteredReports();
+  const summaryRoot = document.getElementById('summaryRoot');
+  const statRow = document.getElementById('statRow');
+  summaryRoot.innerHTML = '';
+
+  if(!reports.length){
+    statRow.style.display = 'none';
+    summaryRoot.innerHTML = `<div class="empty-state"><div class="big">Нет отчётов, подходящих под фильтр</div>Загрузите файлы или измените диапазон дат / выбранных менеджеров.</div>`;
+    document.getElementById('btnDownload').disabled = true;
+    document.getElementById('btnPrint').disabled = true;
+    return;
+  }
+
+  const managers = [...new Set(reports.map(r=>r.meta.manager||'Без имени'))].sort((a,b)=>a.localeCompare(b,'ru'));
+  const leaderboardData = buildLeaderboard(reports);
+  const teamAvg = leaderboardData.length ? Math.round(leaderboardData.reduce((s,d)=>s+d.avg,0)/leaderboardData.length) : null;
+  statRow.style.display = 'flex';
+  statRow.innerHTML = statCard(reports.length,'отчётов') + statCard(managers.length,'менеджеров') + statCard(dateRangeLabel(reports),'период',true)
+    + (teamAvg!=null ? statCard(idxBadge(teamAvg),'средний индекс',true) : '');
+
+  const lb = renderLeaderboard(reports);
+  if(lb) summaryRoot.appendChild(lb);
+
+  summaryRoot.appendChild(
+    groupMode==='manager' ? renderByManager(reports, managers) :
+    groupMode==='full' ? renderFullReportsAccordion(reports) :
+    renderBySection(reports, managers)
+  );
+
+  document.getElementById('btnDownload').disabled = false;
+  document.getElementById('btnPrint').disabled = false;
+}
+
+function statCard(value, label, isText){
+  return `<div class="stat"><div class="num" style="${isText?'font-size:14px;':''}">${value}</div><div class="lbl">${label}</div></div>`;
+}
+function dateRangeLabel(reports){
+  const dates = reports.map(r=>r.meta.filledDate).filter(Boolean).sort();
+  if(!dates.length) return '—';
+  return dates[0]===dates[dates.length-1] ? fmtDate(dates[0]) : fmtDate(dates[0])+' – '+fmtDate(dates[dates.length-1]);
+}
+function fmtDate(d){
+  if(!d) return '';
+  const parts = d.split('-');
+  return parts.length===3 ? `${parts[2]}.${parts[1]}.${parts[0]}` : d;
+}
+function esc(s){
+  return String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function nl2br(s){ return esc(s).replace(/\n/g,'<br>'); }
+
+/* ---------------------------------------------------------------
+   ИНДЕКС РЕЗУЛЬТАТИВНОСТИ
+   Берём готовый расчёт из отчёта (report.sections[].index), если он есть —
+   так сводка не зависит от версии опросника. Если в старом файле индекса
+   нет, считаем сами по стандартным KPI/весам как запасной вариант.
+--------------------------------------------------------------- */
+const FALLBACK_INDEX_DEFS = {
+  contacts_search: {kpi:10, weight:1},
+  calls: {kpi:10, weight:2},
+  meetings: {kpi:5, weight:3}
+};
+function idxColorClass(percent){
+  if(percent>=85) return 'good';
+  if(percent>=60) return 'warn';
+  return 'bad';
+}
+function findIndexSection(report){
+  return report.sections.find(s=>s.type==='fields' && s.index);
+}
+function computeFallbackIndex(sec){
+  let totalWeight=0, weighted=0, any=false;
+  sec.fields.forEach(f=>{
+    const def = FALLBACK_INDEX_DEFS[f.id];
+    if(def){
+      any = true;
+      const ratio = Math.min((Number(f.value)||0)/def.kpi, 1);
+      weighted += ratio*def.weight; totalWeight += def.weight;
+    }
+  });
+  return any && totalWeight ? Math.round(weighted/totalWeight*100) : null;
+}
+function getReportIndex(report){
+  const withIndex = findIndexSection(report);
+  if(withIndex) return withIndex.index.percent;
+  const secAct = report.sections.find(s=>s.id==='activities_done' && s.type==='fields');
+  if(secAct) return computeFallbackIndex(secAct);
+  return null;
+}
+function idxBadge(percent){
+  if(percent==null) return `<span class="idx-badge na">—</span>`;
+  return `<span class="idx-badge ${idxColorClass(percent)}">${percent}%</span>`;
+}
+
+function buildLeaderboard(reports){
+  const byMgr = {};
+  reports.forEach(r=>{
+    const idx = getReportIndex(r);
+    if(idx==null) return;
+    const mgr = r.meta.manager || 'Без имени';
+    (byMgr[mgr] = byMgr[mgr] || []).push(idx);
+  });
+  return Object.entries(byMgr)
+    .map(([manager, arr])=>({manager, avg: Math.round(arr.reduce((a,b)=>a+b,0)/arr.length), count: arr.length}))
+    .sort((a,b)=>b.avg-a.avg);
+}
+
+function renderLeaderboard(reports){
+  const data = buildLeaderboard(reports);
+  if(!data.length) return null;
+  const card = document.createElement('section'); card.className='card';
+  const head = document.createElement('div'); head.className='card-head';
+  head.innerHTML = `<h2>Индекс результативности недели — по менеджерам</h2>`;
+  card.appendChild(head);
+  const body = document.createElement('div'); body.className='card-body';
+  const table = document.createElement('table'); table.className='sumtable';
+  let rows = data.map((d,i)=>`<tr><td><span class="rank-num">${i+1}</span></td><td class="mgr-name">${esc(d.manager)}</td><td>${idxBadge(d.avg)}</td><td style="color:var(--ink-faint);">${d.count} ${d.count===1?'отчёт':'отчёта(ов)'}</td></tr>`).join('');
+  table.innerHTML = `<tr><th></th><th>Менеджер</th><th>Индекс (среднее за период)</th><th>Отчётов учтено</th></tr>${rows}`;
+  body.appendChild(table);
+  body.appendChild(el2('div',{style:'font-size:12px;color:var(--ink-faint);margin-top:10px;'}, 'Индекс считается по показателям раздела «Выполненные мероприятия» относительно KPI, с весом по приоритету: встречи важнее звонков, звонки важнее поиска контактов. Если отчётов за период несколько — берётся среднее.'));
+  card.appendChild(body);
+  return card;
+}
+function el2(tag, attrs, txt){
+  const e = document.createElement(tag);
+  Object.keys(attrs||{}).forEach(k=>e.setAttribute(k, attrs[k]));
+  if(txt) e.textContent = txt;
+  return e;
+}
+
+/* ---- collect a registry of all section/field ids seen across reports ---- */
+function collectSectionRegistry(reports){
+  const registry = {}; // id -> {title, type, columns:{id:label}, fieldsOrder:[]}
+  reports.forEach(r=>{
+    r.sections.forEach(sec=>{
+      if(!registry[sec.id]){
+        registry[sec.id] = {id:sec.id, title:sec.title, type:sec.type, columns:{}, colOrder:[], fieldOrder:[]};
+      }
+      const reg = registry[sec.id];
+      reg.title = sec.title; // latest label wins for display
+      if(sec.type==='fields'){
+        sec.fields.forEach(f=>{
+          if(!reg.fieldOrder.includes(f.id)) reg.fieldOrder.push(f.id);
+          reg.columns[f.id] = {label:f.label, type:f.type};
+        });
+      }
+      if(sec.type==='table' || sec.type==='fixedlist'){
+        (sec.columns||[]).forEach(c=>{
+          if(!reg.colOrder.includes(c.id)) reg.colOrder.push(c.id);
+          reg.columns[c.id] = {label:c.label, type:c.type};
+        });
+      }
+    });
+  });
+  return registry;
+}
+
+/* ---------------------------------------------------------------
+   ГРУППИРОВКА ПО РАЗДЕЛАМ (сводные таблицы по каждому разделу)
+--------------------------------------------------------------- */
+function renderBySection(reports, managers){
+  const registry = collectSectionRegistry(reports);
+  const container = document.createElement('div');
+  let idx = 0;
+  Object.values(registry).forEach(reg=>{
+    idx++;
+    const card = document.createElement('section');
+    card.className = 'card';
+    const head = document.createElement('div'); head.className='card-head';
+    head.innerHTML = `<span class="idx">${String(idx).padStart(2,'0')}</span><h2>${esc(reg.title)}</h2>`;
+    card.appendChild(head);
+    const body = document.createElement('div'); body.className='card-body';
+
+    if(reg.type==='fields'){
+      body.appendChild(renderFieldsSectionSummary(reg, reports));
+    } else if(reg.type==='table'){
+      body.appendChild(renderTableSectionSummary(reg, reports));
+    } else if(reg.type==='fixedlist'){
+      body.appendChild(renderFixedlistSectionSummary(reg, reports));
+    }
+    card.appendChild(body);
+    container.appendChild(card);
+  });
+  return container;
+}
+
+function sectionOf(report, secId){
+  return report.sections.find(s=>s.id===secId);
+}
+
+function renderFieldsSectionSummary(reg, reports){
+  const fieldIds = reg.fieldOrder;
+  const allNumeric = fieldIds.length && fieldIds.every(fid => reg.columns[fid].type==='number');
+
+  if(allNumeric){
+    const table = document.createElement('table'); table.className='sumtable';
+    const hasIndex = reg.id === 'activities_done' || reports.some(r=>{ const s=sectionOf(r,reg.id); return s && s.index; });
+    let thead = '<tr><th>Менеджер</th>' + fieldIds.map(fid=>`<th>${esc(reg.columns[fid].label)}</th>`).join('') + (hasIndex?'<th>Индекс</th>':'') + '</tr>';
+    const rowsSorted = reports.slice().sort((a,b)=>(a.meta.manager||'').localeCompare(b.meta.manager||'','ru'));
+    let body = '';
+    const totals = {}; fieldIds.forEach(fid=>totals[fid]=0);
+    rowsSorted.forEach(r=>{
+      const sec = sectionOf(r, reg.id);
+      body += `<tr><td class="mgr-name">${esc(r.meta.manager)}</td>`;
+      fieldIds.forEach(fid=>{
+        const f = sec && sec.fields.find(x=>x.id===fid);
+        const v = f ? Number(f.value)||0 : 0;
+        totals[fid]+=v;
+        body += `<td>${f? esc(f.value||0):'—'}</td>`;
+      });
+      if(hasIndex){
+        body += `<td>${idxBadge(sec ? getReportIndex(r) : null)}</td>`;
+      }
+      body += '</tr>';
+    });
+    let totalRow = `<tr class="total-row"><td>Итого</td>` + fieldIds.map(fid=>`<td>${totals[fid]}</td>`).join('') + (hasIndex?'<td></td>':'') + `</tr>`;
+    table.innerHTML = thead + body + totalRow;
+    return table;
+  }
+
+  // mixed / textual fields -> per-manager list
+  const wrap = document.createElement('div'); wrap.className='textlist';
+  const rowsSorted = reports.slice().sort((a,b)=>(a.meta.manager||'').localeCompare(b.meta.manager||'','ru'));
+  rowsSorted.forEach(r=>{
+    const sec = sectionOf(r, reg.id);
+    if(!sec) return;
+    const lines = sec.fields.map(f=>`<b>${esc(f.label)}:</b> ${nl2br(f.value||'—')}`).join('<br>');
+    const item = document.createElement('div'); item.className='item';
+    item.innerHTML = `<div class="who">${esc(r.meta.manager)} <span style="font-weight:400;color:var(--ink-faint);">· ${fmtDate(r.meta.filledDate)}</span></div><div class="txt">${lines}</div>`;
+    wrap.appendChild(item);
+  });
+  return wrap;
+}
+
+function renderTableSectionSummary(reg, reports){
+  const cols = reg.colOrder;
+  const table = document.createElement('table'); table.className='sumtable';
+  let thead = '<tr><th>Менеджер</th>' + cols.map(cid=>`<th>${esc(reg.columns[cid].label)}</th>`).join('') + '</tr>';
+  let body = '';
+  const rowsSorted = reports.slice().sort((a,b)=>(a.meta.manager||'').localeCompare(b.meta.manager||'','ru'));
+  let any = false;
+  rowsSorted.forEach(r=>{
+    const sec = sectionOf(r, reg.id);
+    if(!sec || !sec.rows || !sec.rows.length) return;
+    sec.rows.forEach(row=>{
+      any = true;
+      body += `<tr><td class="mgr-name">${esc(r.meta.manager)}</td>` + cols.map(cid=>{
+        const val = row[cid];
+        const colType = reg.columns[cid].type;
+        if(colType==='select' && val){
+          const cls = val==='Низкий'?'low':(val==='Высокий'?'high':'mid');
+          return `<td><span class="prio-tag ${cls}">${esc(val)}</span></td>`;
+        }
+        return `<td>${nl2br(val||'—')}</td>`;
+      }).join('') + '</tr>';
+    });
+  });
+  if(!any){
+    const empty = document.createElement('div'); empty.className='empty-state'; empty.style.padding='20px';
+    empty.innerHTML = '<div class="big">Нет строк</div>';
+    return empty;
+  }
+  table.innerHTML = thead + body;
+  return table;
+}
+
+function renderFixedlistSectionSummary(reg, reports){
+  // group by fixed question (using question text as key, since ids are per-config)
+  const wrap = document.createElement('div');
+  const byQuestion = {};
+  const order = [];
+  const rowsSorted = reports.slice().sort((a,b)=>(a.meta.manager||'').localeCompare(b.meta.manager||'','ru'));
+  rowsSorted.forEach(r=>{
+    const sec = sectionOf(r, reg.id);
+    if(!sec) return;
+    (sec.rows||[]).forEach(row=>{
+      const q = row.question || row.id;
+      if(!byQuestion[q]){ byQuestion[q]=[]; order.push(q); }
+      if(row.answer && row.answer.trim()){
+        byQuestion[q].push({manager:r.meta.manager, answer:row.answer});
+      }
+    });
+  });
+  order.forEach(q=>{
+    const block = document.createElement('div'); block.className='qa-block';
+    const answers = byQuestion[q];
+    let itemsHtml = answers.length
+      ? answers.map(a=>`<div class="qa-item"><div class="who">${esc(a.manager)}</div><div>${nl2br(a.answer)}</div></div>`).join('')
+      : '<div class="empty-state" style="padding:10px;text-align:left;">Ответов нет</div>';
+    block.innerHTML = `<h4>${esc(q)}</h4>${itemsHtml}`;
+    wrap.appendChild(block);
+  });
+  return wrap;
+}
+
+/* ---------------------------------------------------------------
+   ПОЛНЫЕ ОТЧЁТЫ — свёрнутые вкладки (аккордеон) по каждому отчёту
+--------------------------------------------------------------- */
+function renderFullReportsAccordion(reports){
+  const wrap = document.createElement('div'); wrap.className = 'accordion-list';
+  const sorted = reports.slice().sort((a,b)=>
+    (a.meta.manager||'').localeCompare(b.meta.manager||'','ru') ||
+    (a.meta.filledDate||'').localeCompare(b.meta.filledDate||'')
+  );
+  sorted.forEach(r=>{
+    const entry = findEntryForReport(r);
+    const details = document.createElement('details'); details.className = 'acc-item';
+
+    const summary = document.createElement('summary');
+    summary.innerHTML = `<span class="acc-chevron">▸</span><span class="mgr-name">${esc(r.meta.manager)}</span>
+      <span class="acc-date">${fmtDate(r.meta.filledDate)}</span>`;
+    const withIndex = findIndexSection(r);
+    if(withIndex){
+      const badge = document.createElement('span');
+      badge.style.marginLeft = 'auto';
+      badge.innerHTML = idxBadge(withIndex.index.percent);
+      summary.appendChild(badge);
+    }
+    details.appendChild(summary);
+
+    const body = document.createElement('div'); body.className = 'acc-body';
+    if(entry && entry.rawHtml){
+      const iframe = document.createElement('iframe');
+      iframe.className = 'report-frame';
+      iframe.srcdoc = entry.rawHtml;
+      const fitHeight = ()=>{ try{ iframe.style.height = (iframe.contentWindow.document.body.scrollHeight + 24) + 'px'; }catch(e){} };
+      iframe.addEventListener('load', fitHeight);
+      details.addEventListener('toggle', ()=>{ if(details.open) fitHeight(); });
+      body.appendChild(iframe);
+    } else {
+      // старый .json-файл без встроенной html-версии — собираем из структуры
+      r.sections.forEach(sec=>{
+        const t = document.createElement('div');
+        t.style.cssText = 'font-weight:700;font-size:13.5px;margin:14px 0 6px;';
+        t.textContent = sec.title;
+        body.appendChild(t);
+        body.appendChild(renderSingleSectionContent(sec));
+      });
+    }
+    details.appendChild(body);
+    wrap.appendChild(details);
+  });
+  return wrap;
+}
+
+/* ---------------------------------------------------------------
+   ГРУППИРОВКА ПО МЕНЕДЖЕРАМ (по одному блоку на менеджера)
+--------------------------------------------------------------- */
+function renderByManager(reports, managers){
+  const registry = collectSectionRegistry(reports);
+  const container = document.createElement('div');
+  const sorted = managers.slice().sort((a,b)=>a.localeCompare(b,'ru'));
+  sorted.forEach((mgr, idx)=>{
+    const mgrReports = reports.filter(r=>(r.meta.manager||'Без имени')===mgr)
+      .sort((a,b)=>(a.meta.filledDate||'').localeCompare(b.meta.filledDate||''));
+    const card = document.createElement('section'); card.className='card';
+    const head = document.createElement('div'); head.className='card-head';
+    const datesLabel = mgrReports.map(r=>fmtDate(r.meta.filledDate)).join(', ');
+    head.innerHTML = `<span class="idx">${String(idx+1).padStart(2,'0')}</span><h2>${esc(mgr)} <span style="font-weight:400;font-size:12.5px;color:var(--ink-faint);">· ${esc(datesLabel)}</span></h2>`;
+    card.appendChild(head);
+    const body = document.createElement('div'); body.className='card-body';
+
+    mgrReports.forEach(r=>{
+      const sub = document.createElement('div');
+      sub.style.marginBottom = '18px';
+      sub.innerHTML = `<div style="font-family:var(--mono);font-size:11.5px;color:var(--ink-faint);margin-bottom:8px;">Отчёт от ${fmtDate(r.meta.filledDate)}</div>`;
+      r.sections.forEach(sec=>{
+        const sTitle = document.createElement('div');
+        sTitle.style.fontWeight='700'; sTitle.style.fontSize='13.5px'; sTitle.style.margin='10px 0 6px';
+        sTitle.textContent = sec.title;
+        sub.appendChild(sTitle);
+        sub.appendChild(renderSingleSectionContent(sec));
+      });
+      body.appendChild(sub);
+    });
+
+    card.appendChild(body);
+    container.appendChild(card);
+  });
+  return container;
+}
+
+function renderSingleSectionContent(sec){
+  const wrap = document.createElement('div');
+  if(sec.type==='fields'){
+    const table = document.createElement('table'); table.className='sumtable';
+    table.innerHTML = sec.fields.map(f=>`<tr><td style="width:32%;color:var(--ink-soft);font-weight:600;">${esc(f.label)}</td><td>${nl2br(f.value||'—')}</td></tr>`).join('');
+    if(sec.index){
+      table.innerHTML += `<tr class="total-row"><td>${esc(sec.index.label)}</td><td>${idxBadge(sec.index.percent)}</td></tr>`;
+    }
+    wrap.appendChild(table);
+  } else if(sec.type==='table'){
+    if(!sec.rows || !sec.rows.length){
+      wrap.innerHTML = '<div style="font-size:13px;color:var(--ink-faint);font-style:italic;">Нет данных</div>';
+    } else {
+      const table = document.createElement('table'); table.className='sumtable';
+      let thead = '<tr>'+sec.columns.map(c=>`<th>${esc(c.label)}</th>`).join('')+'</tr>';
+      let body = sec.rows.map(row=>'<tr>'+sec.columns.map(c=>{
+        const val = row[c.id];
+        if(c.type==='select' && val){
+          const cls = val==='Низкий'?'low':(val==='Высокий'?'high':'mid');
+          return `<td><span class="prio-tag ${cls}">${esc(val)}</span></td>`;
+        }
+        return `<td>${nl2br(val||'—')}</td>`;
+      }).join('')+'</tr>').join('');
+      table.innerHTML = thead+body;
+      wrap.appendChild(table);
+    }
+  } else if(sec.type==='fixedlist'){
+    const table = document.createElement('table'); table.className='sumtable';
+    table.innerHTML = (sec.rows||[]).map(r=>`<tr><td style="width:32%;color:var(--ink-soft);">${esc(r.question)}</td><td>${nl2br(r.answer||'—')}</td></tr>`).join('');
+    wrap.appendChild(table);
+  }
+  return wrap;
+}
+
+/* ---------------------------------------------------------------
+   ЭКСПОРТ СВОДКИ
+--------------------------------------------------------------- */
+document.getElementById('btnPrint').addEventListener('click', ()=>window.print());
+document.getElementById('btnDownload').addEventListener('click', ()=>{
+  const styles = document.querySelector('style').outerHTML;
+  const content = document.getElementById('summaryRoot').innerHTML;
+  const stats = document.getElementById('statRow').outerHTML;
+  const from = document.getElementById('dateFrom').value;
+  const to = document.getElementById('dateTo').value;
+  const html = `<!DOCTYPE html><html lang="ru"><head><meta charset="UTF-8"><title>Сводка по отчётам менеджеров</title>${styles}</head>
+  <body style="padding-bottom:20px;"><div class="wrap">
+  <header class="top"><div class="eyebrow"><span class="dot"></span>Отдел продаж · Сводный отчёт</div>
+  <h1>Сводка по отчётам менеджеров</h1>
+  <div class="sub">Период: ${esc(fmtDate(from))} — ${esc(fmtDate(to))}. Сформировано ${esc(new Date().toLocaleString('ru-RU'))}.</div></header>
+  ${stats}
+  <div id="summaryRoot">${content}</div>
+  </div></body></html>`;
+  const blob = new Blob([html], {type:'text/html'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `svodka_${from||'period'}_${to||'period'}.html`;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(()=>URL.revokeObjectURL(a.href), 4000);
+});
+</script>
+</body>
+</html>
