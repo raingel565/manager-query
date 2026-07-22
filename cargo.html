@@ -300,10 +300,8 @@
   <div class="admin-bar" id="driveBar" style="align-items:flex-start;">
     <div style="flex:1;min-width:260px;">
       <strong>Отправка на Google Диск</strong>
-      <div style="margin:4px 0 10px;font-weight:400;">Вставьте URL веб-приложения Apps Script (см. инструкцию, которую прислал Claude). После сохранения каждый «Завершить заполнение» будет отправлять .html-отчёт в папку на Диске — сводка читает данные из него же.</div>
+      <div style="margin:4px 0 10px;font-weight:400;">Адрес веб-приложения задан в коде страницы и менеджерам недоступен для изменения. Каждый «Завершить заполнение» отправляет .html-отчёт в папку на Диске — сводка читает данные из него же.</div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;">
-        <input type="text" id="gasUrlInput" placeholder="https://script.google.com/macros/s/.../exec" style="flex:1;min-width:260px;">
-        <button class="btn small" id="btnSaveGasUrl">Сохранить</button>
         <button class="btn small" id="btnTestGasUrl">Проверить связь</button>
       </div>
       <div id="gasStatus" style="font-family:var(--mono);font-size:11.5px;margin-top:8px;"></div>
@@ -340,7 +338,10 @@
 --------------------------------------------------------------- */
 const STORAGE_CONFIG = 'salesSurvey.config.v1';
 const STORAGE_DRAFT  = 'salesSurvey.draft.v1';
-const STORAGE_GAS_URL = 'salesSurvey.gasUrl.v1';
+
+// URL веб-приложения Google Apps Script, куда отправляются .html-отчёты.
+// Задаётся здесь в коде — через интерфейс менеджеры его поменять не могут.
+const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxZmopP206_Po-F6AqzAJHA3M3dZw57GEmCtX0yHeARl0C_Y7xEA89A18wFCT0JNPCE/exec';
 
 function uid(prefix){
   return prefix + '_' + Date.now().toString(36) + Math.random().toString(36).slice(2,7);
@@ -378,7 +379,7 @@ const DEFAULT_CONFIG = {
       fields:[
         {id:"contacts_search", label:"Поиск контактов", type:"number", width:"third", kpi:10, weight:1},
         {id:"calls", label:"Звонки", type:"number", width:"third", kpi:10, weight:2},
-        {id:"meetings", label:"Встречи", type:"number", width:"third", kpi:5, weight:3}
+        {id:"meetings", label:"Встречи", type:"number", width:"third", kpi:2, weight:3}
       ]
     },
     {
@@ -1028,10 +1029,7 @@ function downloadFile(filename, content, mime){
    ОТПРАВКА НА GOOGLE ДИСК (через Google Apps Script веб-приложение)
 --------------------------------------------------------------- */
 function loadGasUrl(){
-  return (localStorage.getItem(STORAGE_GAS_URL) || '').trim();
-}
-function saveGasUrl(url){
-  localStorage.setItem(STORAGE_GAS_URL, url.trim());
+  return GAS_WEB_APP_URL.trim();
 }
 function setGasStatus(msg, kind){
   const colors = {ok:'var(--green)', bad:'var(--red)', neutral:'var(--ink-faint)'};
@@ -1042,7 +1040,6 @@ function setGasStatus(msg, kind){
 }
 function refreshGasStatusIdle(){
   const url = loadGasUrl();
-  document.getElementById('gasUrlInput').value = url;
   setGasStatus(url ? '☁ Google Диск подключён' : '☁ Google Диск не настроен — отчёты скачиваются только локально', url ? 'ok' : 'neutral');
 }
 
@@ -1066,15 +1063,7 @@ async function sendToDrive(payload){
   }
 }
 
-document.getElementById('btnSaveGasUrl').addEventListener('click', ()=>{
-  saveGasUrl(document.getElementById('gasUrlInput').value);
-  refreshGasStatusIdle();
-  showToast('Адрес Google Диска сохранён');
-});
 document.getElementById('btnTestGasUrl').addEventListener('click', async ()=>{
-  const url = document.getElementById('gasUrlInput').value.trim();
-  if(!url){ setGasStatus('Сначала вставьте URL веб-приложения', 'bad'); return; }
-  saveGasUrl(url);
   setGasStatus('Проверяю связь…', 'neutral');
   const result = await sendToDrive({
     fileName: '_test_connection.html',
