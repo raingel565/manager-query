@@ -1,0 +1,1208 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Еженедельный отчёт менеджера</title>
+<style>
+  :root{
+    --bg:#F3F5F4;
+    --paper:#FFFFFF;
+    --ink:#1B2420;
+    --ink-soft:#5B6A63;
+    --ink-faint:#8B978F;
+    --line:#DCE3DF;
+    --line-strong:#C3CDC6;
+    --accent:#2F6F5E;
+    --accent-dark:#204F42;
+    --accent-soft:#E4EFEA;
+    --amber:#B8791E;
+    --amber-soft:#FBF0DE;
+    --red:#B8433A;
+    --red-soft:#FBE7E4;
+    --green:#3A7D4C;
+    --green-soft:#E7F3EA;
+    --radius:10px;
+    --mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:var(--sans);
+    background:
+      linear-gradient(var(--bg),var(--bg));
+    color:var(--ink);
+    line-height:1.5;
+    padding-bottom:120px;
+  }
+  body::before{
+    content:"";
+    position:fixed; inset:0;
+    background-image:
+      linear-gradient(90deg, rgba(47,111,94,0.035) 1px, transparent 1px),
+      linear-gradient(rgba(47,111,94,0.035) 1px, transparent 1px);
+    background-size:28px 28px;
+    pointer-events:none;
+    z-index:0;
+  }
+  .wrap{max-width:900px;margin:0 auto;padding:0 20px;position:relative;z-index:1;}
+
+  header.top{
+    padding:38px 0 26px;
+    border-bottom:2px solid var(--ink);
+    margin-bottom:28px;
+  }
+  .eyebrow{
+    font-family:var(--mono);
+    font-size:11.5px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--accent-dark);
+    display:flex;align-items:center;gap:10px;
+    margin-bottom:10px;
+  }
+  .eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--accent);}
+  h1{
+    font-size:30px;
+    margin:0 0 6px;
+    letter-spacing:-0.01em;
+    font-weight:700;
+  }
+  .sub{color:var(--ink-soft);font-size:14.5px;max-width:56ch;}
+
+  .toolbar{
+    display:flex;flex-wrap:wrap;gap:8px;align-items:center;
+    margin-top:18px;
+  }
+  .btn{
+    font-family:inherit;font-size:13px;font-weight:600;
+    border:1px solid var(--line-strong);
+    background:var(--paper);
+    color:var(--ink);
+    padding:9px 14px;
+    border-radius:8px;
+    cursor:pointer;
+    display:inline-flex;align-items:center;gap:6px;
+    transition:.15s ease;
+  }
+  .btn:hover{border-color:var(--accent);color:var(--accent-dark);}
+  .btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+  .btn.primary{background:var(--accent);border-color:var(--accent);color:#fff;}
+  .btn.primary:hover{background:var(--accent-dark);border-color:var(--accent-dark);color:#fff;}
+  .btn.ghost{background:transparent;border-color:transparent;color:var(--ink-soft);padding:6px 8px;}
+  .btn.ghost:hover{color:var(--red);}
+  .btn.small{padding:5px 10px;font-size:12px;}
+  .btn.danger:hover{color:var(--red);border-color:var(--red);}
+  .btn[disabled]{opacity:.4;cursor:not-allowed;}
+
+  .admin-toggle{
+    margin-left:auto;
+    display:flex;align-items:center;gap:8px;
+    font-family:var(--mono);font-size:12px;color:var(--ink-soft);
+  }
+  .switch{
+    width:38px;height:22px;border-radius:20px;background:var(--line-strong);
+    position:relative;cursor:pointer;transition:.2s;flex-shrink:0;
+  }
+  .switch.on{background:var(--accent);}
+  .switch::after{
+    content:"";position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;
+    background:#fff;transition:.2s;box-shadow:0 1px 2px rgba(0,0,0,.3);
+  }
+  .switch.on::after{left:18px;}
+
+  .admin-bar{
+    display:none;
+    background:var(--accent-soft);
+    border:1px dashed var(--accent);
+    border-radius:10px;
+    padding:12px 14px;
+    margin-bottom:22px;
+    font-size:13px;
+    color:var(--accent-dark);
+    align-items:center;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+  .admin-bar.show{display:flex;}
+  .admin-bar strong{font-weight:700;}
+  .admin-bar .spacer{flex:1;}
+
+  section.card{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    margin-bottom:18px;
+    position:relative;
+    overflow:visible;
+  }
+  .card-head{
+    display:flex;align-items:flex-start;gap:14px;
+    padding:18px 20px 14px;
+    border-bottom:1px solid var(--line);
+  }
+  .idx{
+    font-family:var(--mono);
+    font-size:12px;
+    color:var(--ink-faint);
+    padding-top:3px;
+    min-width:22px;
+  }
+  .card-head h2{
+    font-size:17px;margin:0;font-weight:700;flex:1;
+  }
+  .card-desc{
+    font-size:13px;color:var(--ink-soft);margin-top:4px;font-weight:400;
+  }
+  .card-body{padding:18px 20px 20px;}
+  .sec-actions{display:flex;gap:4px;align-items:center;}
+
+  .legend{
+    display:flex;flex-wrap:wrap;gap:10px;
+    margin:0 0 16px;
+  }
+  .legend .pill{
+    font-size:12px;border-radius:8px;padding:8px 10px;line-height:1.4;max-width:230px;
+  }
+  .pill.low{background:var(--green-soft);color:var(--green);}
+  .pill.mid{background:var(--amber-soft);color:var(--amber);}
+  .pill.high{background:var(--red-soft);color:var(--red);}
+  .pill b{display:block;font-size:12px;margin-bottom:2px;}
+
+  label.field-label{
+    display:block;font-size:12.5px;font-weight:600;color:var(--ink-soft);
+    margin-bottom:6px;text-transform:uppercase;letter-spacing:.03em;
+  }
+  .field{margin-bottom:14px;}
+  .field:last-child{margin-bottom:0;}
+  input[type=text], input[type=date], input[type=number], textarea, select{
+    width:100%;
+    font-family:inherit;
+    font-size:14.5px;
+    color:var(--ink);
+    background:var(--bg);
+    border:1px solid var(--line-strong);
+    border-radius:7px;
+    padding:9px 11px;
+  }
+  input:focus, textarea:focus, select:focus{
+    outline:none;border-color:var(--accent);background:var(--paper);
+    box-shadow:0 0 0 3px var(--accent-soft);
+  }
+  textarea{resize:vertical;min-height:80px;}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  .grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+  @media (max-width:640px){.grid2,.grid4{grid-template-columns:1fr;}}
+
+  table.dyn{width:100%;border-collapse:collapse;font-size:14px;}
+  table.dyn th{
+    text-align:left;font-size:11.5px;text-transform:uppercase;letter-spacing:.03em;
+    color:var(--ink-soft);font-weight:700;padding:0 10px 8px;border-bottom:1px solid var(--line-strong);
+  }
+  table.dyn td{padding:6px 10px 6px 0;vertical-align:top;border-bottom:1px solid var(--line);}
+  table.dyn tr:last-child td{border-bottom:none;}
+  table.dyn td input, table.dyn td textarea, table.dyn td select{background:var(--paper);}
+  table.dyn .row-del{width:34px;text-align:center;}
+  .qcol{width:38%;font-size:13.5px;color:var(--ink-soft);padding-top:9px;line-height:1.4;}
+  .add-row{margin-top:10px;}
+
+  .col-actions{display:flex;gap:2px;}
+
+  footer.submit-bar{
+    position:fixed;left:0;right:0;bottom:0;
+    background:var(--paper);
+    border-top:1px solid var(--line);
+    padding:14px 0;
+    box-shadow:0 -6px 20px rgba(20,30,25,.06);
+    z-index:5;
+  }
+  footer.submit-bar .wrap{display:flex;align-items:center;gap:14px;}
+  .save-status{font-family:var(--mono);font-size:11.5px;color:var(--ink-faint);}
+  .submit-bar .spacer{flex:1;}
+
+  .modal-overlay{
+    position:fixed;inset:0;background:rgba(20,30,25,.45);
+    display:none;align-items:center;justify-content:center;z-index:50;padding:20px;
+  }
+  .modal-overlay.show{display:flex;}
+  .modal{
+    background:var(--paper);border-radius:12px;max-width:440px;width:100%;
+    padding:22px;max-height:86vh;overflow:auto;
+  }
+  .modal h3{margin:0 0 4px;font-size:16px;}
+  .modal .hint{font-size:12.5px;color:var(--ink-soft);margin-bottom:16px;}
+  .modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px;}
+  .type-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px;}
+  .type-opt{
+    border:1px solid var(--line-strong);border-radius:8px;padding:10px;cursor:pointer;font-size:13px;
+  }
+  .type-opt input{width:auto;margin-right:6px;}
+  .type-opt.checked{border-color:var(--accent);background:var(--accent-soft);}
+
+  .toast{
+    position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(10px);
+    background:var(--ink);color:#fff;padding:11px 18px;border-radius:8px;font-size:13.5px;
+    opacity:0;pointer-events:none;transition:.25s ease;z-index:60;
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+  .empty-note{font-size:13px;color:var(--ink-faint);font-style:italic;padding:8px 0;}
+
+  .index-box{margin-top:18px;border:1px solid var(--line);border-radius:10px;padding:16px 18px;background:var(--bg);}
+  .idx-head-row{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;}
+  .idx-headline{display:flex;align-items:center;gap:16px;}
+  .idx-percent{font-family:var(--mono);font-size:34px;font-weight:700;min-width:82px;line-height:1;}
+  .idx-percent.good{color:var(--green);}
+  .idx-percent.warn{color:var(--amber);}
+  .idx-percent.bad{color:var(--red);}
+  .idx-caption{font-size:13px;color:var(--ink-soft);font-weight:600;}
+  .idx-note{font-size:11.5px;color:var(--ink-faint);font-weight:400;display:block;margin-top:3px;max-width:48ch;}
+  .idx-breakdown{margin-top:14px;display:flex;flex-direction:column;gap:2px;}
+  .idx-row{display:flex;justify-content:space-between;font-size:13px;padding:6px 0;border-bottom:1px dashed var(--line-strong);}
+  .idx-row:last-child{border-bottom:none;}
+  .idx-row-label{color:var(--ink-soft);}
+  .idx-row-val{font-family:var(--mono);font-size:12.5px;}
+  .idx-row-val b{color:var(--ink);font-weight:700;}
+  .req::after{content:" *";color:var(--red);}
+  .col-editor{border:1px solid var(--line);border-radius:8px;padding:10px;margin-bottom:8px;}
+  .col-editor-row{display:flex;gap:8px;margin-bottom:6px;align-items:center;}
+  .col-editor-row input{flex:2;}
+  .col-editor-row select{flex:1;}
+  textarea.mono-area{font-family:var(--mono);font-size:12.5px;}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="top">
+    <div class="eyebrow"><span class="dot"></span>Отдел продаж · Отчёт за неделю</div>
+    <h1>Еженедельный отчёт менеджера</h1>
+    <div class="sub">Заполните разделы по итогам недели. Отчёт скачается на ваше устройство после нажатия «Завершить заполнение» — его нужно передать для сводки.</div>
+    <div class="toolbar">
+      <button class="btn" id="btnReset">Начать заново</button>
+      <div class="admin-toggle">
+        Режим настройки
+        <div class="switch" id="adminSwitch"></div>
+      </div>
+    </div>
+  </header>
+
+  <div class="admin-bar" id="adminBar">
+    <strong>Режим настройки включён.</strong>
+    <span>Можно добавлять разделы, поля и колонки таблиц.</span>
+    <div class="spacer"></div>
+    <button class="btn small" id="btnExportConfig">Экспорт конфигурации</button>
+    <button class="btn small" id="btnImportConfig">Импорт конфигурации</button>
+    <button class="btn small danger" id="btnResetConfig">Сбросить к стандартной</button>
+  </div>
+
+  <div id="formRoot"></div>
+
+  <div style="display:flex;justify-content:center;margin:6px 0 14px;">
+    <button class="btn" id="btnAddSection" style="display:none;">+ Добавить раздел</button>
+  </div>
+</div>
+
+<footer class="submit-bar">
+  <div class="wrap">
+    <span class="save-status" id="saveStatus">черновик сохраняется автоматически</span>
+    <div class="spacer"></div>
+    <button class="btn primary" id="btnSubmit">Завершить заполнение и скачать отчёт</button>
+  </div>
+</footer>
+
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal" id="modalBody"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<input type="file" id="fileImport" accept=".json" style="display:none;">
+
+<script>
+/* ---------------------------------------------------------------
+   ДАННЫЕ / КОНФИГУРАЦИЯ
+--------------------------------------------------------------- */
+const STORAGE_CONFIG = 'salesSurvey.config.v1';
+const STORAGE_DRAFT  = 'salesSurvey.draft.v1';
+
+function uid(prefix){
+  return prefix + '_' + Date.now().toString(36) + Math.random().toString(36).slice(2,7);
+}
+
+const DEFAULT_CONFIG = {
+  version: 1,
+  title: "Еженедельный отчёт менеджера",
+  sections: [
+    {
+      id: "meta", type: "fields", title: "ФИО и дата заполнения",
+      desc: "Кто отчитывается и за какой период.",
+      locked: true,
+      fields: [
+        {id:"fio", label:"ФИО менеджера", type:"text", required:true, width:"half"},
+        {id:"fill_date", label:"Дата заполнения", type:"date", required:true, width:"half"},
+        {id:"period_start", label:"Период с", type:"date", required:false, width:"half"},
+        {id:"period_end", label:"по", type:"date", required:false, width:"half"}
+      ]
+    },
+    {
+      id:"plan_prev", type:"table", title:"План мероприятий предыдущего периода",
+      desc:"Что было запланировано на прошлой неделе и что получилось.",
+      addable:true,
+      columns:[
+        {id:"event", label:"Мероприятие", type:"text"},
+        {id:"result", label:"Результат", type:"textarea"}
+      ]
+    },
+    {
+      id:"activities_done", type:"fields", title:"Выполненные мероприятия",
+      desc:"Показатели активности за неделю.",
+      showIndex:true,
+      indexLabel:"Индекс результативности недели",
+      fields:[
+        {id:"contacts_search", label:"Поиск контактов", type:"number", width:"third", kpi:10, weight:1},
+        {id:"calls", label:"Звонки", type:"number", width:"third", kpi:10, weight:2},
+        {id:"meetings", label:"Встречи", type:"number", width:"third", kpi:5, weight:3}
+      ]
+    },
+    {
+      id:"leads_processed", type:"fields", title:"Обработанные лиды",
+      desc:"Вставьте список обработанных лидов.",
+      fields:[
+        {id:"leads_text", label:"Список лидов", type:"textarea", width:"full", tall:true}
+      ]
+    },
+    {
+      id:"problems", type:"table", title:"Проблемы",
+      desc:"С какими проблемами столкнулись на этой неделе.",
+      addable:true,
+      priorityLegend:true,
+      columns:[
+        {id:"priority", label:"Приоритет", type:"select", options:["Низкий","Средний","Высокий"]},
+        {id:"description", label:"Описание", type:"textarea"}
+      ]
+    },
+    {
+      id:"insights", type:"fixedlist", title:"Инсайты недели",
+      desc:"Короткие наблюдения по рынку и клиентам.",
+      columns:[
+        {id:"question", label:"Вопрос", type:"label"},
+        {id:"answer", label:"Ответ", type:"textarea"}
+      ],
+      rows:[
+        {id:"r1", question:"Что нового узнали о рынке?"},
+        {id:"r2", question:"Что предлагали конкуренты?"},
+        {id:"r3", question:"Что чаще всего спрашивают клиенты?"},
+        {id:"r4", question:"Какой вопрос поставил в тупик?"},
+        {id:"r5", question:"Какое возражение встречалось чаще всего?"},
+        {id:"r6", question:"Как удалось отработать?"},
+        {id:"r7", question:"Что мешает продавать продукт?"}
+      ]
+    },
+    {
+      id:"plan_next", type:"table", title:"План мероприятий на следующую неделю",
+      desc:"Что запланировано на предстоящий период.",
+      addable:true,
+      columns:[
+        {id:"event", label:"Мероприятие", type:"text"},
+        {id:"goal", label:"Цель", type:"text"},
+        {id:"date", label:"Дата", type:"date"}
+      ]
+    }
+  ]
+};
+
+const PRIORITY_LEGEND = [
+  {k:"low", label:"Низкий", text:"Надо решить в ближайший месяц."},
+  {k:"mid", label:"Средний", text:"Решить до конца следующей недели."},
+  {k:"high", label:"Высокий", text:"Срочно решить — мешает продавать."}
+];
+
+function loadConfig(){
+  try{
+    const raw = localStorage.getItem(STORAGE_CONFIG);
+    if(raw) return JSON.parse(raw);
+  }catch(e){}
+  return JSON.parse(JSON.stringify(DEFAULT_CONFIG));
+}
+function saveConfig(){
+  localStorage.setItem(STORAGE_CONFIG, JSON.stringify(config));
+}
+
+let config = loadConfig();
+let adminMode = false;
+
+/* ---------------------------------------------------------------
+   ЧЕРНОВИК (ОТВЕТЫ)
+--------------------------------------------------------------- */
+function emptyAnswersForSection(sec){
+  if(sec.type === "fields"){
+    const vals = {};
+    sec.fields.forEach(f=>vals[f.id] = "");
+    return vals;
+  }
+  if(sec.type === "table"){
+    return {rows: []};
+  }
+  if(sec.type === "fixedlist"){
+    const rows = {};
+    sec.rows.forEach(r=>rows[r.id] = "");
+    return {rows};
+  }
+  return {};
+}
+
+function loadDraft(){
+  try{
+    const raw = localStorage.getItem(STORAGE_DRAFT);
+    if(raw) return JSON.parse(raw);
+  }catch(e){}
+  return {};
+}
+let draft = loadDraft();
+
+function ensureDraftShape(){
+  config.sections.forEach(sec=>{
+    if(!draft[sec.id]){
+      draft[sec.id] = emptyAnswersForSection(sec);
+    }
+    if(sec.type === "table" && !draft[sec.id].rows) draft[sec.id].rows = [];
+    if(sec.type === "fixedlist"){
+      if(!draft[sec.id].rows) draft[sec.id].rows = {};
+      sec.rows.forEach(r=>{ if(draft[sec.id].rows[r.id] === undefined) draft[sec.id].rows[r.id] = ""; });
+    }
+    if(sec.type === "fields"){
+      sec.fields.forEach(f=>{ if(draft[sec.id][f.id] === undefined) draft[sec.id][f.id] = ""; });
+    }
+  });
+  if(!draft.meta) draft.meta = emptyAnswersForSection(config.sections.find(s=>s.id==='meta'));
+  if(!draft.meta.fill_date){
+    draft.meta.fill_date = new Date().toISOString().slice(0,10);
+  }
+}
+
+let saveTimer = null;
+function persistDraft(){
+  clearTimeout(saveTimer);
+  document.getElementById('saveStatus').textContent = 'сохранение…';
+  saveTimer = setTimeout(()=>{
+    localStorage.setItem(STORAGE_DRAFT, JSON.stringify(draft));
+    document.getElementById('saveStatus').textContent = 'черновик сохранён · ' + new Date().toLocaleTimeString('ru-RU');
+  }, 350);
+}
+
+/* ---------------------------------------------------------------
+   РЕНДЕР ФОРМЫ
+--------------------------------------------------------------- */
+const root = document.getElementById('formRoot');
+
+function widthClass(w){
+  if(w==='half') return 'grid2-item';
+  if(w==='third') return 'grid4-item';
+  return '';
+}
+
+function el(tag, attrs, children){
+  const e = document.createElement(tag);
+  if(attrs) for(const k in attrs){
+    if(k==='class') e.className = attrs[k];
+    else if(k==='html') e.innerHTML = attrs[k];
+    else if(k.startsWith('on')) e.addEventListener(k.slice(2), attrs[k]);
+    else e.setAttribute(k, attrs[k]);
+  }
+  (children||[]).forEach(c=>{ if(c) e.appendChild(c); });
+  return e;
+}
+function text(t){ return document.createTextNode(t); }
+
+function renderAll(){
+  ensureDraftShape();
+  root.innerHTML = "";
+  config.sections.forEach((sec, i)=>{
+    root.appendChild(renderSection(sec, i));
+  });
+  document.getElementById('btnAddSection').style.display = adminMode ? 'inline-flex' : 'none';
+  document.getElementById('adminBar').classList.toggle('show', adminMode);
+}
+
+function renderSection(sec, index){
+  const card = el('section', {class:'card', 'data-sec':sec.id});
+
+  const head = el('div',{class:'card-head'},[
+    el('div',{class:'idx'}, [text(String(index+1).padStart(2,'0'))]),
+    el('div',{style:'flex:1'},[
+      el('h2',{}, [text(sec.title)]),
+      sec.desc ? el('div',{class:'card-desc'},[text(sec.desc)]) : null
+    ])
+  ]);
+
+  if(adminMode){
+    const actions = el('div',{class:'sec-actions'});
+    actions.appendChild(iconBtn('✎', 'Переименовать раздел', ()=>promptRenameSection(sec)));
+    if(index>0) actions.appendChild(iconBtn('↑','Переместить вверх', ()=>moveSection(sec.id,-1)));
+    if(index<config.sections.length-1) actions.appendChild(iconBtn('↓','Переместить вниз', ()=>moveSection(sec.id,1)));
+    if(!sec.locked) actions.appendChild(iconBtn('🗑','Удалить раздел', ()=>deleteSection(sec.id)));
+    head.appendChild(actions);
+  }
+  card.appendChild(head);
+
+  const body = el('div',{class:'card-body'});
+
+  if(sec.priorityLegend){
+    const legend = el('div',{class:'legend'});
+    const map = {"Низкий":"low","Средний":"mid","Высокий":"high"};
+    PRIORITY_LEGEND.forEach(p=>{
+      legend.appendChild(el('div',{class:'pill '+p.k},[
+        el('b',{},[text(p.label)]), text(p.text)
+      ]));
+    });
+    body.appendChild(legend);
+  }
+
+  if(sec.type === 'fields') body.appendChild(renderFieldsBody(sec));
+  if(sec.type === 'table') body.appendChild(renderTableBody(sec));
+  if(sec.type === 'fixedlist') body.appendChild(renderFixedListBody(sec));
+
+  if(adminMode){
+    const addRow = el('div',{style:'margin-top:14px;display:flex;gap:8px;flex-wrap:wrap;'});
+    if(sec.type === 'fields'){
+      addRow.appendChild(el('button',{class:'btn small', onclick:()=>openFieldModal(sec)},[text('+ Добавить поле')]));
+    } else {
+      addRow.appendChild(el('button',{class:'btn small', onclick:()=>openColumnModal(sec)},[text('+ Добавить колонку')]));
+    }
+    body.appendChild(addRow);
+  }
+
+  card.appendChild(body);
+  return card;
+}
+
+function iconBtn(glyph, title, onClick){
+  return el('button',{class:'btn ghost small', title:title, onclick:onClick},[text(glyph)]);
+}
+
+/* ---- fields ---- */
+function renderFieldsBody(sec){
+  const wrap = el('div',{});
+  const groups = {full:[], half:[], third:[]};
+  sec.fields.forEach(f=> groups[f.width||'full'].push(f));
+
+  if(groups.half.length){
+    const g = el('div',{class:'grid2'});
+    groups.half.forEach(f=> g.appendChild(fieldBlock(sec, f)));
+    wrap.appendChild(g);
+  }
+  if(groups.third.length){
+    const g = el('div',{class:'grid4', style:'margin-top:14px;'});
+    groups.third.forEach(f=> g.appendChild(fieldBlock(sec, f)));
+    wrap.appendChild(g);
+  }
+  if(groups.full.length){
+    groups.full.forEach(f=>{
+      const b = fieldBlock(sec, f);
+      b.style.marginTop = '14px';
+      wrap.appendChild(b);
+    });
+  }
+  if(!sec.fields.length){
+    wrap.appendChild(el('div',{class:'empty-note'},[text('Пока нет полей. Добавьте первое поле.')]));
+  }
+  if(sec.showIndex){
+    const box = el('div',{class:'index-box', id:'idxbox_'+sec.id, html: indexBoxHtml(sec)});
+    wrap.appendChild(box);
+    if(adminMode){
+      const cfgBtn = el('button',{class:'btn small', style:'margin-top:10px;', onclick:()=>openKpiModal(sec)},[text('⚙ Настроить KPI и веса')]);
+      wrap.appendChild(cfgBtn);
+    }
+  }
+  return wrap;
+}
+
+function fieldBlock(sec, f){
+  const block = el('div',{class:'field'});
+  const lbl = el('label',{class:'field-label'+(f.required?' req':'')},[text(f.label)]);
+  if(adminMode){
+    const del = iconBtn('🗑','Удалить поле', (ev)=>{ ev.stopPropagation(); deleteField(sec.id, f.id); });
+    del.style.float='right';
+    lbl.appendChild(del);
+  }
+  block.appendChild(lbl);
+  block.appendChild(inputFor(f.type, draft[sec.id][f.id], f.tall, (val)=>{
+    draft[sec.id][f.id] = val; persistDraft();
+    if(sec.showIndex) refreshIndexBox(sec);
+  }, f.options));
+  return block;
+}
+
+/* ---- performance index (weighted KPI achievement) ---- */
+function computeIndexParts(sec){
+  const parts = [];
+  sec.fields.forEach(f=>{
+    if(f.kpi && f.kpi>0){
+      const raw = Number(draft[sec.id][f.id]) || 0;
+      const ratio = raw / f.kpi;
+      const weight = f.weight || 1;
+      parts.push({id:f.id, label:f.label, value:raw, kpi:f.kpi, weight:weight, ratio:ratio, cappedRatio:Math.min(ratio,1)});
+    }
+  });
+  return parts;
+}
+function computeIndexPercent(parts){
+  const totalWeight = parts.reduce((s,p)=>s+p.weight,0);
+  if(!totalWeight) return 0;
+  const weighted = parts.reduce((s,p)=>s+p.cappedRatio*p.weight,0);
+  return Math.round(weighted/totalWeight*100);
+}
+function idxColorClass(percent){
+  if(percent>=85) return 'good';
+  if(percent>=60) return 'warn';
+  return 'bad';
+}
+function indexBoxHtml(sec){
+  const parts = computeIndexParts(sec);
+  const percent = computeIndexPercent(parts);
+  const rowsHtml = parts.map(p=>{
+    const pct = Math.round(p.ratio*100);
+    return `<div class="idx-row"><span class="idx-row-label">${escapeHtml(p.label)} <span style="color:var(--ink-faint);">· вес ${p.weight}</span></span><span class="idx-row-val">${p.value} / ${p.kpi} <b>(${pct}%)</b></span></div>`;
+  }).join('');
+  return `
+    <div class="idx-headline">
+      <div class="idx-percent ${idxColorClass(percent)}">${percent}%</div>
+      <div>
+        <div class="idx-caption">${escapeHtml(sec.indexLabel||'Индекс результативности')}</div>
+        <span class="idx-note">Каждый показатель учитывается не выше 100% от своего KPI. Вес растёт по приоритету: поиск контактов → звонки → встречи.</span>
+      </div>
+    </div>
+    ${parts.length ? `<div class="idx-breakdown">${rowsHtml}</div>` : '<div class="empty-note">Задайте KPI хотя бы для одного числового поля, чтобы считать индекс.</div>'}
+  `;
+}
+function refreshIndexBox(sec){
+  const boxEl = document.getElementById('idxbox_'+sec.id);
+  if(boxEl) boxEl.innerHTML = indexBoxHtml(sec);
+}
+
+function openKpiModal(sec){
+  const rows = sec.fields.filter(f=>f.type==='number').map(f=>`
+    <div class="col-editor" data-fid="${f.id}">
+      <div style="font-weight:600;font-size:13px;margin-bottom:6px;">${escapeHtml(f.label)}</div>
+      <div class="col-editor-row">
+        <label style="flex:1;font-size:12px;color:var(--ink-soft);">KPI (мин. в неделю)</label>
+        <input type="number" class="kpi-input" value="${f.kpi||''}" placeholder="—" style="flex:1;">
+      </div>
+      <div class="col-editor-row">
+        <label style="flex:1;font-size:12px;color:var(--ink-soft);">Вес (приоритет)</label>
+        <input type="number" class="weight-input" value="${f.weight||1}" min="0" step="1" style="flex:1;">
+      </div>
+    </div>
+  `).join('');
+  modalBody.innerHTML = `
+    <h3>Настройка индекса результативности</h3>
+    <div class="hint">KPI — минимальное количество в неделю. Вес — приоритет показателя: чем выше вес, тем сильнее он влияет на индекс. Оставьте KPI пустым, чтобы исключить поле из расчёта.</div>
+    ${rows || '<div class="empty-note">В разделе нет числовых полей.</div>'}
+    <div class="modal-actions">
+      <button class="btn" id="km_cancel">Отмена</button>
+      <button class="btn primary" id="km_save">Сохранить</button>
+    </div>
+  `;
+  overlay.classList.add('show');
+  document.getElementById('km_cancel').onclick = closeModal;
+  document.getElementById('km_save').onclick = ()=>{
+    modalBody.querySelectorAll('.col-editor').forEach(row=>{
+      const fid = row.dataset.fid;
+      const f = sec.fields.find(x=>x.id===fid);
+      const kpiVal = row.querySelector('.kpi-input').value;
+      const weightVal = row.querySelector('.weight-input').value;
+      f.kpi = kpiVal ? Number(kpiVal) : undefined;
+      f.weight = weightVal ? Number(weightVal) : 1;
+    });
+    saveConfig(); renderAll(); closeModal();
+  };
+}
+
+function inputFor(type, value, tall, onChange, options){
+  let node;
+  if(type === 'textarea'){
+    node = el('textarea',{});
+    if(tall) node.style.minHeight = '140px';
+    node.value = value||'';
+    node.addEventListener('input', ()=>onChange(node.value));
+  } else if(type === 'select'){
+    node = el('select',{});
+    node.appendChild(el('option',{value:''},[text('—')]));
+    (options||[]).forEach(o=>{
+      const opt = el('option',{value:o},[text(o)]);
+      if(value===o) opt.selected = true;
+      node.appendChild(opt);
+    });
+    node.addEventListener('change', ()=>onChange(node.value));
+  } else {
+    node = el('input',{type: type==='number'?'number':(type==='date'?'date':'text')});
+    node.value = value||'';
+    node.addEventListener('input', ()=>onChange(node.value));
+  }
+  return node;
+}
+
+/* ---- dynamic tables ---- */
+function renderTableBody(sec){
+  const wrap = el('div',{});
+  const rows = draft[sec.id].rows;
+  const table = el('table',{class:'dyn'});
+  const thead = el('tr',{});
+  sec.columns.forEach(c=>{
+    const th = el('th',{}, [text(c.label)]);
+    if(adminMode){
+      const del = iconBtn('🗑','Удалить колонку', ()=>deleteColumn(sec.id, c.id));
+      del.style.marginLeft='4px';
+      th.appendChild(del);
+    }
+    thead.appendChild(th);
+  });
+  thead.appendChild(el('th',{class:'row-del'},[]));
+  table.appendChild(thead);
+
+  rows.forEach((row, ri)=>{
+    const tr = el('tr',{});
+    sec.columns.forEach(c=>{
+      const td = el('td',{});
+      td.appendChild(inputFor(c.type, row[c.id], false, (val)=>{
+        row[c.id]=val; persistDraft();
+      }, c.options));
+      tr.appendChild(td);
+    });
+    const delTd = el('td',{class:'row-del'});
+    delTd.appendChild(iconBtn('✕','Удалить строку', ()=>{
+      rows.splice(ri,1); persistDraft(); renderAll();
+    }));
+    tr.appendChild(delTd);
+    table.appendChild(tr);
+  });
+  wrap.appendChild(table);
+  if(!rows.length){
+    wrap.appendChild(el('div',{class:'empty-note'},[text('Строк пока нет.')]));
+  }
+  if(sec.addable !== false){
+    wrap.appendChild(el('button',{class:'btn small add-row', onclick:()=>{
+      const newRow = {};
+      sec.columns.forEach(c=>newRow[c.id]='');
+      rows.push(newRow); persistDraft(); renderAll();
+    }},[text('+ Добавить строку')]));
+  }
+  return wrap;
+}
+
+/* ---- fixed list (insights) ---- */
+function renderFixedListBody(sec){
+  const table = el('table',{class:'dyn'});
+  sec.rows.forEach(r=>{
+    const tr = el('tr',{});
+    const q = el('td',{class:'qcol'},[text(r.question)]);
+    tr.appendChild(q);
+    const a = el('td',{});
+    a.appendChild(inputFor('textarea', draft[sec.id].rows[r.id], false, (val)=>{
+      draft[sec.id].rows[r.id]=val; persistDraft();
+    }));
+    tr.appendChild(a);
+    table.appendChild(tr);
+  });
+  return table;
+}
+
+/* ---------------------------------------------------------------
+   АДМИН-ДЕЙСТВИЯ: разделы / поля / колонки
+--------------------------------------------------------------- */
+function moveSection(id, dir){
+  const idx = config.sections.findIndex(s=>s.id===id);
+  const swapWith = idx+dir;
+  if(swapWith<0 || swapWith>=config.sections.length) return;
+  const tmp = config.sections[idx];
+  config.sections[idx] = config.sections[swapWith];
+  config.sections[swapWith] = tmp;
+  saveConfig(); renderAll();
+}
+function promptRenameSection(sec){
+  const v = window.prompt('Название раздела:', sec.title);
+  if(v && v.trim()){ sec.title = v.trim(); saveConfig(); renderAll(); }
+}
+function deleteSection(id){
+  if(!confirm('Удалить раздел вместе с введёнными данными?')) return;
+  config.sections = config.sections.filter(s=>s.id!==id);
+  delete draft[id];
+  saveConfig(); persistDraft(); renderAll();
+}
+function deleteField(secId, fieldId){
+  const sec = config.sections.find(s=>s.id===secId);
+  sec.fields = sec.fields.filter(f=>f.id!==fieldId);
+  saveConfig(); renderAll();
+}
+function deleteColumn(secId, colId){
+  const sec = config.sections.find(s=>s.id===secId);
+  if(sec.columns.length<=1){ alert('Нужна хотя бы одна колонка.'); return; }
+  sec.columns = sec.columns.filter(c=>c.id!==colId);
+  if(sec.type==='table'){
+    draft[secId].rows.forEach(r=>delete r[colId]);
+  }
+  saveConfig(); persistDraft(); renderAll();
+}
+
+/* modal helpers */
+const overlay = document.getElementById('modalOverlay');
+const modalBody = document.getElementById('modalBody');
+function closeModal(){ overlay.classList.remove('show'); modalBody.innerHTML=''; }
+overlay.addEventListener('click', (e)=>{ if(e.target===overlay) closeModal(); });
+
+function openFieldModal(sec){
+  modalBody.innerHTML = `
+    <h3>Новое поле</h3>
+    <div class="hint">Раздел «${escapeHtml(sec.title)}»</div>
+    <label class="field-label">Название поля</label>
+    <input type="text" id="mf_label" placeholder="Например, Комментарий">
+    <div style="height:12px"></div>
+    <label class="field-label">Тип поля</label>
+    <div class="type-grid" id="mf_types">
+      ${typeOptionsHtml('text')}
+    </div>
+    <div id="mf_options_wrap" style="display:none;margin-top:12px;">
+      <label class="field-label">Варианты (через запятую)</label>
+      <input type="text" id="mf_options" placeholder="Вариант 1, Вариант 2">
+    </div>
+    <div class="modal-actions">
+      <button class="btn" id="mf_cancel">Отмена</button>
+      <button class="btn primary" id="mf_save">Добавить</button>
+    </div>
+  `;
+  overlay.classList.add('show');
+  wireTypeGrid('mf_types', 'mf_options_wrap');
+  document.getElementById('mf_cancel').onclick = closeModal;
+  document.getElementById('mf_save').onclick = ()=>{
+    const label = document.getElementById('mf_label').value.trim();
+    if(!label){ alert('Введите название поля'); return; }
+    const type = document.querySelector('#mf_types input:checked').value;
+    const options = type==='select' ? splitOptions(document.getElementById('mf_options').value) : undefined;
+    sec.fields.push({id:uid('f'), label, type, width:'full', required:false, options});
+    saveConfig(); renderAll(); closeModal();
+  };
+}
+
+function openColumnModal(sec){
+  modalBody.innerHTML = `
+    <h3>Новая колонка</h3>
+    <div class="hint">Раздел «${escapeHtml(sec.title)}»</div>
+    <label class="field-label">Название колонки</label>
+    <input type="text" id="mc_label" placeholder="Например, Ссылка">
+    <div style="height:12px"></div>
+    <label class="field-label">Тип данных</label>
+    <div class="type-grid" id="mc_types">
+      ${typeOptionsHtml('text', true)}
+    </div>
+    <div id="mc_options_wrap" style="display:none;margin-top:12px;">
+      <label class="field-label">Варианты (через запятую)</label>
+      <input type="text" id="mc_options" placeholder="Вариант 1, Вариант 2">
+    </div>
+    <div class="modal-actions">
+      <button class="btn" id="mc_cancel">Отмена</button>
+      <button class="btn primary" id="mc_save">Добавить</button>
+    </div>
+  `;
+  overlay.classList.add('show');
+  wireTypeGrid('mc_types', 'mc_options_wrap');
+  document.getElementById('mc_cancel').onclick = closeModal;
+  document.getElementById('mc_save').onclick = ()=>{
+    const label = document.getElementById('mc_label').value.trim();
+    if(!label){ alert('Введите название колонки'); return; }
+    const type = document.querySelector('#mc_types input:checked').value;
+    const options = type==='select' ? splitOptions(document.getElementById('mc_options').value) : undefined;
+    const col = {id:uid('c'), label, type, options};
+    sec.columns.push(col);
+    if(sec.type==='table'){
+      draft[sec.id].rows.forEach(r=>r[col.id]='');
+    } else if(sec.type==='fixedlist'){
+      // fixedlist: extend fixed rows with blank value for this column
+      sec.rows.forEach(r=>{ if(draft[sec.id].rows[r.id]===undefined) draft[sec.id].rows[r.id]=''; });
+    }
+    saveConfig(); persistDraft(); renderAll(); closeModal();
+  };
+}
+
+function typeOptionsHtml(defaultType, skipLabelType){
+  const types = [
+    ['text','Текст'], ['textarea','Многострочный текст'],
+    ['number','Число'], ['date','Дата'], ['select','Список (выбор)']
+  ];
+  return types.map(([v,l])=>`
+    <label class="type-opt${v===defaultType?' checked':''}">
+      <input type="radio" name="typegrid" value="${v}" ${v===defaultType?'checked':''}> ${l}
+    </label>`).join('');
+}
+function wireTypeGrid(gridId, optionsWrapId){
+  const grid = document.getElementById(gridId);
+  const wrap = document.getElementById(optionsWrapId);
+  grid.querySelectorAll('input[type=radio]').forEach(r=>{
+    r.addEventListener('change', ()=>{
+      grid.querySelectorAll('.type-opt').forEach(o=>o.classList.remove('checked'));
+      r.closest('.type-opt').classList.add('checked');
+      wrap.style.display = r.value==='select' ? 'block' : 'none';
+    });
+  });
+}
+function splitOptions(str){
+  return str.split(',').map(s=>s.trim()).filter(Boolean);
+}
+function escapeHtml(s){
+  return (s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function openAddSectionModal(){
+  modalBody.innerHTML = `
+    <h3>Новый раздел</h3>
+    <div class="hint">Выберите тип раздела и название.</div>
+    <label class="field-label">Название раздела</label>
+    <input type="text" id="ms_label" placeholder="Например, Обучение">
+    <div style="height:12px"></div>
+    <label class="field-label">Тип раздела</label>
+    <div class="type-grid" id="ms_types">
+      <label class="type-opt checked"><input type="radio" name="sectype" value="fields" checked> Обычные поля</label>
+      <label class="type-opt"><input type="radio" name="sectype" value="table"> Таблица (строки добавляются)</label>
+      <label class="type-opt"><input type="radio" name="sectype" value="fixedlist"> Список вопросов (фикс. строки)</label>
+    </div>
+    <div class="hint" style="margin-top:10px;">После создания раздела добавьте в него поля/колонки кнопкой внутри раздела.</div>
+    <div class="modal-actions">
+      <button class="btn" id="ms_cancel">Отмена</button>
+      <button class="btn primary" id="ms_save">Создать</button>
+    </div>
+  `;
+  overlay.classList.add('show');
+  document.getElementById('ms_types').querySelectorAll('input').forEach(r=>{
+    r.addEventListener('change', ()=>{
+      document.querySelectorAll('#ms_types .type-opt').forEach(o=>o.classList.remove('checked'));
+      r.closest('.type-opt').classList.add('checked');
+    });
+  });
+  document.getElementById('ms_cancel').onclick = closeModal;
+  document.getElementById('ms_save').onclick = ()=>{
+    const label = document.getElementById('ms_label').value.trim();
+    if(!label){ alert('Введите название раздела'); return; }
+    const type = document.querySelector('#ms_types input:checked').value;
+    const sec = {id:uid('sec'), type, title:label, desc:'', };
+    if(type==='fields') sec.fields = [];
+    if(type==='table'){ sec.addable = true; sec.columns = [{id:uid('c'),label:'Поле 1',type:'text'}]; }
+    if(type==='fixedlist'){
+      sec.columns = [{id:'question',label:'Вопрос',type:'label'},{id:'answer',label:'Ответ',type:'textarea'}];
+      sec.rows = [{id:uid('r'), question:'Новый вопрос'}];
+    }
+    config.sections.push(sec);
+    saveConfig(); ensureDraftShape(); persistDraft(); renderAll(); closeModal();
+  };
+}
+
+/* ---------------------------------------------------------------
+   ЭКСПОРТ / ИМПОРТ КОНФИГУРАЦИИ
+--------------------------------------------------------------- */
+function downloadFile(filename, content, mime){
+  const blob = new Blob([content], {type:mime});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(()=>URL.revokeObjectURL(a.href), 4000);
+}
+
+document.getElementById('btnExportConfig').onclick = ()=>{
+  downloadFile('konfiguraciya-oprosnika.json', JSON.stringify(config,null,2), 'application/json');
+};
+document.getElementById('btnImportConfig').onclick = ()=> document.getElementById('fileImport').click();
+document.getElementById('fileImport').addEventListener('change', (e)=>{
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ()=>{
+    try{
+      const parsed = JSON.parse(reader.result);
+      if(!parsed.sections) throw new Error('bad shape');
+      config = parsed;
+      saveConfig();
+      draft = {};
+      ensureDraftShape();
+      persistDraft();
+      renderAll();
+      showToast('Конфигурация импортирована');
+    }catch(err){
+      alert('Не удалось прочитать файл конфигурации.');
+    }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+});
+document.getElementById('btnResetConfig').onclick = ()=>{
+  if(!confirm('Сбросить конфигурацию к стандартной? Пользовательские разделы и поля будут удалены.')) return;
+  config = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
+  saveConfig(); ensureDraftShape(); persistDraft(); renderAll();
+};
+
+/* ---------------------------------------------------------------
+   ADMIN SWITCH / RESET / TOAST
+--------------------------------------------------------------- */
+const adminSwitch = document.getElementById('adminSwitch');
+adminSwitch.addEventListener('click', ()=>{
+  adminMode = !adminMode;
+  adminSwitch.classList.toggle('on', adminMode);
+  renderAll();
+});
+document.getElementById('btnAddSection').addEventListener('click', openAddSectionModal);
+
+document.getElementById('btnReset').addEventListener('click', ()=>{
+  if(!confirm('Очистить все введённые ответы в этом отчёте?')) return;
+  draft = {};
+  ensureDraftShape();
+  persistDraft();
+  renderAll();
+});
+
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2600);
+}
+
+/* ---------------------------------------------------------------
+   ОТПРАВКА / СКАЧИВАНИЕ ОТЧЁТА
+--------------------------------------------------------------- */
+function buildReport(){
+  const metaSec = config.sections.find(s=>s.id==='meta');
+  const meta = {
+    manager: (draft.meta && draft.meta.fio) || '',
+    filledDate: (draft.meta && draft.meta.fill_date) || '',
+    periodStart: (draft.meta && draft.meta.period_start) || '',
+    periodEnd: (draft.meta && draft.meta.period_end) || '',
+    submittedAt: new Date().toISOString(),
+    surveyTitle: config.title
+  };
+  const sections = config.sections.filter(s=>s.id!=='meta').map(sec=>{
+    if(sec.type==='fields'){
+      const out = {
+        id:sec.id, title:sec.title, type:'fields',
+        fields: sec.fields.map(f=>({id:f.id, label:f.label, type:f.type, value:draft[sec.id][f.id]}))
+      };
+      if(sec.showIndex){
+        const parts = computeIndexParts(sec);
+        out.index = {
+          label: sec.indexLabel || 'Индекс результативности',
+          percent: computeIndexPercent(parts),
+          parts: parts.map(p=>({id:p.id, label:p.label, value:p.value, kpi:p.kpi, weight:p.weight, achievedPercent:Math.round(p.ratio*100)}))
+        };
+      }
+      return out;
+    }
+    if(sec.type==='table'){
+      return {
+        id:sec.id, title:sec.title, type:'table',
+        columns: sec.columns.map(c=>({id:c.id,label:c.label,type:c.type})),
+        rows: draft[sec.id].rows
+      };
+    }
+    if(sec.type==='fixedlist'){
+      return {
+        id:sec.id, title:sec.title, type:'fixedlist',
+        columns: sec.columns.map(c=>({id:c.id,label:c.label,type:c.type})),
+        rows: sec.rows.map(r=>({id:r.id, question:r.question, answer: draft[sec.id].rows[r.id]||''}))
+      };
+    }
+  });
+  return {meta, sections};
+}
+
+function reportToReadableHtml(report){
+  const esc = escapeHtml;
+  let body = `<h1>${esc(report.meta.surveyTitle)}</h1>`;
+  body += `<p><b>Менеджер:</b> ${esc(report.meta.manager)}<br>`;
+  body += `<b>Дата заполнения:</b> ${esc(report.meta.filledDate)}<br>`;
+  if(report.meta.periodStart || report.meta.periodEnd){
+    body += `<b>Период:</b> ${esc(report.meta.periodStart)} — ${esc(report.meta.periodEnd)}<br>`;
+  }
+  body += `</p><hr>`;
+  report.sections.forEach(sec=>{
+    body += `<h2>${esc(sec.title)}</h2>`;
+    if(sec.type==='fields'){
+      body += '<table class="rt">';
+      sec.fields.forEach(f=>{
+        body += `<tr><td class="lbl">${esc(f.label)}</td><td>${esc(String(f.value||'—')).replace(/\n/g,'<br>')}</td></tr>`;
+      });
+      body += '</table>';
+      if(sec.index){
+        body += `<p style="margin-top:10px;"><b>${esc(sec.index.label)}: ${sec.index.percent}%</b><br>`;
+        body += sec.index.parts.map(p=>`${esc(p.label)}: ${p.value} / ${p.kpi} (${p.achievedPercent}%)`).join(' · ');
+        body += `</p>`;
+      }
+    }
+    if(sec.type==='table'){
+      if(!sec.rows.length){ body += '<p class="muted">Нет данных</p>'; }
+      else{
+        body += '<table class="rt"><tr>'+sec.columns.map(c=>`<th>${esc(c.label)}</th>`).join('')+'</tr>';
+        sec.rows.forEach(r=>{
+          body += '<tr>'+sec.columns.map(c=>`<td>${esc(String(r[c.id]||'')).replace(/\n/g,'<br>')}</td>`).join('')+'</tr>';
+        });
+        body += '</table>';
+      }
+    }
+    if(sec.type==='fixedlist'){
+      body += '<table class="rt">';
+      sec.rows.forEach(r=>{
+        body += `<tr><td class="lbl">${esc(r.question)}</td><td>${esc(r.answer||'—').replace(/\n/g,'<br>')}</td></tr>`;
+      });
+      body += '</table>';
+    }
+  });
+  return `<!DOCTYPE html><html lang="ru"><head><meta charset="UTF-8"><title>Отчёт — ${esc(report.meta.manager)}</title>
+  <style>
+    body{font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;max-width:820px;margin:40px auto;color:#1B2420;padding:0 20px;}
+    h1{font-size:24px;border-bottom:2px solid #1B2420;padding-bottom:10px;}
+    h2{font-size:16px;margin-top:30px;color:#204F42;}
+    table.rt{width:100%;border-collapse:collapse;margin-top:8px;}
+    table.rt th{background:#E4EFEA;text-align:left;padding:8px;font-size:12px;text-transform:uppercase;}
+    table.rt td{padding:8px;border-bottom:1px solid #DCE3DF;font-size:14px;vertical-align:top;}
+    td.lbl{font-weight:600;width:32%;color:#5B6A63;}
+    .muted{color:#8B978F;font-style:italic;}
+    @media print{ body{margin:0;} }
+  </style></head><body>${body}</body></html>`;
+}
+
+function validateRequired(){
+  const missing = [];
+  config.sections.forEach(sec=>{
+    if(sec.type!=='fields') return;
+    sec.fields.forEach(f=>{
+      if(f.required && !String(draft[sec.id][f.id]||'').trim()){
+        missing.push(f.label);
+      }
+    });
+  });
+  return missing;
+}
+
+document.getElementById('btnSubmit').addEventListener('click', ()=>{
+  const missing = validateRequired();
+  if(missing.length){
+    alert('Заполните обязательные поля: '+missing.join(', '));
+    return;
+  }
+  const report = buildReport();
+  const managerSlug = (report.meta.manager||'menedzher').trim().replace(/\s+/g,'_').replace(/[^\wА-Яа-яЁё_-]/g,'');
+  const dateSlug = report.meta.filledDate || new Date().toISOString().slice(0,10);
+  downloadFile(`otchet_${managerSlug}_${dateSlug}.json`, JSON.stringify(report,null,2), 'application/json');
+  setTimeout(()=>{
+    downloadFile(`otchet_${managerSlug}_${dateSlug}.html`, reportToReadableHtml(report), 'text/html');
+  }, 300);
+  showToast('Отчёт скачан: .json (для сводки) и .html (для чтения)');
+  localStorage.removeItem(STORAGE_DRAFT);
+});
+
+/* ---------------------------------------------------------------
+   INIT
+--------------------------------------------------------------- */
+ensureDraftShape();
+renderAll();
+</script>
+</body>
+</html>
