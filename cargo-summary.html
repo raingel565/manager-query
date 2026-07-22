@@ -390,7 +390,7 @@ function nl2br(s){ return esc(s).replace(/\n/g,'<br>'); }
 const FALLBACK_INDEX_DEFS = {
   contacts_search: {kpi:10, weight:1},
   calls: {kpi:10, weight:2},
-  meetings: {kpi:5, weight:3}
+  meetings: {kpi:2, weight:3}
 };
 function idxColorClass(percent){
   if(percent>=85) return 'good';
