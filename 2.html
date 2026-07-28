@@ -10,14 +10,14 @@
         /* НАСТРОЙКИ ЦВЕТОВ (КОРПОРАТИВНЫЙ ЗЕЛЕНЫЙ) */
         /* ========================================= */
         :root {
-            --primary-color: #39b54a;     /* Главный зеленый цвет */
-            --primary-hover: #2e963c;     /* Цвет при наведении */
+            --primary-color: #39b54a;     
+            --primary-hover: #2e963c;     
             --bg-page: #f0f4f9;            
             --bg-card: #ffffff;            
-            --text-main: #1f2937;         /* Черный/темно-серый текст */
+            --text-main: #1f2937;         
             --text-muted: #6b7280;        
-            --border-color: #39b54a;      /* Рамки таблиц тоже зеленые */
-            --border-input: #d1d5db;      /* Рамки полей ввода серые для контраста */
+            --border-color: #39b54a;      
+            --border-input: #d1d5db;      
         }
 
         /* БАЗОВЫЕ СТИЛИ */
@@ -31,6 +31,50 @@
         }
 
         .container { max-width: 900px; margin: 0 auto; }
+
+        /* БЫСТРЫЕ ССЫЛКИ (Компактные) */
+        .quick-links-compact {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        .ql-card {
+            display: flex;
+            align-items: center;
+            background: #ffffff;
+            border: 1px solid var(--border-input);
+            border-radius: 12px;
+            padding: 12px 16px;
+            text-decoration: none;
+            transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+        .ql-card:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 16px rgba(57, 181, 74, 0.12);
+        }
+        .ql-icon {
+            font-size: 22px;
+            margin-right: 14px;
+            background: #f0fdf4;
+            width: 42px;
+            height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            transition: 0.2s;
+            flex-shrink: 0;
+        }
+        .ql-card:hover .ql-icon {
+            background: var(--primary-color);
+            transform: scale(1.1);
+        }
+        .ql-texts { display: flex; flex-direction: column; }
+        .ql-title { font-size: 14px; font-weight: 800; color: var(--text-main); margin-bottom: 2px; }
+        .ql-sub { font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
 
         /* КАРТОЧКИ (БЛОКИ ОТЧЕТА) */
         .card {
@@ -68,148 +112,71 @@
 
         /* ПОЛЯ ВВОДА */
         label { display: block; font-weight: 600; margin-bottom: 5px; font-size: 14px; }
-        
         .hint { font-size: 12px; color: var(--text-muted); margin-bottom: 8px; display: block; font-style: italic; }
 
         input[type="text"], input[type="number"], input[type="date"], textarea, select {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid var(--border-input);
-            border-radius: 6px;
-            box-sizing: border-box;
-            font-family: inherit;
-            font-size: 14px;
-            margin-bottom: 10px;
-            background-color: #fff;
+            width: 100%; padding: 10px; border: 1px solid var(--border-input); border-radius: 6px; box-sizing: border-box;
+            font-family: inherit; font-size: 14px; margin-bottom: 10px; background-color: #fff;
         }
-
         input:focus, textarea:focus, select:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 2px rgba(57, 181, 74, 0.2);
+            outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 2px rgba(57, 181, 74, 0.2);
         }
 
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
 
         /* СПЕЦИАЛЬНЫЕ СТИЛИ ДЛЯ OKR */
         .kr-row { 
-            display: flex; 
-            align-items: center; 
-            justify-content: space-between; 
-            margin-bottom: 10px; 
-            padding: 12px; 
-            background: #fafafa; 
-            border: 1px solid var(--border-input); 
-            border-radius: 6px; 
+            display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; 
+            padding: 12px; background: #fafafa; border: 1px solid var(--border-input); border-radius: 6px; 
         }
         .kr-text-col { display: flex; align-items: center; width: 75%; font-size: 14px; font-weight: 500; padding-right: 15px;}
         .kr-val-col { width: 25%; display: flex; align-items: center; justify-content: flex-end; gap: 10px; }
         .kr-val-col input { width: 90px; margin-bottom: 0; padding: 8px; font-weight: bold; }
 
-        /* ТАБЛИЦЫ И АДАПТИВНЫЙ СКРОЛЛ */
-        .table-wrapper {
-            width: 100%;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            margin-bottom: 10px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 600px; 
-            border: 2px solid var(--border-color); /* Внешняя рамка таблицы */
-        }
-
-        th, td {
-            border: 1px solid var(--border-color); /* Внутренние рамки таблицы */
-            padding: 8px;
-            text-align: left;
-            vertical-align: top;
-        }
-
+        /* ТАБЛИЦЫ */
+        .table-wrapper { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; margin-bottom: 10px; }
+        table { width: 100%; border-collapse: collapse; min-width: 600px; border: 2px solid var(--border-color); }
+        th, td { border: 1px solid var(--border-color); padding: 8px; text-align: left; vertical-align: top; }
         th { background-color: #f8fafc; font-weight: 600; font-size: 13px; color: var(--primary-color); }
-
         td input, td textarea { margin-bottom: 0; border: none; background: transparent; padding: 5px; min-width: 120px; }
         td input:hover, td textarea:hover { background: #f3f4f6; }
-        
         .row-header { background-color: #f8fafc; font-weight: 600; font-size: 14px;}
 
         /* КНОПКИ */
         .btn-add { background: transparent; color: var(--primary-color); border: none; cursor: pointer; font-weight: 600; padding: 5px 0; font-size: 14px; }
         .btn-add:hover { text-decoration: underline; }
-
         .btn-remove { color: #dc2626; background: transparent; border: none; cursor: pointer; font-weight: bold; font-size: 18px; }
 
         .btn-group { display: flex; justify-content: center; margin-top: 30px; margin-bottom: 50px; }
-
         .btn-main {
-            background-color: var(--primary-color);
-            color: white;
-            padding: 18px 32px;
-            border: none;
-            border-radius: 8px;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
-            text-align: center;
-            transition: 0.2s;
-            width: 100%;
-            max-width: 600px;
-            box-shadow: 0 4px 12px rgba(57, 181, 74, 0.3);
+            background-color: var(--primary-color); color: white; padding: 18px 32px; border: none;
+            border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; text-align: center;
+            transition: 0.2s; width: 100%; max-width: 600px; box-shadow: 0 4px 12px rgba(57, 181, 74, 0.3);
         }
         .btn-main:hover { background-color: var(--primary-hover); transform: translateY(-2px); }
         .btn-main:disabled { opacity: 0.7; cursor: wait; transform: none; }
 
         /* ИНТЕРАКТИВНАЯ САМООЦЕНКА */
         .rating-row {
-            display: flex;
-            flex-direction: column;
-            padding: 15px;
-            border: 1px solid var(--border-input);
-            border-radius: 6px;
-            margin-bottom: 15px;
-            background-color: #fafafa;
+            display: flex; flex-direction: column; padding: 15px; border: 1px solid var(--border-input);
+            border-radius: 6px; margin-bottom: 15px; background-color: #fafafa;
         }
         .rating-question { font-weight: 600; margin-bottom: 5px; color: var(--text-main); }
-        .rating-options { 
-            display: flex; 
-            gap: 10px; 
-            margin-top: 10px;
-            flex-wrap: wrap;
-        }
+        .rating-options { display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
         
-        /* Стилизация радиокнопок под красивые кружки */
         .rating-label {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            border: 2px solid var(--primary-color);
-            color: var(--primary-color);
-            font-weight: bold;
-            font-size: 16px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            user-select: none;
+            display: flex; align-items: center; justify-content: center; width: 40px; height: 40px;
+            border-radius: 50%; border: 2px solid var(--primary-color); color: var(--primary-color);
+            font-weight: bold; font-size: 16px; cursor: pointer; transition: all 0.2s ease; user-select: none;
         }
         .rating-label input[type="radio"] { display: none; }
         .rating-label:hover { background-color: rgba(57, 181, 74, 0.1); }
-        
         .rating-label input[type="radio"]:checked + span {
-            background-color: var(--primary-color);
-            color: white;
-            border-radius: 50%;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            background-color: var(--primary-color); color: white; border-radius: 50%; width: 100%; height: 100%;
+            display: flex; align-items: center; justify-content: center;
         }
 
-        /* МЕДИАЗАПРОСЫ ДЛЯ МОБИЛЬНОЙ ВЕРСТКИ */
+        /* МЕДИАЗАПРОСЫ */
         @media (max-width: 768px) {
             body { padding: 10px; }
             .card { padding: 15px; }
@@ -226,10 +193,37 @@
     <img src="https://amanat24.kz/_nuxt/img/logo.2b6daef.svg" alt="Amanat24" style="max-width: 200px;">
 </div>
 <div class="container">
-    <div style="text-align: center; margin-bottom: 30px;">
-        <h1 style="color: var(--primary-color);">Еженедельный отчет менеджера</h1>
+    <div style="text-align: center; margin-bottom: 20px;">
+        <h1 style="color: var(--primary-color); margin-bottom: 5px;">Еженедельный отчет менеджера</h1>
+        <p style="color: var(--text-muted); font-size: 14px; margin-top: 0;">Рабочая панель</p>
     </div>
 
+    <!-- БЛОК БЫСТРЫХ ССЫЛОК -->
+    <div class="quick-links-compact">
+        <a href="https://crm.amanat24.kz/workgroups/group/35/tasks/" target="_blank" class="ql-card">
+            <span class="ql-icon">📋</span>
+            <div class="ql-texts">
+                <span class="ql-title">Канбан (Задачи)</span>
+                <span class="ql-sub">Bitrix24</span>
+            </div>
+        </a>
+        <a href="https://crm.amanat24.kz/crm/deal/kanban/category/52/" target="_blank" class="ql-card">
+            <span class="ql-icon">🎯</span>
+            <div class="ql-texts">
+                <span class="ql-title">Воронка продаж</span>
+                <span class="ql-sub">CRM Bitrix24</span>
+            </div>
+        </a>
+        <a href="https://datastudio.google.com/u/0/reporting/c8166063-77f9-47a3-81ad-40098301b551/page/p_dx16nhmn0d" target="_blank" class="ql-card">
+            <span class="ql-icon">📊</span>
+            <div class="ql-texts">
+                <span class="ql-title">Дашборд продукта</span>
+                <span class="ql-sub">Data Studio</span>
+            </div>
+        </a>
+    </div>
+
+    <!-- НАЧАЛО ФОРМЫ ОТЧЕТА -->
     <form id="weeklyReportForm">
         <!-- ШАПКА -->
         <div class="card grid-2">
@@ -534,7 +528,6 @@
 
         krContainer.style.display = "block";
 
-        // Если выбран "Свой вариант", открываем поля для ручного ввода
         if (selectedVal === "Свой вариант") {
             hintEl.innerText = "Подсказка: Сформулируйте главную цель и 3 измеримых результата.";
             customFocusInput.style.display = 'block';
@@ -547,7 +540,6 @@
                 input.value = ''; 
             }
         } else {
-            // Если выбран готовый вариант, подставляем данные
             const data = okrData[selectedVal];
             hintEl.innerText = "Подсказка: " + data.hint;
             
@@ -563,10 +555,7 @@
         }
     }
 
-    // Инициализация фокуса при загрузке страницы (если браузер запомнил выбор)
     window.addEventListener('load', changeFocus);
-    // ------------------------------------
-
 
     // Генерация самооценки с подсказками
     const ratingsData = [
@@ -621,7 +610,7 @@
         }
     }
 
-    // СБОРКА ИДЕАЛЬНОГО HTML-ШАБЛОНА ДЛЯ ДАШБОРДА И ЧТЕНИЯ
+    // СБОРКА ИДЕАЛЬНОГО HTML-ШАБЛОНА
     function buildStaticTemplate() {
         const form = document.getElementById('weeklyReportForm');
         const formData = new FormData(form);
@@ -647,7 +636,6 @@
 
         const ratingVal = (name) => formData.get(name) || "—";
 
-        // Получаем значения OKR (с учетом кастомного ввода)
         let finalOkrMain = val('okr_main');
         if (finalOkrMain === "Свой вариант") {
             finalOkrMain = val('custom_okr_main') || "Свой вариант";
