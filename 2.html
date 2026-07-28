@@ -35,7 +35,7 @@
         /* БЫСТРЫЕ ССЫЛКИ (Компактные) */
         .quick-links-compact {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 15px;
             margin-bottom: 25px;
         }
@@ -73,7 +73,7 @@
             transform: scale(1.1);
         }
         .ql-texts { display: flex; flex-direction: column; }
-        .ql-title { font-size: 14px; font-weight: 800; color: var(--text-main); margin-bottom: 2px; }
+        .ql-title { font-size: 13px; font-weight: 800; color: var(--text-main); margin-bottom: 2px; }
         .ql-sub { font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
 
         /* КАРТОЧКИ (БЛОКИ ОТЧЕТА) */
@@ -195,7 +195,7 @@
 <div class="container">
     <div style="text-align: center; margin-bottom: 20px;">
         <h1 style="color: var(--primary-color); margin-bottom: 5px;">Еженедельный отчет менеджера</h1>
-        <p style="color: var(--text-muted); font-size: 14px; margin-top: 0;">Рабочая панель</p>
+        <p style="color: var(--text-muted); font-size: 14px; margin-top: 0;">Рабочая панель (Штаб)</p>
     </div>
 
     <!-- БЛОК БЫСТРЫХ ССЫЛОК -->
@@ -204,7 +204,7 @@
             <span class="ql-icon">📋</span>
             <div class="ql-texts">
                 <span class="ql-title">Канбан (Задачи)</span>
-                <span class="ql-sub">Bitrix24</span>
+                <span class="ql-sub">Bitrix24 Штаб</span>
             </div>
         </a>
         <a href="https://crm.amanat24.kz/crm/deal/kanban/category/52/" target="_blank" class="ql-card">
@@ -219,6 +219,13 @@
             <div class="ql-texts">
                 <span class="ql-title">Дашборд продукта</span>
                 <span class="ql-sub">Data Studio</span>
+            </div>
+        </a>
+        <a href="https://docs.google.com/spreadsheets/d/1xtV6Qq9HlV6MC6VKukaZ3SlOa9ibcwoAtNiHcxO91Vk/edit?gid=0#gid=0" target="_blank" class="ql-card">
+            <span class="ql-icon">📑</span>
+            <div class="ql-texts">
+                <span class="ql-title">Данные по агентам</span>
+                <span class="ql-sub">Google Таблицы</span>
             </div>
         </a>
     </div>
@@ -528,6 +535,7 @@
 
         krContainer.style.display = "block";
 
+        // Если выбран "Свой вариант", открываем поля для ручного ввода
         if (selectedVal === "Свой вариант") {
             hintEl.innerText = "Подсказка: Сформулируйте главную цель и 3 измеримых результата.";
             customFocusInput.style.display = 'block';
@@ -540,6 +548,7 @@
                 input.value = ''; 
             }
         } else {
+            // Если выбран готовый вариант, подставляем данные
             const data = okrData[selectedVal];
             hintEl.innerText = "Подсказка: " + data.hint;
             
@@ -555,6 +564,7 @@
         }
     }
 
+    // Инициализация фокуса при загрузке страницы
     window.addEventListener('load', changeFocus);
 
     // Генерация самооценки с подсказками
@@ -610,7 +620,7 @@
         }
     }
 
-    // СБОРКА ИДЕАЛЬНОГО HTML-ШАБЛОНА
+    // СБОРКА ИДЕАЛЬНОГО HTML-ШАБЛОНА ДЛЯ ДАШБОРДА И ЧТЕНИЯ
     function buildStaticTemplate() {
         const form = document.getElementById('weeklyReportForm');
         const formData = new FormData(form);
@@ -636,6 +646,7 @@
 
         const ratingVal = (name) => formData.get(name) || "—";
 
+        // Получаем значения OKR (с учетом кастомного ввода)
         let finalOkrMain = val('okr_main');
         if (finalOkrMain === "Свой вариант") {
             finalOkrMain = val('custom_okr_main') || "Свой вариант";
