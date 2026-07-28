@@ -12,8 +12,8 @@
         :root {
             --primary-color: #39b54a;     /* Главный зеленый цвет */
             --primary-hover: #2e963c;     /* Цвет при наведении */
-            --bg-page: #f0f4f9;           
-            --bg-card: #ffffff;           
+            --bg-page: #f0f4f9;            
+            --bg-card: #ffffff;            
             --text-main: #1f2937;         /* Черный/темно-серый текст */
             --text-muted: #6b7280;        
             --border-color: #39b54a;      /* Рамки таблиц тоже зеленые */
@@ -71,7 +71,7 @@
         
         .hint { font-size: 12px; color: var(--text-muted); margin-bottom: 8px; display: block; font-style: italic; }
 
-        input[type="text"], input[type="number"], input[type="date"], textarea {
+        input[type="text"], input[type="number"], input[type="date"], textarea, select {
             width: 100%;
             padding: 10px;
             border: 1px solid var(--border-input);
@@ -80,15 +80,31 @@
             font-family: inherit;
             font-size: 14px;
             margin-bottom: 10px;
+            background-color: #fff;
         }
 
-        input:focus, textarea:focus {
+        input:focus, textarea:focus, select:focus {
             outline: none;
             border-color: var(--primary-color);
             box-shadow: 0 0 0 2px rgba(57, 181, 74, 0.2);
         }
 
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+        /* СПЕЦИАЛЬНЫЕ СТИЛИ ДЛЯ OKR */
+        .kr-row { 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            margin-bottom: 10px; 
+            padding: 12px; 
+            background: #fafafa; 
+            border: 1px solid var(--border-input); 
+            border-radius: 6px; 
+        }
+        .kr-text-col { display: flex; align-items: center; width: 75%; font-size: 14px; font-weight: 500; padding-right: 15px;}
+        .kr-val-col { width: 25%; display: flex; align-items: center; justify-content: flex-end; gap: 10px; }
+        .kr-val-col input { width: 90px; margin-bottom: 0; padding: 8px; font-weight: bold; }
 
         /* ТАБЛИЦЫ И АДАПТИВНЫЙ СКРОЛЛ */
         .table-wrapper {
@@ -179,10 +195,9 @@
             transition: all 0.2s ease;
             user-select: none;
         }
-        .rating-label input[type="radio"] { display: none; /* Прячем стандартный кружок */ }
+        .rating-label input[type="radio"] { display: none; }
         .rating-label:hover { background-color: rgba(57, 181, 74, 0.1); }
         
-        /* Состояние выбранной оценки */
         .rating-label input[type="radio"]:checked + span {
             background-color: var(--primary-color);
             color: white;
@@ -200,6 +215,9 @@
             .card { padding: 15px; }
             .grid-2 { grid-template-columns: 1fr; gap: 10px; }
             .rating-options { justify-content: space-between; width: 100%; }
+            .kr-row { flex-direction: column; align-items: flex-start; }
+            .kr-text-col { width: 100%; margin-bottom: 10px; padding-right: 0;}
+            .kr-val-col { width: 100%; justify-content: flex-start; }
         }
     </style>
 </head>
@@ -217,7 +235,14 @@
         <div class="card grid-2">
             <div>
                 <label>ФИО Менеджера</label>
-                <input type="text" id="managerName" name="managerName" required placeholder="Введите ваше ФИО">
+                <select id="managerName" name="managerName" required>
+                    <option value="">-- Выберите ваше ФИО --</option>
+                    <option value="Маканов Ганибек Амангельдыевич">Маканов Ганибек Амангельдыевич</option>
+                    <option value="Успанова Альбина Анваровна">Успанова Альбина Анваровна</option>
+                    <option value="Касжанова Акдидар Убаевна">Касжанова Акдидар Убаевна</option>
+                    <option value="Жоратаев Олжас Кененханович">Жоратаев Олжас Кененханович</option>
+                    <option value="Судабаева Лариса Бисембаевна">Судабаева Лариса Бисембаевна</option>
+                </select>
             </div>
             <div>
                 <label>Дата отчета</label>
@@ -228,13 +253,57 @@
         <!-- 1. OKR -->
         <div class="card">
             <h2 class="card-title"><span class="block-number">1</span> Личный OKR недели</h2>
-            <label>Главная цель:</label>
-            <input type="text" name="okr_main" placeholder="Какова главная цель?">
+            <label>Фокус недели:</label>
+            <select name="okr_main" id="focusSelect" onchange="changeFocus()" required>
+                <option value="">-- Выберите фокус недели --</option>
+                <option value="Подключение новых агентов">Подключение новых агентов</option>
+                <option value="Реактивация спящих агентов">Реактивация спящих агентов</option>
+                <option value="Увеличение кол-ва активных агентов">Увеличение кол-ва активных агентов</option>
+                <option value="Свой вариант">Свой вариант</option>
+            </select>
             
-            <label style="margin-top: 15px;">3 ключевых результата:</label>
-            <div style="display: flex; align-items: center;"><span style="width: 25px; font-weight: bold; color: var(--primary-color);">1.</span><input type="text" name="okr_kr1"></div>
-            <div style="display: flex; align-items: center;"><span style="width: 25px; font-weight: bold; color: var(--primary-color);">2.</span><input type="text" name="okr_kr2"></div>
-            <div style="display: flex; align-items: center;"><span style="width: 25px; font-weight: bold; color: var(--primary-color);">3.</span><input type="text" name="okr_kr3"></div>
+            <input type="text" id="customFocusInput" name="custom_okr_main" placeholder="Опишите ваш фокус недели..." style="display: none; margin-top: 10px;">
+            <span id="focusHint" class="hint" style="margin-top: 5px; color: var(--primary-color); font-weight: 500;"></span>
+
+            <div id="krContainer" style="display: none; margin-top: 25px;">
+                <label style="margin-bottom: 15px;">3 ключевых результата:</label>
+                
+                <div class="kr-row">
+                    <div class="kr-text-col">
+                        <span style="width: 25px; font-weight: bold; color: var(--primary-color); flex-shrink: 0;">1.</span>
+                        <span id="kr1_label"></span>
+                        <input type="hidden" name="okr_kr1_name" id="kr1_name_input" placeholder="Опишите 1-й ключевой результат" style="width: 100%; margin-bottom: 0;">
+                    </div>
+                    <div class="kr-val-col">
+                        <span style="font-size: 13px; color: var(--text-muted);">Кол-во =</span>
+                        <input type="number" name="okr_kr1_val" min="0" placeholder="0">
+                    </div>
+                </div>
+
+                <div class="kr-row">
+                    <div class="kr-text-col">
+                        <span style="width: 25px; font-weight: bold; color: var(--primary-color); flex-shrink: 0;">2.</span>
+                        <span id="kr2_label"></span>
+                        <input type="hidden" name="okr_kr2_name" id="kr2_name_input" placeholder="Опишите 2-й ключевой результат" style="width: 100%; margin-bottom: 0;">
+                    </div>
+                    <div class="kr-val-col">
+                        <span style="font-size: 13px; color: var(--text-muted);">Кол-во =</span>
+                        <input type="number" name="okr_kr2_val" min="0" placeholder="0">
+                    </div>
+                </div>
+
+                <div class="kr-row">
+                    <div class="kr-text-col">
+                        <span style="width: 25px; font-weight: bold; color: var(--primary-color); flex-shrink: 0;">3.</span>
+                        <span id="kr3_label"></span>
+                        <input type="hidden" name="okr_kr3_name" id="kr3_name_input" placeholder="Опишите 3-й ключевой результат" style="width: 100%; margin-bottom: 0;">
+                    </div>
+                    <div class="kr-val-col">
+                        <span style="font-size: 13px; color: var(--text-muted);">Кол-во =</span>
+                        <input type="number" name="okr_kr3_val" min="0" placeholder="0">
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- 2. МЕРОПРИЯТИЯ -->
@@ -416,6 +485,89 @@
 <script>
     document.getElementById('reportDate').valueAsDate = new Date();
 
+    // --- ЛОГИКА ДЛЯ OKR (ФОКУС НЕДЕЛИ) ---
+    const okrData = {
+        "Подключение новых агентов": {
+            hint: "Расширить сеть за счет поиска, регистрации и быстрого запуска новых агентов.",
+            krs: [
+                "Встречи / звонки с потенциальными агентами",
+                "Новые агенты",
+                "Кол-во новых агентов, которые сделали 1-ю продажу"
+            ]
+        },
+        "Реактивация спящих агентов": {
+            hint: "Разбудить неактивную базу и вернуть «спящих» агентов к регулярным продажам.",
+            krs: [
+                "Провести переговоры со «спящими» агентами",
+                "Собрать обратную связь о причинах спада",
+                "Кол-во реактивированных агентов, сделавших продажу"
+            ]
+        },
+        "Увеличение кол-ва активных агентов": {
+            hint: "Повысить лояльность и объемы продаж текущих агентов, сделав их стабильными партнерами.",
+            krs: [
+                "Провести аудит продаж с действующими агентами",
+                "Провести точечное обучение по продукту для агентов",
+                "Вывести агентов на темп от 3 полисов в неделю"
+            ]
+        }
+    };
+
+    function changeFocus() {
+        const select = document.getElementById('focusSelect');
+        const hintEl = document.getElementById('focusHint');
+        const krContainer = document.getElementById('krContainer');
+        const customFocusInput = document.getElementById('customFocusInput');
+        const selectedVal = select.value;
+
+        // Сброс видимости кастомного инпута
+        customFocusInput.style.display = 'none';
+        if(selectedVal !== "Свой вариант") {
+            customFocusInput.value = ""; 
+        }
+
+        if(!selectedVal) {
+            hintEl.innerText = "";
+            krContainer.style.display = "none";
+            return;
+        }
+
+        krContainer.style.display = "block";
+
+        // Если выбран "Свой вариант", открываем поля для ручного ввода
+        if (selectedVal === "Свой вариант") {
+            hintEl.innerText = "Подсказка: Сформулируйте главную цель и 3 измеримых результата.";
+            customFocusInput.style.display = 'block';
+            
+            for(let i=1; i<=3; i++) {
+                document.getElementById(`kr${i}_label`).style.display = 'none';
+                const input = document.getElementById(`kr${i}_name_input`);
+                input.type = 'text';
+                input.style.display = 'block';
+                input.value = ''; 
+            }
+        } else {
+            // Если выбран готовый вариант, подставляем данные
+            const data = okrData[selectedVal];
+            hintEl.innerText = "Подсказка: " + data.hint;
+            
+            for(let i=1; i<=3; i++) {
+                document.getElementById(`kr${i}_label`).style.display = 'inline';
+                document.getElementById(`kr${i}_label`).innerText = data.krs[i-1];
+                
+                const input = document.getElementById(`kr${i}_name_input`);
+                input.type = 'hidden';
+                input.style.display = 'none';
+                input.value = data.krs[i-1];
+            }
+        }
+    }
+
+    // Инициализация фокуса при загрузке страницы (если браузер запомнил выбор)
+    window.addEventListener('load', changeFocus);
+    // ------------------------------------
+
+
     // Генерация самооценки с подсказками
     const ratingsData = [
         { id: "rate_plan", label: "Выполнение плана", hint: "1 — Далеко от плана, 3 — В графике, 5 — Иду на перевыполнение" },
@@ -446,14 +598,14 @@
         `;
     });
 
-    // ИСПРАВЛЕНО: Добавление строк копирует последнюю строку из tbody
+    // Добавление и удаление строк таблиц
     function addRow(tableId) {
         const tbody = document.getElementById(tableId).querySelector('tbody');
         const rows = tbody.querySelectorAll('tr');
-        const lastRow = rows[rows.length - 1]; // Берем последнюю строку с инпутами
+        const lastRow = rows[rows.length - 1]; 
         
         const newRow = lastRow.cloneNode(true);
-        newRow.querySelectorAll('input, textarea').forEach(input => input.value = ''); // Очищаем значения
+        newRow.querySelectorAll('input, textarea').forEach(input => input.value = ''); 
         tbody.appendChild(newRow);
     }
     
@@ -465,12 +617,11 @@
         if(rows.length > 1) { 
             tr.remove(); 
         } else { 
-            // Если строка последняя, просто очищаем её
             tr.querySelectorAll('input, textarea').forEach(inp => inp.value = ''); 
         }
     }
 
-    // СБОРКА ИДЕАЛЬНОГО HTML-ШАБЛОНА
+    // СБОРКА ИДЕАЛЬНОГО HTML-ШАБЛОНА ДЛЯ ДАШБОРДА И ЧТЕНИЯ
     function buildStaticTemplate() {
         const form = document.getElementById('weeklyReportForm');
         const formData = new FormData(form);
@@ -496,6 +647,19 @@
 
         const ratingVal = (name) => formData.get(name) || "—";
 
+        // Получаем значения OKR (с учетом кастомного ввода)
+        let finalOkrMain = val('okr_main');
+        if (finalOkrMain === "Свой вариант") {
+            finalOkrMain = val('custom_okr_main') || "Свой вариант";
+        }
+
+        const okrKr1Text = val('okr_kr1_name');
+        const okrKr1Val = val('okr_kr1_val') !== "—" ? val('okr_kr1_val') : "0";
+        const okrKr2Text = val('okr_kr2_name');
+        const okrKr2Val = val('okr_kr2_val') !== "—" ? val('okr_kr2_val') : "0";
+        const okrKr3Text = val('okr_kr3_name');
+        const okrKr3Val = val('okr_kr3_val') !== "—" ? val('okr_kr3_val') : "0";
+
         return `<!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -520,7 +684,7 @@
         .highlight-bg { background-color: #f8fafc; font-weight: 600; width: 40%; }
         
         ul { padding-left: 20px; margin: 10px 0; color: #1f2937;}
-        li { margin-bottom: 8px; }
+        li { margin-bottom: 12px; }
         .rating-grid { display: grid; grid-template-columns: 1fr; gap: 10px; }
         .rating-item { display: flex; justify-content: space-between; padding: 12px 15px; border: 1px solid #39b54a; border-radius: 6px; background: #f9fafb; }
         .rating-score { font-weight: bold; color: #39b54a; font-size: 16px; }
@@ -537,15 +701,17 @@
     <div class="container">
         <div class="header">
             <h1>Еженедельный отчет менеджера</h1>
-            <p><strong>Менеджер:</strong> ${val('managerName')} &nbsp;|&nbsp; <strong>Дата:</strong> ${val('reportDate')}</p>
+            <p><strong>Менеджер:</strong> <span id="out_managerName">${val('managerName')}</span> &nbsp;|&nbsp; <strong>Дата:</strong> <span id="out_reportDate">${val('reportDate')}</span></p>
         </div>
 
         <div class="section">
             <h2 class="section-title"><span class="block-number">1</span> Личный OKR недели</h2>
-            <p><strong>Главная цель:</strong> ${val('okr_main')}</p>
+            <p><strong>Фокус недели:</strong> <span id="out_okr_main">${finalOkrMain}</span></p>
             <p style="margin-bottom: 5px;"><strong>3 ключевых результата:</strong></p>
             <ul>
-                <li>${val('okr_kr1')}</li><li>${val('okr_kr2')}</li><li>${val('okr_kr3')}</li>
+                <li>${okrKr1Text} — <b style="color: #39b54a;">${okrKr1Val} шт.</b></li>
+                <li>${okrKr2Text} — <b style="color: #39b54a;">${okrKr2Val} шт.</b></li>
+                <li>${okrKr3Text} — <b style="color: #39b54a;">${okrKr3Val} шт.</b></li>
             </ul>
         </div>
 
@@ -646,6 +812,10 @@
     function checkRequired() {
         if(!document.getElementById('managerName').value || !document.getElementById('reportDate').value) {
             alert("Пожалуйста, заполните ФИО и Дату отчета!");
+            return false;
+        }
+        if(!document.getElementById('focusSelect').value) {
+            alert("Пожалуйста, выберите Фокус недели!");
             return false;
         }
         return true;
