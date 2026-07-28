@@ -24,9 +24,9 @@
         --bg-alt2: #f3f4f6;
         
         --text-main: #1f2937;
-        --text-muted: #4b5563; /* Сделал темнее для читабельности */
+        --text-muted: #4b5563; 
         
-        --border: #d1d5db; /* Более контрастные рамки */
+        --border: #d1d5db; 
         --border-glow: rgba(57, 181, 74, 0.3);
         --mono: 'SFMono-Regular', Consolas, 'Roboto Mono', monospace;
     }
@@ -199,11 +199,29 @@
     /* ===== DYNAMICS LINE CHARTS ===== */
     .dyn-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;}
     @media (max-width:960px){.dyn-grid{grid-template-columns:1fr;}}
-    .dyn-box{border:1px solid var(--border);border-radius:8px;padding:16px;background:#ffffff; box-shadow: 0 2px 4px rgba(0,0,0,0.02);}
+    .dyn-box{
+        border:1px solid var(--border);
+        border-radius:8px;
+        padding:16px;
+        background:#ffffff; 
+        box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        min-width: 0; /* РЕЗИНОВЫЙ КОНТЕЙНЕР */
+    }
     .dyn-box .dyn-title{font-size:13px;font-weight:800;text-transform:uppercase;color:var(--text-main);margin-bottom:4px;}
-    .dyn-box .dyn-total{font-size:13px;color:var(--text-muted);margin-bottom:15px; font-weight: 500;}
+    .dyn-box .dyn-total{
+        font-size:13px;color:var(--text-muted);margin-bottom:15px; font-weight: 500;
+        word-break: break-word; overflow-wrap: break-word;
+    }
     .linechart-single{text-align:center;padding:20px 0;}
-    .linechart-single .lc-value{font-size:26px;font-weight:800;color:var(--primary-dark);font-family:var(--mono);}
+    .linechart-single .lc-value{
+        font-size: clamp(20px, 2vw, 26px); /* ПЛАВАЮЩИЙ ШРИФТ */
+        font-weight:800;
+        color:var(--primary-dark);
+        font-family:var(--mono);
+        word-break: break-word;
+        overflow-wrap: break-word;
+        line-height: 1.1;
+    }
     .linechart-single .lc-label{font-size:13px;color:var(--text-muted);margin-top:4px;}
 
     /* ===== KPI GRID ===== */
@@ -211,10 +229,19 @@
     .kpi{
         background:#ffffff;border:1px solid var(--border);border-top:3px solid var(--border);border-radius:8px;padding:18px;
         transition:.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        min-width: 0; /* РЕЗИНОВЫЙ КОНТЕЙНЕР */
     }
     .kpi:hover{border-top-color:var(--primary);box-shadow:0 6px 12px rgba(0,0,0,0.05); transform: translateY(-2px);}
     .kpi .kpi-label{font-size:12px;text-transform:uppercase;color:var(--text-muted);font-weight:700;margin-bottom:8px;}
-    .kpi .kpi-value{font-size:26px;font-weight:800;color:var(--text-main);font-family:var(--mono);}
+    .kpi .kpi-value{
+        font-size: clamp(20px, 2vw, 26px); /* ПЛАВАЮЩИЙ ШРИФТ */
+        font-weight:800;
+        color:var(--text-main);
+        font-family:var(--mono);
+        word-break: break-word; 
+        overflow-wrap: break-word;
+        line-height: 1.1;
+    }
     .kpi .kpi-value.accent{color:var(--primary-dark);}
     .kpi .kpi-sub{font-size:12px;color:var(--text-muted);margin-top:6px; font-weight: 500;}
 
@@ -351,8 +378,17 @@
     .cover-hero-item{
         background:var(--bg-alt);border:1px solid var(--border);border-radius:10px;padding:22px 15px;
         box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        min-width: 0; /* РЕЗИНОВЫЙ КОНТЕЙНЕР */
     }
-    .cover-hero-value{font-size:32px;font-weight:900;color:var(--primary-dark);font-family:var(--mono);}
+    .cover-hero-value{
+        font-size: clamp(22px, 2.5vw, 32px); /* ПЛАВАЮЩИЙ ШРИФТ */
+        font-weight:900;
+        color:var(--primary-dark);
+        font-family:var(--mono);
+        word-break: break-word; 
+        overflow-wrap: break-word;
+        line-height: 1.1;
+    }
     .cover-hero-label{font-size:12px;color:var(--text-main);text-transform:uppercase;font-weight: 700; margin-top:8px;}
 
     /* ===== FULL REPORT VIEWER ===== */
@@ -631,7 +667,6 @@ let reports = [];
 let sortState = { key: 'date', dir: 'desc' };
 let selectedManagers = new Set(); 
 
-// Список менеджеров для корректной фильтрации
 const KNOWN_MANAGERS = [
     "Маканов Ганибек Амангельдыевич",
     "Успанова Альбина Анваровна",
@@ -690,7 +725,6 @@ function parseReport(htmlText, fileName){
     }
     const headerText = headerP.textContent;
     
-    // Поддержка как старого формата (в тексте), так и нового (через спаны)
     const spanManager = doc.getElementById('out_managerName');
     const spanDate = doc.getElementById('out_reportDate');
     
@@ -723,7 +757,6 @@ function parseReport(htmlText, fileName){
         const numEl = section.querySelector('.block-number');
         const num = numEl ? numEl.textContent.trim() : '';
 
-        // Блок OKR
         if (num === '1'){
             const spanMain = section.querySelector('#out_okr_main');
             if (spanMain) {
@@ -735,7 +768,6 @@ function parseReport(htmlText, fileName){
                     data.okr.main = cleanText(targetP.textContent.replace('Фокус недели:', '').replace('Главная цель:', ''));
                 }
             }
-            // Ключевые результаты (включая цифры)
             data.okr.kr = Array.from(section.querySelectorAll('ul li')).map(li => cleanText(li.textContent));
         }
         else if (num === '2'){
@@ -753,7 +785,7 @@ function parseReport(htmlText, fileName){
         else if (num === '3'){
             const rows = section.querySelectorAll('table tr');
             const keys = ['newAgents','policies','premium','av'];
-            let rowOffset = rows[0].querySelector('th') ? 1 : 0; // пропуск шапки, если есть
+            let rowOffset = rows[0].querySelector('th') ? 1 : 0; 
             Array.from(rows).slice(rowOffset).forEach((row,i) => {
                 const tds = row.querySelectorAll('td');
                 if (tds.length < 2) return;
