@@ -124,12 +124,12 @@
 
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
 
-        /* СПЕЦИАЛЬНЫЕ СТИЛИ ДЛЯ OKR */
+        /* СПЕЦИАЛЬНЫЕ СТИЛИ ДЛЯ OKR / KPI */
         .kr-row { 
             display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; 
             padding: 12px; background: #fafafa; border: 1px solid var(--border-input); border-radius: 6px; 
         }
-        .kr-text-col { display: flex; align-items: center; width: 75%; font-size: 14px; font-weight: 500; padding-right: 15px;}
+        .kr-text-col { display: flex; align-items: center; width: 75%; gap: 10px; padding-right: 15px;}
         .kr-val-col { width: 25%; display: flex; align-items: center; justify-content: flex-end; gap: 10px; }
         .kr-val-col input { width: 90px; margin-bottom: 0; padding: 8px; font-weight: bold; }
 
@@ -145,7 +145,8 @@
         /* КНОПКИ */
         .btn-add { background: transparent; color: var(--primary-color); border: none; cursor: pointer; font-weight: 600; padding: 5px 0; font-size: 14px; }
         .btn-add:hover { text-decoration: underline; }
-        .btn-remove { color: #dc2626; background: transparent; border: none; cursor: pointer; font-weight: bold; font-size: 18px; }
+        .btn-remove { color: #dc2626; background: transparent; border: none; cursor: pointer; font-weight: bold; font-size: 22px; line-height: 1; padding: 0 5px; }
+        .btn-remove:hover { transform: scale(1.1); }
 
         .btn-group { display: flex; justify-content: center; margin-top: 30px; margin-bottom: 50px; }
         .btn-main {
@@ -195,7 +196,7 @@
 <div class="container">
     <div style="text-align: center; margin-bottom: 20px;">
         <h1 style="color: var(--primary-color); margin-bottom: 5px;">Еженедельный отчет менеджера</h1>
-        <p style="color: var(--text-muted); font-size: 14px; margin-top: 0;">Рабочая панель</p>
+        <p style="color: var(--text-muted); font-size: 14px; margin-top: 0;">Рабочая панель (Штаб)</p>
     </div>
 
     <!-- БЛОК БЫСТРЫХ ССЫЛОК -->
@@ -204,7 +205,7 @@
             <span class="ql-icon">📋</span>
             <div class="ql-texts">
                 <span class="ql-title">Канбан (Задачи)</span>
-                <span class="ql-sub">Bitrix24</span>
+                <span class="ql-sub">Bitrix24 Штаб</span>
             </div>
         </a>
         <a href="https://crm.amanat24.kz/crm/deal/kanban/category/52/" target="_blank" class="ql-card">
@@ -271,43 +272,12 @@
             <span id="focusHint" class="hint" style="margin-top: 5px; color: var(--primary-color); font-weight: 500;"></span>
 
             <div id="krContainer" style="display: none; margin-top: 25px;">
-                <label style="margin-bottom: 15px;">3 ключевых результата:</label>
+                <label style="margin-bottom: 15px;">Мероприятия/KPI для достижения цели:</label>
                 
-                <div class="kr-row">
-                    <div class="kr-text-col">
-                        <span style="width: 25px; font-weight: bold; color: var(--primary-color); flex-shrink: 0;">1.</span>
-                        <span id="kr1_label"></span>
-                        <input type="hidden" name="okr_kr1_name" id="kr1_name_input" placeholder="Опишите 1-й ключевой результат" style="width: 100%; margin-bottom: 0;">
-                    </div>
-                    <div class="kr-val-col">
-                        <span style="font-size: 13px; color: var(--text-muted);">Кол-во =</span>
-                        <input type="number" name="okr_kr1_val" min="0" placeholder="0">
-                    </div>
+                <div id="krList">
+                    <!-- Поля будут генерироваться здесь -->
                 </div>
-
-                <div class="kr-row">
-                    <div class="kr-text-col">
-                        <span style="width: 25px; font-weight: bold; color: var(--primary-color); flex-shrink: 0;">2.</span>
-                        <span id="kr2_label"></span>
-                        <input type="hidden" name="okr_kr2_name" id="kr2_name_input" placeholder="Опишите 2-й ключевой результат" style="width: 100%; margin-bottom: 0;">
-                    </div>
-                    <div class="kr-val-col">
-                        <span style="font-size: 13px; color: var(--text-muted);">Кол-во =</span>
-                        <input type="number" name="okr_kr2_val" min="0" placeholder="0">
-                    </div>
-                </div>
-
-                <div class="kr-row">
-                    <div class="kr-text-col">
-                        <span style="width: 25px; font-weight: bold; color: var(--primary-color); flex-shrink: 0;">3.</span>
-                        <span id="kr3_label"></span>
-                        <input type="hidden" name="okr_kr3_name" id="kr3_name_input" placeholder="Опишите 3-й ключевой результат" style="width: 100%; margin-bottom: 0;">
-                    </div>
-                    <div class="kr-val-col">
-                        <span style="font-size: 13px; color: var(--text-muted);">Кол-во =</span>
-                        <input type="number" name="okr_kr3_val" min="0" placeholder="0">
-                    </div>
-                </div>
+                <button type="button" class="btn-add" onclick="addKrRow('krList', 'okr_kr_name[]', 'okr_kr_val[]')">+ Добавить мероприятие</button>
             </div>
         </div>
 
@@ -429,45 +399,41 @@
             </div>
         </div>
 
-        <!-- 8. ПЛАН -->
+        <!-- 8. ПЛАН (НОВЫЙ OKR НА СЛЕДУЮЩУЮ НЕДЕЛЮ) -->
         <div class="card">
-            <h2 class="card-title"><span class="block-number">8</span> План мероприятий на следующую неделю</h2>
-            <div class="table-wrapper">
-                <table id="tbl_plan">
-                    <thead>
-                        <tr><th width="35%">Мероприятие</th><th>Цель</th><th width="15%">Дата</th><th>Ожидаемый результат</th><th width="30px"></th></tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>
-                                <select class="task-select" onchange="handleTaskChange(this)">
-                                    <option value="">-- Выберите мероприятие --</option>
-                                    <option value="Обзвон холодной базы">Обзвон холодной базы</option>
-                                    <option value="Встречи с потенциальными агентами">Встречи с потенциальными агентами</option>
-                                    <option value="Провести встречу с ЛПР крупного B2B-партнера">Провести встречу с ЛПР крупного B2B-партнера</option>
-                                    <option value="Прозвонить «зависших» новичков (Не продавали за месяц)">Прозвонить «зависших» новичков</option>
-                                    <option value="Провести совместный тестовый расчет страховки">Провести совместный тестовый расчет страховки</option>
-                                    <option value="Провести индивидуальное обучение по продукту (кол-во агентов)">Провести индивидуальное обучение по продукту</option>
-                                    <option value="Провести групповое обучение для менеджеров партнера">Провести групповое обучение для менеджеров</option>
-                                    <option value="Сделать звонки лояльным агентам">Сделать звонки лояльным агентам</option>
-                                    <option value="Провести переговоры со «спящими» агентами (выяснить причины спада)">Провести переговоры со «спящими» агентами</option>
-                                    <option value="Провести аудит продаж с действующим агентом">Провести аудит продаж с действующим агентом</option>
-                                    <option value="Проконсультировать агента по сложным/нестандартным рискам">Проконсультировать агента по сложным рискам</option>
-                                    <option value="Обзвонить отказников (те кто работают с другими СК)">Обзвонить отказников</option>
-                                    <option value="Свой вариант">Свой вариант</option>
-                                </select>
-                                <input type="text" class="custom-task-input" placeholder="Опишите мероприятие..." style="display:none; margin-top:5px;">
-                                <input type="hidden" name="nw_task[]" class="hidden-task">
-                            </td>
-                            <td><input type="text" name="nw_goal[]"></td>
-                            <td><input type="date" name="nw_date[]"></td>
-                            <td><input type="text" name="nw_result[]"></td>
-                            <td style="text-align: center;"><button type="button" class="btn-remove" onclick="removeRow(this)">×</button></td>
-                        </tr>
-                    </tbody>
-                </table>
+            <h2 class="card-title"><span class="block-number">8</span> План на следующую неделю (OKR)</h2>
+            <div class="grid-2">
+                <div>
+                    <label>Фокус на следующую неделю:</label>
+                    <select name="nw_okr_main" id="nwFocusSelect" onchange="changeNwFocus()" required>
+                        <option value="">-- Выберите фокус недели --</option>
+                        <option value="Подключение новых агентов">Подключение новых агентов</option>
+                        <option value="Привлечение крупных B2B-партнеров">Привлечение крупных B2B-партнеров (Визовые центры/Турагенты)</option>
+                        <option value="Реактивация спящих агентов">Реактивация спящих агентов</option>
+                        <option value="Дожим зависших новичков">«Дожим» зависших новичков</option>
+                        <option value="Увеличение кол-ва активных агентов">Увеличение кол-ва активных агентов</option>
+                        <option value="Повышение эффективности базы активных агентов">Повышение эффективности базы активных агентов (Звонки заботы)</option>
+                        <option value="Перехват у конкурентов">Перехват у конкурентов (Работа с возражениями)</option>
+                        <option value="Свой вариант">Свой вариант</option>
+                    </select>
+                    <input type="text" id="nwCustomFocusInput" name="nw_custom_okr_main" placeholder="Опишите ваш фокус на следующую неделю..." style="display: none; margin-top: 10px;">
+                </div>
+                <div>
+                    <label>Дедлайн (Дата):</label>
+                    <input type="date" name="nw_okr_date" required>
+                </div>
             </div>
-            <button type="button" class="btn-add" onclick="addRow('tbl_plan')">+ Добавить задачу</button>
+            
+            <span id="nwFocusHint" class="hint" style="margin-top: 5px; color: var(--primary-color); font-weight: 500;"></span>
+
+            <div id="nwKrContainer" style="display: none; margin-top: 25px;">
+                <label style="margin-bottom: 15px;">Мероприятия/KPI для достижения цели:</label>
+                
+                <div id="nwKrList">
+                    <!-- Поля будут генерироваться здесь -->
+                </div>
+                <button type="button" class="btn-add" onclick="addKrRow('nwKrList', 'nw_okr_kr_name[]', 'nw_okr_kr_val[]')">+ Добавить мероприятие</button>
+            </div>
         </div>
 
         <!-- 9. ПРОБЛЕМЫ -->
@@ -509,7 +475,7 @@
 <script>
     document.getElementById('reportDate').valueAsDate = new Date();
 
-    // --- ЛОГИКА ДЛЯ OKR (ФОКУС НЕДЕЛИ) ---
+    // --- БАЗА ДАННЫХ ДЛЯ OKR (ТЕКУЩЕГО И БУДУЩЕГО) ---
     const okrData = {
         "Подключение новых агентов": {
             hint: "Расширить сеть за счет поиска, регистрации и быстрого запуска новых агентов.",
@@ -569,70 +535,98 @@
         }
     };
 
+    // ФУНКЦИЯ ДОБАВЛЕНИЯ СТРОКИ OKR / МЕРОПРИЯТИЯ
+    function addKrRow(containerId, nameInputName, valInputName, defaultText = '') {
+        const container = document.getElementById(containerId);
+        const row = document.createElement('div');
+        row.className = 'kr-row';
+        row.innerHTML = `
+            <div class="kr-text-col">
+                <button type="button" class="btn-remove" onclick="this.closest('.kr-row').remove()" title="Удалить">×</button>
+                <input type="text" name="${nameInputName}" placeholder="Опишите мероприятие/KPI..." value="${defaultText}">
+            </div>
+            <div class="kr-val-col">
+                <span style="font-size: 13px; color: var(--text-muted);">Кол-во =</span>
+                <input type="number" name="${valInputName}" min="0" placeholder="0">
+            </div>
+        `;
+        container.appendChild(row);
+    }
+
+    // ЛОГИКА ДЛЯ OKR ТЕКУЩЕЙ НЕДЕЛИ (Блок 1)
     function changeFocus() {
         const select = document.getElementById('focusSelect');
         const hintEl = document.getElementById('focusHint');
         const krContainer = document.getElementById('krContainer');
+        const krList = document.getElementById('krList');
         const customFocusInput = document.getElementById('customFocusInput');
         const selectedVal = select.value;
 
-        // Сброс видимости кастомного инпута
         customFocusInput.style.display = 'none';
-        if(selectedVal !== "Свой вариант") {
-            customFocusInput.value = ""; 
-        }
+        if(selectedVal !== "Свой вариант") customFocusInput.value = ""; 
 
         if(!selectedVal) {
             hintEl.innerText = "";
             krContainer.style.display = "none";
+            krList.innerHTML = '';
             return;
         }
 
         krContainer.style.display = "block";
+        krList.innerHTML = ''; // Очищаем список при смене
 
-        // Если выбран "Свой вариант", открываем поля для ручного ввода
         if (selectedVal === "Свой вариант") {
-            hintEl.innerText = "Подсказка: Сформулируйте главную цель и 3 измеримых результата.";
+            hintEl.innerText = "Подсказка: Сформулируйте цель и добавьте мероприятия/KPI.";
             customFocusInput.style.display = 'block';
-            
-            for(let i=1; i<=3; i++) {
-                document.getElementById(`kr${i}_label`).style.display = 'none';
-                const input = document.getElementById(`kr${i}_name_input`);
-                input.type = 'text';
-                input.style.display = 'block';
-                input.value = ''; 
-            }
+            for(let i=0; i<3; i++) addKrRow('krList', 'okr_kr_name[]', 'okr_kr_val[]');
         } else {
-            // Если выбран готовый вариант, подставляем данные
             const data = okrData[selectedVal];
             hintEl.innerText = "Подсказка: " + data.hint;
-            
-            for(let i=1; i<=3; i++) {
-                document.getElementById(`kr${i}_label`).style.display = 'inline';
-                document.getElementById(`kr${i}_label`).innerText = data.krs[i-1];
-                
-                const input = document.getElementById(`kr${i}_name_input`);
-                input.type = 'hidden';
-                input.style.display = 'none';
-                input.value = data.krs[i-1];
-            }
+            data.krs.forEach(text => {
+                addKrRow('krList', 'okr_kr_name[]', 'okr_kr_val[]', text);
+            });
         }
     }
 
-    // Инициализация фокуса при загрузке страницы
-    window.addEventListener('load', changeFocus);
-    
-    // ЛОГИКА ДЛЯ ПЛАНА МЕРОПРИЯТИЙ (Скрытый/Кастомный пункт)
-    function handleTaskChange(select) {
-        const td = select.closest('td');
-        const customInput = td.querySelector('.custom-task-input');
-        if (select.value === 'Свой вариант') {
-            customInput.style.display = 'block';
+    // ЛОГИКА ДЛЯ OKR СЛЕДУЮЩЕЙ НЕДЕЛИ (Блок 8)
+    function changeNwFocus() {
+        const select = document.getElementById('nwFocusSelect');
+        const hintEl = document.getElementById('nwFocusHint');
+        const krContainer = document.getElementById('nwKrContainer');
+        const krList = document.getElementById('nwKrList');
+        const customFocusInput = document.getElementById('nwCustomFocusInput');
+        const selectedVal = select.value;
+
+        customFocusInput.style.display = 'none';
+        if(selectedVal !== "Свой вариант") customFocusInput.value = ""; 
+
+        if(!selectedVal) {
+            hintEl.innerText = "";
+            krContainer.style.display = "none";
+            krList.innerHTML = '';
+            return;
+        }
+
+        krContainer.style.display = "block";
+        krList.innerHTML = ''; // Очищаем список при смене
+
+        if (selectedVal === "Свой вариант") {
+            hintEl.innerText = "Подсказка: Сформулируйте цель и добавьте мероприятия/KPI.";
+            customFocusInput.style.display = 'block';
+            for(let i=0; i<3; i++) addKrRow('nwKrList', 'nw_okr_kr_name[]', 'nw_okr_kr_val[]');
         } else {
-            customInput.style.display = 'none';
-            customInput.value = '';
+            const data = okrData[selectedVal];
+            hintEl.innerText = "Подсказка: " + data.hint;
+            data.krs.forEach(text => {
+                addKrRow('nwKrList', 'nw_okr_kr_name[]', 'nw_okr_kr_val[]', text);
+            });
         }
     }
+
+    window.addEventListener('load', () => {
+        changeFocus();
+        changeNwFocus();
+    });
 
     // Генерация самооценки с подсказками
     const ratingsData = [
@@ -674,9 +668,6 @@
         newRow.querySelectorAll('input:not([type="radio"]), textarea').forEach(input => input.value = ''); 
         newRow.querySelectorAll('select').forEach(select => select.selectedIndex = 0);
         
-        const customTaskInput = newRow.querySelector('.custom-task-input');
-        if(customTaskInput) customTaskInput.style.display = 'none';
-        
         tbody.appendChild(newRow);
     }
     
@@ -690,24 +681,11 @@
         } else { 
             tr.querySelectorAll('input:not([type="radio"]), textarea').forEach(inp => inp.value = ''); 
             tr.querySelectorAll('select').forEach(sel => sel.selectedIndex = 0);
-            const customTaskInput = tr.querySelector('.custom-task-input');
-            if(customTaskInput) customTaskInput.style.display = 'none';
         }
     }
 
     // СБОРКА JSON И HTML
     function buildStaticTemplate() {
-        // Подготавливаем скрытые поля Плана мероприятий перед сборкой
-        const planRows = document.querySelectorAll('#tbl_plan tbody tr');
-        planRows.forEach(tr => {
-            const select = tr.querySelector('.task-select');
-            const custom = tr.querySelector('.custom-task-input');
-            const hidden = tr.querySelector('.hidden-task');
-            if(select && hidden) {
-                hidden.value = select.value === 'Свой вариант' ? custom.value : select.value;
-            }
-        });
-
         const form = document.getElementById('weeklyReportForm');
         const formData = new FormData(form);
         const val = (name) => {
@@ -733,6 +711,7 @@
         function extractTableToJson(keys, fieldNames) {
             const arrays = keys.map(k => formData.getAll(k));
             let rows = [];
+            if(!arrays[0]) return rows;
             for(let i=0; i<arrays[0].length; i++) {
                 if(arrays[0][i].trim() !== "") {
                     let rowObj = {};
@@ -747,6 +726,7 @@
 
         const ratingVal = (name) => formData.get(name) || "—";
 
+        // Получаем значения OKR ТЕКУЩЕЙ недели
         let finalOkrMain = val('okr_main');
         if (finalOkrMain === "Свой вариант") {
             finalOkrMain = val('custom_okr_main') || "Свой вариант";
@@ -756,13 +736,48 @@
                  finalOkrMain = selectEl.options[selectEl.selectedIndex].text;
             }
         }
+        
+        const krNames = formData.getAll('okr_kr_name[]');
+        const krVals = formData.getAll('okr_kr_val[]');
+        let okrListHtml = '';
+        const okrRowsJson = [{ question: "Фокус недели", answer: finalOkrMain }];
+        
+        if (krNames) {
+            for (let i = 0; i < krNames.length; i++) {
+                if (krNames[i].trim() !== '') {
+                    const valAmount = krVals[i] || '0';
+                    okrListHtml += `<li>${krNames[i]} — <b style="color: #39b54a;">${valAmount} шт.</b></li>`;
+                    okrRowsJson.push({ question: krNames[i], answer: valAmount });
+                }
+            }
+        }
 
-        const okrKr1Text = val('okr_kr1_name');
-        const okrKr1Val = val('okr_kr1_val') !== "—" ? val('okr_kr1_val') : "0";
-        const okrKr2Text = val('okr_kr2_name');
-        const okrKr2Val = val('okr_kr2_val') !== "—" ? val('okr_kr2_val') : "0";
-        const okrKr3Text = val('okr_kr3_name');
-        const okrKr3Val = val('okr_kr3_val') !== "—" ? val('okr_kr3_val') : "0";
+        // Получаем значения OKR СЛЕДУЮЩЕЙ недели
+        let finalNwOkrMain = val('nw_okr_main');
+        if (finalNwOkrMain === "Свой вариант") {
+            finalNwOkrMain = val('nw_custom_okr_main') || "Свой вариант";
+        } else if (finalNwOkrMain) {
+            const nwSelectEl = document.getElementById('nwFocusSelect');
+            if (nwSelectEl.options[nwSelectEl.selectedIndex]) {
+                 finalNwOkrMain = nwSelectEl.options[nwSelectEl.selectedIndex].text;
+            }
+        }
+        const nwOkrDate = val('nw_okr_date');
+        
+        const nwKrNames = formData.getAll('nw_okr_kr_name[]');
+        const nwKrVals = formData.getAll('nw_okr_kr_val[]');
+        let nwOkrListHtml = '';
+        const nwOkrRowsJson = [{ question: "Фокус на неделю", answer: finalNwOkrMain + (nwOkrDate !== "—" ? ` (до ${nwOkrDate})` : "") }];
+        
+        if (nwKrNames) {
+            for (let i = 0; i < nwKrNames.length; i++) {
+                if (nwKrNames[i].trim() !== '') {
+                    const valAmount = nwKrVals[i] || '0';
+                    nwOkrListHtml += `<li>${nwKrNames[i]} — <b style="color: #39b54a;">${valAmount} шт.</b></li>`;
+                    nwOkrRowsJson.push({ question: nwKrNames[i], answer: valAmount });
+                }
+            }
+        }
         
         // ==========================================
         // ГЕНЕРАЦИЯ JSON ДЛЯ НОВОЙ СВОДКИ
@@ -777,12 +792,7 @@
                     id: "okr_section",
                     title: "Личный OKR недели",
                     type: "fixedlist",
-                    rows: [
-                        { question: "Фокус недели", answer: finalOkrMain },
-                        { question: okrKr1Text, answer: okrKr1Val },
-                        { question: okrKr2Text, answer: okrKr2Val },
-                        { question: okrKr3Text, answer: okrKr3Val }
-                    ]
+                    rows: okrRowsJson
                 },
                 {
                     id: "activities_done",
@@ -857,14 +867,8 @@
                 {
                     id: "plan_section",
                     title: "План на следующую неделю",
-                    type: "table",
-                    columns: [
-                        { id: "col_task", label: "Мероприятие", type: "text" },
-                        { id: "col_goal", label: "Цель", type: "text" },
-                        { id: "col_date", label: "Дата", type: "date" },
-                        { id: "col_result", label: "Ожидание", type: "text" }
-                    ],
-                    rows: extractTableToJson(['nw_task[]', 'nw_goal[]', 'nw_date[]', 'nw_result[]'], ['col_task', 'col_goal', 'col_date', 'col_result'])
+                    type: "fixedlist",
+                    rows: nwOkrRowsJson
                 },
                 {
                     id: "problems_section",
@@ -932,11 +936,9 @@
         <div class="section">
             <h2 class="section-title"><span class="block-number">1</span> Личный OKR недели</h2>
             <p><strong>Фокус недели:</strong> <span id="out_okr_main">${finalOkrMain}</span></p>
-            <p style="margin-bottom: 5px;"><strong>3 ключевых результата:</strong></p>
+            <p style="margin-bottom: 5px;"><strong>Мероприятия/KPI:</strong></p>
             <ul>
-                <li>${okrKr1Text} — <b style="color: #39b54a;">${okrKr1Val} шт.</b></li>
-                <li>${okrKr2Text} — <b style="color: #39b54a;">${okrKr2Val} шт.</b></li>
-                <li>${okrKr3Text} — <b style="color: #39b54a;">${okrKr3Val} шт.</b></li>
+                ${okrListHtml || '<li class="muted">Не указано</li>'}
             </ul>
         </div>
 
@@ -1011,13 +1013,12 @@
         </div>
 
         <div class="section">
-            <h2 class="section-title"><span class="block-number">8</span> План на следующую неделю</h2>
-            <div class="table-responsive">
-                <table>
-                    <tr><th>Мероприятие</th><th>Цель</th><th width="15%">Дата</th><th>Ожидание</th></tr>
-                    ${extractTable(['nw_task[]', 'nw_goal[]', 'nw_date[]', 'nw_result[]'])}
-                </table>
-            </div>
+            <h2 class="section-title"><span class="block-number">8</span> План на следующую неделю (OKR)</h2>
+            <p><strong>Фокус недели:</strong> ${finalNwOkrMain} <span class="muted" style="color:#6b7280; font-size:13px;">(Дедлайн: ${nwOkrDate})</span></p>
+            <p style="margin-bottom: 5px;"><strong>Мероприятия/KPI:</strong></p>
+            <ul>
+                ${nwOkrListHtml || '<li class="muted">Не указано</li>'}
+            </ul>
         </div>
 
         <div class="section">
@@ -1045,7 +1046,11 @@ ${jsonString}
             return false;
         }
         if(!document.getElementById('focusSelect').value) {
-            alert("Пожалуйста, выберите Фокус недели!");
+            alert("Пожалуйста, выберите Фокус недели (Блок 1)!");
+            return false;
+        }
+        if(!document.getElementById('nwFocusSelect').value) {
+            alert("Пожалуйста, выберите Фокус на следующую неделю (Блок 8)!");
             return false;
         }
         return true;
