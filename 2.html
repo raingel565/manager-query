@@ -138,8 +138,8 @@
         table { width: 100%; border-collapse: collapse; min-width: 600px; border: 2px solid var(--border-color); }
         th, td { border: 1px solid var(--border-color); padding: 8px; text-align: left; vertical-align: top; }
         th { background-color: #f8fafc; font-weight: 600; font-size: 13px; color: var(--primary-color); }
-        td input, td textarea { margin-bottom: 0; border: none; background: transparent; padding: 5px; min-width: 120px; }
-        td input:hover, td textarea:hover { background: #f3f4f6; }
+        td input, td textarea, td select { margin-bottom: 0; border: none; background: transparent; padding: 5px; min-width: 120px; }
+        td input:hover, td textarea:hover, td select:hover { background: #f3f4f6; }
         .row-header { background-color: #f8fafc; font-weight: 600; font-size: 14px;}
 
         /* КНОПКИ */
@@ -195,7 +195,7 @@
 <div class="container">
     <div style="text-align: center; margin-bottom: 20px;">
         <h1 style="color: var(--primary-color); margin-bottom: 5px;">Еженедельный отчет менеджера</h1>
-        <p style="color: var(--text-muted); font-size: 14px; margin-top: 0;">Рабочая панель</p>
+        <p style="color: var(--text-muted); font-size: 14px; margin-top: 0;">Рабочая панель (Штаб)</p>
     </div>
 
     <!-- БЛОК БЫСТРЫХ ССЫЛОК -->
@@ -204,7 +204,7 @@
             <span class="ql-icon">📋</span>
             <div class="ql-texts">
                 <span class="ql-title">Канбан (Задачи)</span>
-                <span class="ql-sub">Bitrix24</span>
+                <span class="ql-sub">Bitrix24 Штаб</span>
             </div>
         </a>
         <a href="https://crm.amanat24.kz/crm/deal/kanban/category/52/" target="_blank" class="ql-card">
@@ -435,11 +435,30 @@
             <div class="table-wrapper">
                 <table id="tbl_plan">
                     <thead>
-                        <tr><th>Мероприятие</th><th>Цель</th><th width="15%">Дата</th><th>Ожидаемый результат</th><th width="30px"></th></tr>
+                        <tr><th width="35%">Мероприятие</th><th>Цель</th><th width="15%">Дата</th><th>Ожидаемый результат</th><th width="30px"></th></tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td><input type="text" name="nw_task[]"></td>
+                            <td>
+                                <select class="task-select" onchange="handleTaskChange(this)">
+                                    <option value="">-- Выберите мероприятие --</option>
+                                    <option value="Обзвон холодной базы">Обзвон холодной базы</option>
+                                    <option value="Встречи с потенциальными агентами">Встречи с потенциальными агентами</option>
+                                    <option value="Провести встречу с ЛПР крупного B2B-партнера">Провести встречу с ЛПР крупного B2B-партнера</option>
+                                    <option value="Прозвонить «зависших» новичков (Не продавали за месяц)">Прозвонить «зависших» новичков</option>
+                                    <option value="Провести совместный тестовый расчет страховки">Провести совместный тестовый расчет страховки</option>
+                                    <option value="Провести индивидуальное обучение по продукту (кол-во агентов)">Провести индивидуальное обучение по продукту</option>
+                                    <option value="Провести групповое обучение для менеджеров партнера">Провести групповое обучение для менеджеров</option>
+                                    <option value="Сделать звонки лояльным агентам">Сделать звонки лояльным агентам</option>
+                                    <option value="Провести переговоры со «спящими» агентами (выяснить причины спада)">Провести переговоры со «спящими» агентами</option>
+                                    <option value="Провести аудит продаж с действующим агентом">Провести аудит продаж с действующим агентом</option>
+                                    <option value="Проконсультировать агента по сложным/нестандартным рискам">Проконсультировать агента по сложным рискам</option>
+                                    <option value="Обзвонить отказников (те кто работают с другими СК)">Обзвонить отказников</option>
+                                    <option value="Свой вариант">Свой вариант</option>
+                                </select>
+                                <input type="text" class="custom-task-input" placeholder="Опишите мероприятие..." style="display:none; margin-top:5px;">
+                                <input type="hidden" name="nw_task[]" class="hidden-task">
+                            </td>
                             <td><input type="text" name="nw_goal[]"></td>
                             <td><input type="date" name="nw_date[]"></td>
                             <td><input type="text" name="nw_result[]"></td>
@@ -602,6 +621,18 @@
 
     // Инициализация фокуса при загрузке страницы
     window.addEventListener('load', changeFocus);
+    
+    // ЛОГИКА ДЛЯ ПЛАНА МЕРОПРИЯТИЙ (Скрытый/Кастомный пункт)
+    function handleTaskChange(select) {
+        const td = select.closest('td');
+        const customInput = td.querySelector('.custom-task-input');
+        if (select.value === 'Свой вариант') {
+            customInput.style.display = 'block';
+        } else {
+            customInput.style.display = 'none';
+            customInput.value = '';
+        }
+    }
 
     // Генерация самооценки с подсказками
     const ratingsData = [
@@ -640,7 +671,12 @@
         const lastRow = rows[rows.length - 1]; 
         
         const newRow = lastRow.cloneNode(true);
-        newRow.querySelectorAll('input, textarea').forEach(input => input.value = ''); 
+        newRow.querySelectorAll('input:not([type="radio"]), textarea').forEach(input => input.value = ''); 
+        newRow.querySelectorAll('select').forEach(select => select.selectedIndex = 0);
+        
+        const customTaskInput = newRow.querySelector('.custom-task-input');
+        if(customTaskInput) customTaskInput.style.display = 'none';
+        
         tbody.appendChild(newRow);
     }
     
@@ -652,12 +688,26 @@
         if(rows.length > 1) { 
             tr.remove(); 
         } else { 
-            tr.querySelectorAll('input, textarea').forEach(inp => inp.value = ''); 
+            tr.querySelectorAll('input:not([type="radio"]), textarea').forEach(inp => inp.value = ''); 
+            tr.querySelectorAll('select').forEach(sel => sel.selectedIndex = 0);
+            const customTaskInput = tr.querySelector('.custom-task-input');
+            if(customTaskInput) customTaskInput.style.display = 'none';
         }
     }
 
-    // СБОРКА ИДЕАЛЬНОГО HTML-ШАБЛОНА ДЛЯ ДАШБОРДА И ЧТЕНИЯ
+    // СБОРКА JSON И HTML
     function buildStaticTemplate() {
+        // Подготавливаем скрытые поля Плана мероприятий перед сборкой
+        const planRows = document.querySelectorAll('#tbl_plan tbody tr');
+        planRows.forEach(tr => {
+            const select = tr.querySelector('.task-select');
+            const custom = tr.querySelector('.custom-task-input');
+            const hidden = tr.querySelector('.hidden-task');
+            if(select && hidden) {
+                hidden.value = select.value === 'Свой вариант' ? custom.value : select.value;
+            }
+        });
+
         const form = document.getElementById('weeklyReportForm');
         const formData = new FormData(form);
         const val = (name) => {
@@ -679,15 +729,28 @@
             }
             return html || `<tr><td colspan="${keys.length}" style="text-align:center; color:#888;">Нет данных</td></tr>`;
         }
+        
+        function extractTableToJson(keys, fieldNames) {
+            const arrays = keys.map(k => formData.getAll(k));
+            let rows = [];
+            for(let i=0; i<arrays[0].length; i++) {
+                if(arrays[0][i].trim() !== "") {
+                    let rowObj = {};
+                    for(let j=0; j<keys.length; j++) {
+                        rowObj[fieldNames[j]] = arrays[j][i] || "";
+                    }
+                    rows.push(rowObj);
+                }
+            }
+            return rows;
+        }
 
         const ratingVal = (name) => formData.get(name) || "—";
 
-        // Получаем значения OKR (с учетом кастомного ввода)
         let finalOkrMain = val('okr_main');
         if (finalOkrMain === "Свой вариант") {
             finalOkrMain = val('custom_okr_main') || "Свой вариант";
         } else if (finalOkrMain) {
-            // Подстановка полного текста Objective для стандартных вариантов, если нужно
             const selectEl = document.getElementById('focusSelect');
             if (selectEl.options[selectEl.selectedIndex]) {
                  finalOkrMain = selectEl.options[selectEl.selectedIndex].text;
@@ -700,7 +763,128 @@
         const okrKr2Val = val('okr_kr2_val') !== "—" ? val('okr_kr2_val') : "0";
         const okrKr3Text = val('okr_kr3_name');
         const okrKr3Val = val('okr_kr3_val') !== "—" ? val('okr_kr3_val') : "0";
+        
+        // ==========================================
+        // ГЕНЕРАЦИЯ JSON ДЛЯ НОВОЙ СВОДКИ
+        // ==========================================
+        const reportDataJson = {
+            meta: {
+                manager: val('managerName'),
+                filledDate: val('reportDate')
+            },
+            sections: [
+                {
+                    id: "okr_section",
+                    title: "Личный OKR недели",
+                    type: "fixedlist",
+                    rows: [
+                        { question: "Фокус недели", answer: finalOkrMain },
+                        { question: okrKr1Text, answer: okrKr1Val },
+                        { question: okrKr2Text, answer: okrKr2Val },
+                        { question: okrKr3Text, answer: okrKr3Val }
+                    ]
+                },
+                {
+                    id: "activities_done",
+                    title: "Выполненные мероприятия",
+                    type: "fields",
+                    fields: [
+                        { id: "calls", label: "Холодные звонки", type: "number", value: val('ev_call_qty') },
+                        { id: "meetings", label: "Онлайн-встречи", type: "number", value: val('ev_online_qty') },
+                        { id: "meetings_offline", label: "Личные встречи", type: "number", value: val('ev_offline_qty') },
+                        { id: "edu", label: "Обучения", type: "number", value: val('ev_edu_qty') },
+                        { id: "follow", label: "Повторные контакты", type: "number", value: val('ev_follow_qty') },
+                        { id: "other", label: "Другое", type: "number", value: val('ev_other_qty') }
+                    ]
+                },
+                {
+                    id: "results_section",
+                    title: "Основные результаты",
+                    type: "fields",
+                    fields: [
+                        { id: "res_newAgents", label: "Подключено новых агентов", type: "number", value: val('res_new') },
+                        { id: "res_policies", label: "Выписано полисов", type: "number", value: val('res_pol') },
+                        { id: "res_premium", label: "Страховая премия", type: "number", value: val('res_prem') },
+                        { id: "res_av", label: "АВ", type: "number", value: val('res_av') }
+                    ]
+                },
+                {
+                    id: "current_agents_section",
+                    title: "Работа с действующими агентами",
+                    type: "table",
+                    columns: [
+                        { id: "col_agent", label: "Агент", type: "text" },
+                        { id: "col_policies", label: "Полисы", type: "number" },
+                        { id: "col_done", label: "Сделано", type: "text" },
+                        { id: "col_next", label: "Шаг", type: "text" }
+                    ],
+                    rows: extractTableToJson(['ca_agent[]', 'ca_pol[]', 'ca_done[]', 'ca_next[]'], ['col_agent', 'col_policies', 'col_done', 'col_next'])
+                },
+                {
+                    id: "new_partners_section",
+                    title: "Развитие базы (Новые партнеры)",
+                    type: "table",
+                    columns: [
+                        { id: "col_comp", label: "Компания", type: "text" },
+                        { id: "col_stat", label: "Статус", type: "text" },
+                        { id: "col_next", label: "Действие", type: "text" }
+                    ],
+                    rows: extractTableToJson(['np_comp[]', 'np_stat[]', 'np_next[]'], ['col_comp', 'col_stat', 'col_next'])
+                },
+                {
+                    id: "ratings_section",
+                    title: "Самооценка",
+                    type: "fields",
+                    fields: [
+                        { id: "rate_plan", label: "Выполнение плана", type: "number", value: ratingVal('rate_plan') },
+                        { id: "rate_newClients", label: "Работа с новыми клиентами", type: "number", value: ratingVal('rate_new') },
+                        { id: "rate_currentAgents", label: "Работа с действ. агентами", type: "number", value: ratingVal('rate_curr') },
+                        { id: "rate_crm", label: "Ведение Bitrix24", type: "number", value: ratingVal('rate_crm') },
+                        { id: "rate_expertise", label: "Продуктовая экспертиза", type: "number", value: ratingVal('rate_exp') }
+                    ]
+                },
+                {
+                    id: "insights_section",
+                    title: "Инсайты",
+                    type: "fixedlist",
+                    rows: [
+                        { question: "Что нового узнали о рынке?", answer: val('in_market').replace(/<br>/g, '\n') },
+                        { question: "Что чаще всего спрашивают клиенты?", answer: val('in_questions').replace(/<br>/g, '\n') },
+                        { question: "Какое возражение встречалось чаще всего?", answer: val('in_objections').replace(/<br>/g, '\n') },
+                        { question: "Что мешает продавать продукт?", answer: val('in_problems').replace(/<br>/g, '\n') }
+                    ]
+                },
+                {
+                    id: "plan_section",
+                    title: "План на следующую неделю",
+                    type: "table",
+                    columns: [
+                        { id: "col_task", label: "Мероприятие", type: "text" },
+                        { id: "col_goal", label: "Цель", type: "text" },
+                        { id: "col_date", label: "Дата", type: "date" },
+                        { id: "col_result", label: "Ожидание", type: "text" }
+                    ],
+                    rows: extractTableToJson(['nw_task[]', 'nw_goal[]', 'nw_date[]', 'nw_result[]'], ['col_task', 'col_goal', 'col_date', 'col_result'])
+                },
+                {
+                    id: "problems_section",
+                    title: "Проблемы",
+                    type: "table",
+                    columns: [
+                        { id: "col_desc", label: "Описание проблемы", type: "text" },
+                        { id: "col_help", label: "Кто может помочь", type: "text" },
+                        { id: "col_lost", label: "Что теряем", type: "text" }
+                    ],
+                    rows: extractTableToJson(['pr_desc[]', 'pr_help[]', 'pr_lost[]'], ['col_desc', 'col_help', 'col_lost'])
+                }
+            ]
+        };
 
+        const jsonString = JSON.stringify(reportDataJson, null, 2);
+
+        // ==========================================
+        // ГЕНЕРАЦИЯ HTML
+        // ==========================================
         return `<!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -846,6 +1030,11 @@
             </div>
         </div>
     </div>
+    
+    <!-- СКРЫТЫЙ БЛОК JSON ДЛЯ СВОДКИ -->
+    <script id="report-data" type="application/json">
+${jsonString}
+    <\/script>
 </body>
 </html>`;
     }
