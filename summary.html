@@ -1,7 +1,6 @@
 <!DOCTYPE html>
-<html lang="ru">
-<head>
-<meta charset="UTF-8">
+<html lang="ru"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Сводный отчёт по менеджерам</title>
 <style>
@@ -205,7 +204,7 @@
         padding:16px;
         background:#ffffff; 
         box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-        min-width: 0; /* РЕЗИНОВЫЙ КОНТЕЙНЕР */
+        min-width: 0;
     }
     .dyn-box .dyn-title{font-size:13px;font-weight:800;text-transform:uppercase;color:var(--text-main);margin-bottom:4px;}
     .dyn-box .dyn-total{
@@ -214,7 +213,7 @@
     }
     .linechart-single{text-align:center;padding:20px 0;}
     .linechart-single .lc-value{
-        font-size: clamp(20px, 2vw, 26px); /* ПЛАВАЮЩИЙ ШРИФТ */
+        font-size: clamp(20px, 2vw, 26px);
         font-weight:800;
         color:var(--primary-dark);
         font-family:var(--mono);
@@ -229,12 +228,12 @@
     .kpi{
         background:#ffffff;border:1px solid var(--border);border-top:3px solid var(--border);border-radius:8px;padding:18px;
         transition:.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-        min-width: 0; /* РЕЗИНОВЫЙ КОНТЕЙНЕР */
+        min-width: 0;
     }
     .kpi:hover{border-top-color:var(--primary);box-shadow:0 6px 12px rgba(0,0,0,0.05); transform: translateY(-2px);}
     .kpi .kpi-label{font-size:12px;text-transform:uppercase;color:var(--text-muted);font-weight:700;margin-bottom:8px;}
     .kpi .kpi-value{
-        font-size: clamp(20px, 2vw, 26px); /* ПЛАВАЮЩИЙ ШРИФТ */
+        font-size: clamp(20px, 2vw, 26px);
         font-weight:800;
         color:var(--text-main);
         font-family:var(--mono);
@@ -246,7 +245,7 @@
     .kpi .kpi-sub{font-size:12px;color:var(--text-muted);margin-top:6px; font-weight: 500;}
 
     /* ===== CHARTS ===== */
-    .charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:30px;}
+    .charts-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:30px;}
     @media (max-width:860px){.charts-grid{grid-template-columns:1fr;}}
     .bar-chart{display:flex;flex-direction:column;gap:14px;}
     .bar-row{display:grid;grid-template-columns:180px 1fr 60px;align-items:center;gap:12px;}
@@ -378,10 +377,10 @@
     .cover-hero-item{
         background:var(--bg-alt);border:1px solid var(--border);border-radius:10px;padding:22px 15px;
         box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-        min-width: 0; /* РЕЗИНОВЫЙ КОНТЕЙНЕР */
+        min-width: 0;
     }
     .cover-hero-value{
-        font-size: clamp(22px, 2.5vw, 32px); /* ПЛАВАЮЩИЙ ШРИФТ */
+        font-size: clamp(22px, 2.5vw, 32px);
         font-weight:900;
         color:var(--primary-dark);
         font-family:var(--mono);
@@ -445,7 +444,7 @@
 <div class="container">
 
     <!-- EMPTY STATE -->
-    <div class="card empty-state" id="emptyState">
+    <div class="card empty-state" id="emptyState" style="display: block;">
         <div class="big-icon">📄</div>
         <div><strong>Пока нет загруженных отчётов</strong></div>
         <div style="margin-top: 5px;">Загрузите HTML-файлы отчётов, чтобы увидеть сводку по всем менеджерам.</div>
@@ -453,7 +452,7 @@
     </div>
 
     <!-- DASHBOARD -->
-    <div id="dashboard">
+    <div id="dashboard" style="display: none;">
 
         <!-- COVER SLIDE -->
         <div class="card cover-slide" id="sec-cover">
@@ -492,6 +491,22 @@
                     <label>Дата по</label>
                     <input type="date" id="fTo">
                 </div>
+                
+                <!-- НОВЫЙ ФИЛЬТР ПО ФОКУСАМ -->
+                <div class="field">
+                    <label>Фокус недели</label>
+                    <select id="fFocus" style="max-width: 280px;">
+                        <option value="">-- Все фокусы --</option>
+                        <option value="Подключение новых агентов">Подключение новых агентов</option>
+                        <option value="Привлечение крупных B2B-партнеров">Привлечение крупных B2B-партнеров</option>
+                        <option value="Реактивация спящих агентов">Реактивация спящих агентов</option>
+                        <option value="Дожим зависших новичков">«Дожим» зависших новичков</option>
+                        <option value="Увеличение кол-ва активных агентов">Увеличение кол-ва активных агентов</option>
+                        <option value="Повышение эффективности базы">Повышение эффективности базы</option>
+                        <option value="Перехват у конкурентов">Перехват у конкурентов</option>
+                    </select>
+                </div>
+
                 <div class="field">
                     <button class="btn btn-outline" id="resetFiltersBtn" style="margin-top: 21px;">Сбросить фильтры</button>
                 </div>
@@ -974,20 +989,25 @@ function renderQueue(){
 function getFilteredReports(){
     const from = document.getElementById('fFrom').value;
     const to = document.getElementById('fTo').value;
+    const focus = document.getElementById('fFocus').value;
+    
     return reports.filter(r => {
         if (selectedManagers.size && !selectedManagers.has(r.manager)) return false;
         if (from && r.date && r.date < from) return false;
         if (to && r.date && r.date > to) return false;
+        if (focus && r.okr && r.okr.main && !r.okr.main.includes(focus)) return false; 
         return true;
     });
 }
 
-['fFrom','fTo'].forEach(id => {
+['fFrom','fTo','fFocus'].forEach(id => {
     document.getElementById(id).addEventListener('input', renderAll);
 });
+
 document.getElementById('resetFiltersBtn').addEventListener('click', () => {
     document.getElementById('fFrom').value = '';
     document.getElementById('fTo').value = '';
+    document.getElementById('fFocus').value = '';
     selectedManagers.clear();
     document.getElementById('managerSearchInput').value = '';
     renderAll();
@@ -1583,12 +1603,31 @@ function buildReportSectionsHtml(r){
     const partnersRows = r.newPartners.length ? r.newPartners.map(p=>`<tr><td style="font-weight: 600;">${escapeHtml(p.company)}</td><td>${escapeHtml(p.status)}</td><td>${escapeHtml(p.next)}</td></tr>`).join('') : `<tr><td colspan="3" class="muted" style="text-align:center;">Нет данных</td></tr>`;
     const planRows = r.plan.length ? r.plan.map(p=>`<tr><td style="font-weight: 600;">${escapeHtml(p.task)}</td><td>${escapeHtml(p.goal)}</td><td>${escapeHtml(p.date)}</td><td>${escapeHtml(p.result)}</td></tr>`).join('') : `<tr><td colspan="4" class="muted" style="text-align:center;">Нет данных</td></tr>`;
 
+    // ----------------------------------------------------
+    // НОВАЯ ГЕНЕРАЦИЯ OKR В ВИДЕ ТАБЛИЦЫ
+    // ----------------------------------------------------
+    const krRows = r.okr.kr.map(k => {
+        const parts = k.split('—');
+        let text = k;
+        let val = '';
+        if (parts.length > 1) {
+            val = parts.pop().replace(/шт\.?/g, '').trim();
+            text = parts.join('—').trim();
+        }
+        return `<tr><td>${escapeHtml(text)}</td><td class="num" style="color: var(--primary-dark); font-weight: bold; font-size: 14px;">${escapeHtml(val)}</td></tr>`;
+    }).join('');
+
     return `
         ${buildVerdictPanelHtml(verdict)}
         <div class="modal-section">
             <h4>1. Личный OKR недели</h4>
-            <p style="font-size: 15px;"><b>Фокус недели:</b> <span style="color: var(--primary-dark); font-weight: 700;">${escapeHtml(r.okr.main)}</span></p>
-            <ul>${r.okr.kr.map(k=>`<li>${k}</li>`).join('')}</ul>
+            <p style="font-size: 15px; margin-bottom: 12px;"><b>Фокус недели:</b> <span style="color: var(--primary-dark); font-weight: 700;">${escapeHtml(r.okr.main)}</span></p>
+            <table>
+                <thead>
+                    <tr><th>Ключевой результат</th><th class="num" style="width: 100px;">Кол-во</th></tr>
+                </thead>
+                <tbody>${krRows}</tbody>
+            </table>
         </div>
         <div class="modal-section">
             <h4>2. Выполненные мероприятия</h4>
