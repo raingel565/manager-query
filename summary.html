@@ -494,9 +494,9 @@
                 
                 <!-- НОВЫЙ ФИЛЬТР ПО ФОКУСАМ -->
                 <div class="field">
-                    <label>Фокус недели</label>
+                    <label>Objective недели</label>
                     <select id="fFocus" style="max-width: 280px;">
-                        <option value="">-- Все фокусы --</option>
+                        <option value="">-- Все Objectives --</option>
                         <option value="Подключение новых агентов">Подключение новых агентов</option>
                         <option value="Привлечение крупных B2B-партнеров">Привлечение крупных B2B-партнеров</option>
                         <option value="Реактивация спящих агентов">Реактивация спящих агентов</option>
@@ -565,7 +565,7 @@
                         <tr>
                             <th class="sortable" data-key="manager">Менеджер <span class="arrow">▲</span></th>
                             <th class="sortable" data-key="date">Дата <span class="arrow">▲</span></th>
-                            <th class="sortable" data-key="focus">Фокус недели <span class="arrow">▲</span></th>
+                            <th class="sortable" data-key="focus">Objective недели <span class="arrow">▲</span></th>
                             <th class="sortable num" data-key="calls">Звонки <span class="arrow">▲</span></th>
                             <th class="sortable num" data-key="meetings">Встречи <span class="arrow">▲</span></th>
                             <th class="sortable num" data-key="newAgents">Новые агенты <span class="arrow">▲</span></th>
@@ -1621,7 +1621,7 @@ function buildReportSectionsHtml(r){
         ${buildVerdictPanelHtml(verdict)}
         <div class="modal-section">
             <h4>1. Личный OKR недели</h4>
-            <p style="font-size: 15px; margin-bottom: 12px;"><b>Фокус недели:</b> <span style="color: var(--primary-dark); font-weight: 700;">${escapeHtml(r.okr.main)}</span></p>
+            <p style="font-size: 15px; margin-bottom: 12px;"><b>Objective недели:</b> <span style="color: var(--primary-dark); font-weight: 700;">${escapeHtml(r.okr.main)}</span></p>
             <table>
                 <thead>
                     <tr><th>Ключевой результат</th><th class="num" style="width: 100px;">Кол-во</th></tr>
